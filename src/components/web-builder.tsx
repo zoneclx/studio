@@ -34,6 +34,7 @@ type WebBuilderProps = {
 
 export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   const [prompt, setPrompt] = useState(initialPrompt);
+  const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
   const [isPending, startTransition] = useTransition();
   const [canShare, setCanShare] = useState(false);
@@ -56,11 +57,9 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       return;
     }
 
-    if (!text) {
-      setPrompt(textToProcess);
-    }
-
+    setPrompt(textToProcess);
     setOutput('');
+
     startTransition(async () => {
       const result = await handleGeneration(textToProcess);
       if (result.error) {
@@ -71,13 +70,15 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
         });
       } else {
         setOutput(result.text || '');
+        setLastSuccessfulPrompt(textToProcess);
       }
     });
   };
 
   const handleRestart = () => {
-    setPrompt('');
-    setOutput('');
+    if (lastSuccessfulPrompt) {
+      onGenerate(lastSuccessfulPrompt);
+    }
   }
 
   useEffect(() => {
@@ -205,7 +206,6 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         variant="secondary"
                         size="sm"
                         onClick={() => {
-                          setPrompt(example);
                           onGenerate(example);
                         }}
                         disabled={isPending}

@@ -122,6 +122,7 @@ const examplePrompts = [
 
 function TryPageInner() {
   const [prompt, setPrompt] = useState('');
+  const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -140,11 +141,9 @@ function TryPageInner() {
       return;
     }
 
-    if (!text) {
-      setPrompt(textToProcess);
-    }
-
+    setPrompt(textToProcess);
     setOutput('');
+
     startTransition(async () => {
       const result = await handleGeneration(textToProcess);
       if (result.error) {
@@ -155,13 +154,15 @@ function TryPageInner() {
         });
       } else {
         setOutput(result.text || '');
+        setLastSuccessfulPrompt(textToProcess);
       }
     });
   };
 
   const handleRestart = () => {
-    setPrompt('');
-    setOutput('');
+    if (lastSuccessfulPrompt) {
+      onGenerate(lastSuccessfulPrompt);
+    }
   }
 
   return (
@@ -236,7 +237,6 @@ function TryPageInner() {
                         variant="secondary"
                         size="sm"
                         onClick={() => {
-                          setPrompt(example);
                           onGenerate(example);
                         }}
                         disabled={isPending || generations >= MAX_GENERATIONS}
