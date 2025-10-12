@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'MonoMuse',
-  description: 'A minimalist text generation and analysis app.',
+  title: 'AI Web Builder',
+  description: 'Generate websites with a single prompt.',
 };
 
 export default function RootLayout({
