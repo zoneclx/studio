@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,18 +10,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ArrowRight, Code, LogOut, PenTool, Sparkles } from 'lucide-react';
-import { useAuthContext } from '@/firebase/provider';
+import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth as useFirebaseAuth } from '@/firebase';
 
 export default function Home() {
-  const { user, loading } = useAuthContext();
+  const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
-  const auth = useFirebaseAuth();
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      await signOut();
       toast({
         title: 'Signed Out',
         description: 'You have successfully signed out.',
