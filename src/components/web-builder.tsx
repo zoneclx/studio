@@ -344,7 +344,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; {new Date().getFullYear()} Monochrome Ai. All rights reserved.
+          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
         </p>
       </footer>
     </div>
