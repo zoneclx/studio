@@ -71,7 +71,7 @@ export default function MyWorkPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Home
         </Link>
-        <h1 className="text-4xl font-bold font-display">My Work</h1>
+        <h1 className="text-4xl font-bold font-display">My Archive</h1>
         <p className="text-muted-foreground mt-2 text-lg">
           Here is your last saved creation. You can view it and continue editing.
         </p>
