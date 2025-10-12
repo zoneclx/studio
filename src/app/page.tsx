@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -100,33 +101,38 @@ export default function Home() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {presets.map((preset) => (
-            <Link
+            <Card
               key={preset.title}
-              href={`/create?prompt=${encodeURIComponent(preset.prompt)}`}
-              passHref
-              className="block"
+              className="border-border/50 bg-card overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col"
             >
-              <Card
-                className="border-border/50 bg-card overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col"
-              >
-                <CardHeader className="p-0">
-                  <Image
-                    src={preset.imageUrl}
-                    alt={preset.title}
-                    width={600}
-                    height={400}
-                    data-ai-hint={preset.imageHint}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </CardHeader>
-                <CardContent className="p-6 text-left flex-1">
-                  <CardTitle>{preset.title}</CardTitle>
-                  <CardDescription className="mt-2">
-                    {preset.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </Link>
+              <CardHeader className="p-0">
+                <Image
+                  src={preset.imageUrl}
+                  alt={preset.title}
+                  width={600}
+                  height={400}
+                  data-ai-hint={preset.imageHint}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </CardHeader>
+              <CardContent className="p-6 text-left flex-1">
+                <CardTitle>{preset.title}</CardTitle>
+                <CardDescription className="mt-2">
+                  {preset.description}
+                </CardDescription>
+              </CardContent>
+              <CardFooter>
+                <Link
+                  href={`/create?prompt=${encodeURIComponent(preset.prompt)}`}
+                  passHref
+                  className="w-full"
+                >
+                  <Button className="w-full">
+                    Use Preset
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </section>
