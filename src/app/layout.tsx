@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { AuthProvider } from '@/firebase/auth-provider';
+import { FirebaseProvider } from '@/firebase/provider';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
@@ -35,9 +34,7 @@ export default function RootLayout({
           fontDisplay.variable
         )}
       >
-        <FirebaseClientProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </FirebaseClientProvider>
+        <FirebaseProvider>{children}</FirebaseProvider>
         <Toaster />
       </body>
     </html>

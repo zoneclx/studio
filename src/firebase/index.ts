@@ -9,6 +9,11 @@ function initializeFirebase() {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
+  if (process.env.NEXT_PUBLIC_EMULATOR_HOST) {
+    // connectAuthEmulator(auth, `http://${process.env.NEXT_PUBLIC_EMULATOR_HOST}:9099`, { disableWarnings: true });
+    // connectFirestoreEmulator(firestore, process.env.NEXT_PUBLIC_EMULATOR_HOST, 8080);
+  }
+
   return { app, auth, firestore };
 }
 

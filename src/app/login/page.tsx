@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useFirebaseApp } from '@/firebase';
+import { useAuth } from '@/firebase';
 import { Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
@@ -25,8 +25,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const app = useFirebaseApp();
-  const auth = getAuth(app);
+  const auth = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +50,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-sm border-border/50 bg-secondary/20">
+      <Card className="w-full max-w-sm border-border/50 bg-card">
         <form onSubmit={handleSignIn}>
           <CardHeader>
             <CardTitle className="text-2xl font-display flex items-center gap-2">

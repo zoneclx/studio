@@ -1,13 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { useFirebaseApp } from '..';
+import { useEffect, useState, useContext } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { FirebaseContext, useAuth } from '..';
 
-export const useUser = () => {
-  const app = useFirebaseApp();
-  const auth = getAuth(app);
+export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const auth = useAuth();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -19,4 +18,4 @@ export const useUser = () => {
   }, [auth]);
 
   return { user, loading };
-};
+}

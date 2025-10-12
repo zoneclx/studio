@@ -122,7 +122,7 @@ export default function WebBuilder() {
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <header className="mb-8">
           <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4">
@@ -130,7 +130,7 @@ export default function WebBuilder() {
             Back to Home
           </Link>
           <div className="text-center">
-             <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
+             <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
               Web Builder
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">Describe the website you want, and let AI build it for you.</p>
@@ -139,7 +139,7 @@ export default function WebBuilder() {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
-            <Card className="shadow-lg border-border/50 bg-secondary/20">
+            <Card className="shadow-lg border-border/50 bg-card">
               <CardHeader>
                 <CardTitle>Describe Your Website</CardTitle>
                 <CardDescription>Enter as much detail as you'd like.</CardDescription>
@@ -175,7 +175,7 @@ export default function WebBuilder() {
           </div>
           
           <div className="space-y-6 h-full min-h-[600px] lg:min-h-0">
-             <Card className="shadow-lg h-full border-border/50 bg-secondary/20 flex flex-col">
+             <Card className="shadow-lg h-full border-border/50 bg-card flex flex-col">
                 <Tabs defaultValue="preview" className="flex flex-col h-full w-full">
                   <CardHeader className="flex-row items-center justify-between">
                     <TabsList>

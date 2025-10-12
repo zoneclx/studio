@@ -3,11 +3,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import WebBuilder from '@/components/web-builder';
-import { useUser } from '@/firebase';
+import { useAuthContext } from '@/firebase/provider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CreatePage() {
-  const { user, loading } = useUser();
+  const { user, loading } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {

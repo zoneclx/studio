@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,15 +11,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ArrowRight, Code, LogOut, PenTool, Sparkles } from 'lucide-react';
-import { useUser } from '@/firebase';
+import { useAuthContext } from '@/firebase/provider';
 import { useToast } from '@/hooks/use-toast';
-import { useFirebaseApp } from '@/firebase';
+import { useAuth as useFirebaseAuth } from '@/firebase';
 
 export default function Home() {
-  const { user, loading } = useUser();
+  const { user, loading } = useAuthContext();
   const { toast } = useToast();
-  const app = useFirebaseApp();
-  const auth = getAuth(app);
+  const auth = useFirebaseAuth();
 
   const handleSignOut = async () => {
     try {
@@ -91,7 +90,7 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">A simple two-step process to your new website.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="border-border/50 bg-secondary/20">
+          <Card className="border-border/50 bg-card">
             <CardHeader>
               <PenTool className="h-8 w-8 mb-2 text-primary" />
               <CardTitle>1. Describe Your Idea</CardTitle>
@@ -104,7 +103,7 @@ export default function Home() {
               </CardDescription>
             </CardContent>
           </Card>
-          <Card className="border-border/50 bg-secondary/20">
+          <Card className="border-border/50 bg-card">
             <CardHeader>
               <Code className="h-8 w-8 mb-2 text-primary" />
               <CardTitle>2. Get Instant Code</CardTitle>
