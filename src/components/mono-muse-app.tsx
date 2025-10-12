@@ -1,0 +1,169 @@
+"use client";
+
+import { useState, useTransition, useEffect } from "react";
+import { Download, Share2, Sparkles } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { handleGeneration } from "@/app/actions";
+
+export default function MonoMuseApp() {
+  const [prompt, setPrompt] = useState("");
+  const [output, setOutput] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [canShare, setCanShare] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && (navigator.share || navigator.clipboard)) {
+      setCanShare(true);
+    }
+  }, []);
+
+  const onGenerate = () => {
+    if (!prompt) {
+      toast({
+        title: "Prompt is empty",
+        description: "Please enter some text to generate from.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setOutput("");
+    startTransition(async () => {
+      const result = await handleGeneration(prompt);
+      if (result.error) {
+        toast({
+          title: "An error occurred",
+          description: result.error,
+          variant: "destructive",
+        });
+      } else {
+        setOutput(result.text || "");
+      }
+    });
+  };
+
+  const handleSave = () => {
+    if (!output) return;
+    try {
+      const blob = new Blob([output], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "monomuse_generation.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch(e) {
+      toast({
+        title: "Save failed",
+        description: "Could not save the file.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    if (!output) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "MonoMuse Generation",
+          text: output,
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+        console.error("Error sharing:", error);
+        toast({
+          title: "Sharing failed",
+          description: "Could not share the generated text.",
+          variant: "destructive",
+        });
+      }
+    } else if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(output);
+        toast({
+          title: "Copied to clipboard",
+          description: "Share API not supported, text copied to clipboard.",
+        });
+      } catch (err) {
+        toast({
+          title: "Failed to copy",
+          description: "Could not copy text to clipboard.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+  
+  return (
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <main className="container mx-auto max-w-4xl flex-1 px-4 py-8 sm:py-12">
+        <header className="text-center mb-8 sm:mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight font-headline">MonoMuse</h1>
+          <p className="text-muted-foreground mt-2 text-lg">Minimalist AI Text Generation & Analysis</p>
+        </header>
+        
+        <div className="space-y-6">
+          <div className="grid gap-4">
+            <Textarea
+              placeholder="Enter a prompt to generate text, or provide a longer text to summarize..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="min-h-[120px] text-base rounded-md focus-visible:ring-primary bg-input border-border"
+              disabled={isPending}
+              aria-label="Prompt Input"
+            />
+            <Button onClick={onGenerate} disabled={isPending} size="lg" className="w-full sm:w-auto justify-self-center sm:justify-self-end bg-primary text-primary-foreground hover:bg-primary/90">
+              <Sparkles className="mr-2 h-4 w-4" />
+              {isPending ? "Generating..." : "Generate"}
+            </Button>
+          </div>
+
+          <Card className="shadow-lg border-border">
+            <CardHeader>
+              <CardTitle>Output</CardTitle>
+            </CardHeader>
+            <CardContent className="min-h-[200px]">
+              {isPending ? (
+                <div className="space-y-3 p-1">
+                  <Skeleton className="h-4 w-full bg-muted" />
+                  <Skeleton className="h-4 w-full bg-muted" />
+                  <Skeleton className="h-4 w-3/4 bg-muted" />
+                </div>
+              ) : (
+                <div className="whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90">
+                  {output || <p className="text-muted-foreground">AI generated content will appear here.</p>}
+                </div>
+              )}
+            </CardContent>
+            {output && !isPending && (
+              <CardFooter className="justify-end gap-2">
+                <Button variant="outline" size="icon" onClick={handleSave} aria-label="Save text as a file">
+                  <Download className="h-4 w-4" />
+                </Button>
+                {canShare && (
+                  <Button variant="outline" size="icon" onClick={handleShare} aria-label="Share generated text">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </CardFooter>
+            )}
+          </Card>
+        </div>
+      </main>
+      <footer className="py-6 text-center text-sm text-muted-foreground">
+        <p>&copy; {new Date().getFullYear()} MonoMuse. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
