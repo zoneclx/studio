@@ -19,11 +19,13 @@ export default function Home() {
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4">
-          Build a website with a prompt
+          Build a website with a single prompt
         </h2>
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8">
-          Start with an idea, a sketch, or a preset. Our AI will bring your
-          vision to life, and help you refine it.
+          Monochrome AI is a powerful tool that allows you to generate
+          beautiful, production-ready websites using simple text prompts.
+          Describe your vision, and watch as our AI brings it to life, helping
+          you refine and perfect your creation.
         </p>
         <Link href="/signup">
           <Button size="lg" className="font-bold text-lg">
