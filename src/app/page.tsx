@@ -3,55 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import Image from 'next/image';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
-
-const presets = [
-  {
-    title: 'Photographer Portfolio',
-    description:
-      'A sleek, modern portfolio for a photographer to showcase their work, featuring a gallery, an about me page, and a contact form.',
-    prompt:
-      'A sleek, modern portfolio for a photographer named "Alex Doe", featuring a stunning photo gallery, an about me page, and a contact form. Use a dark theme with vibrant accent colors.',
-    image: 'https://picsum.photos/seed/photographer-portfolio/600/400',
-    imageHint: 'sleek dark',
-  },
-  {
-    title: 'Mobile App Landing Page',
-    description:
-      'A vibrant and engaging landing page for a new mobile app, designed to drive downloads and user engagement.',
-    prompt:
-      'A vibrant and engaging landing page for a new mobile app called "ConnectSphere". It should have a clear call-to-action to download from the App Store and Google Play, feature screenshots, and list key benefits.',
-    image: 'https://picsum.photos/seed/mobile-app-landing/600/400',
-    imageHint: 'vibrant engaging',
-  },
-  {
-    title: 'Travel Blog',
-    description:
-      'A beautiful and personal blog for a travel writer, with a focus on storytelling and stunning imagery.',
-    prompt:
-      'A beautiful and personal blog for a travel writer named "Journeying Jane". The design should be clean and focus on large, high-quality images and elegant typography. Include sections for different destinations.',
-    image: 'https://picsum.photos/seed/travel-blog/600/400',
-    imageHint: 'travel blog',
-  },
-  {
-    title: 'E-commerce Store',
-    description:
-      'A stylish online store for selling handmade jewelry, with product listings, a shopping cart, and a secure checkout.',
-    prompt:
-      'A stylish and elegant e-commerce site for "Gemstone Gems", a boutique for handmade jewelry. The site needs a homepage with featured products, a product listing page with filters, and a shopping cart icon in the header.',
-    image: 'https://picsum.photos/seed/ecommerce-store/600/400',
-    imageHint: 'stylish elegant',
-  },
-];
 
 export default function Home() {
   const { user } = useAuth();
@@ -100,44 +52,6 @@ export default function Home() {
           </Link>
         </div>
       </main>
-
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <h3 className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-center mb-12">
-          Start with a beautiful preset
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {presets.map((preset) => (
-            <Card
-              key={preset.title}
-              className="bg-card border-border/50 flex flex-col"
-            >
-              <CardHeader>
-                <div className="aspect-[3/2] rounded-t-lg overflow-hidden mb-4">
-                  <Image
-                    src={preset.image}
-                    alt={preset.title}
-                    width={600}
-                    height={400}
-                    data-ai-hint={preset.imageHint}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardTitle>{preset.title}</CardTitle>
-                <CardDescription className="flex-grow">
-                  {preset.description}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Link href={`/create?prompt=${encodeURIComponent(preset.prompt)}`} className="w-full">
-                  <Button className="w-full" variant="secondary">
-                    Use Preset
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </section>
 
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
-import { Download, Share2, Sparkles, Wand2, Code, Eye } from 'lucide-react';
+import { Download, Share2, Sparkles, Wand2, Code, Eye, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -74,6 +74,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       }
     });
   };
+
+  const handleRestart = () => {
+    setPrompt('');
+    setOutput('');
+  }
 
   useEffect(() => {
     if (initialPrompt) {
@@ -234,6 +239,14 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                   </TabsList>
                   {output && !isPending && (
                     <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRestart}
+                        aria-label="Restart"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

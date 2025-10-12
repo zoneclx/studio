@@ -12,6 +12,7 @@ import {
   Eye,
   ArrowLeft,
   Info,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -158,6 +159,11 @@ function TryPageInner() {
     });
   };
 
+  const handleRestart = () => {
+    setPrompt('');
+    setOutput('');
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
@@ -262,6 +268,18 @@ function TryPageInner() {
                       Code
                     </TabsTrigger>
                   </TabsList>
+                  {output && !isPending && (
+                    <div className="flex items-center gap-2">
+                       <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRestart}
+                        aria-label="Restart"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardHeader>
                 <TabsContent value="preview" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
@@ -363,4 +381,3 @@ export default function TryPage() {
         </TrialProvider>
     );
 }
-
