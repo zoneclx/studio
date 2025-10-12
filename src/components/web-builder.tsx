@@ -307,9 +307,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
             </Card>
           </div>
         </div>
-        <div className="mt-8">
+        {output && !isPending && (
+          <div className="mt-8">
             <AiChat />
-        </div>
+          </div>
+        )}
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
