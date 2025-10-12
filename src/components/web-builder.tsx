@@ -19,6 +19,7 @@ import { handleGeneration } from '@/app/actions';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AiChat from '@/components/ai-chat';
 
 const examplePrompts = [
   'A portfolio website for a photographer.',
@@ -305,6 +306,9 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
               </Tabs>
             </Card>
           </div>
+        </div>
+        <div className="mt-8">
+            <AiChat />
         </div>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
