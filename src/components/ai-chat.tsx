@@ -15,7 +15,12 @@ type Message = {
   content: string;
 };
 
-export default function AiChat() {
+type AiChatProps = {
+  onSendMessage?: () => boolean;
+  disabled?: boolean;
+};
+
+export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
@@ -36,6 +41,10 @@ export default function AiChat() {
   };
 
   const handleSendMessage = () => {
+    if (onSendMessage && !onSendMessage()) {
+      return;
+    }
+    
     if (!input.trim() && !image) return;
 
     const userMessage = input.trim();
@@ -133,14 +142,14 @@ export default function AiChat() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             className="pr-20"
-            disabled={isPending}
+            disabled={isPending || disabled}
           />
           <div className="absolute inset-y-0 right-0 flex items-center">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isPending}
+              disabled={isPending || disabled}
             >
               <Paperclip className="h-5 w-5" />
             </Button>
@@ -155,7 +164,7 @@ export default function AiChat() {
               variant="ghost"
               size="icon"
               onClick={handleSendMessage}
-              disabled={isPending}
+              disabled={isPending || disabled}
             >
               <Send className="h-5 w-5" />
             </Button>
