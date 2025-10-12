@@ -122,7 +122,7 @@ export default function WebBuilder() {
   };
   
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col min-h-screen">
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <header className="mb-8">
           <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4">
@@ -139,7 +139,7 @@ export default function WebBuilder() {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
-            <Card className="shadow-lg border-primary/20 bg-card/50">
+            <Card className="shadow-lg border-primary/20 bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>Describe Your Website</CardTitle>
                 <CardDescription>Enter as much detail as you'd like.</CardDescription>
@@ -174,13 +174,13 @@ export default function WebBuilder() {
             </Card>
           </div>
           
-          <div className="space-y-6 h-full">
-             <Card className="shadow-lg h-full border-primary/20 bg-card/50 flex flex-col">
+          <div className="space-y-6 h-full min-h-[600px] lg:min-h-0">
+             <Card className="shadow-lg h-full border-primary/20 bg-card/50 backdrop-blur-sm flex flex-col">
                 <Tabs defaultValue="preview" className="flex flex-col h-full w-full">
                   <CardHeader className="flex-row items-center justify-between">
                     <TabsList className="bg-secondary">
-                      <TabsTrigger value="preview"><Eye className="mr-2"/>Preview</TabsTrigger>
-                      <TabsTrigger value="code"><Code className="mr-2"/>Code</TabsTrigger>
+                      <TabsTrigger value="preview"><Eye className="mr-2 h-4 w-4"/>Preview</TabsTrigger>
+                      <TabsTrigger value="code"><Code className="mr-2 h-4 w-4"/>Code</TabsTrigger>
                     </TabsList>
                     {output && !isPending && (
                       <div className="flex items-center gap-2">

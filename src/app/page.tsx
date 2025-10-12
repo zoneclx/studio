@@ -39,14 +39,14 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
+      <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold font-display flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-primary" />
           Monochrome Ai
         </h1>
         {loading ? null : user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden sm:inline text-sm text-muted-foreground">{user.email}</span>
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-5 w-5" />
             </Button>
@@ -63,11 +63,11 @@ export default function Home() {
         )}
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4">
-        <h2 className="text-5xl sm:text-7xl font-bold font-display tracking-tight mb-4 bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
+      <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
           Build Websites with a Prompt
         </h2>
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mb-8">
+        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8">
           Welcome to Monochrome Ai, your intelligent partner for web development.
           Describe your vision, and let our AI bring it to life instantly.
         </p>
@@ -83,12 +83,12 @@ export default function Home() {
         )}
       </main>
 
-      <section className="container mx-auto px-4 py-24">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
          <div className="text-center mb-12">
-            <h3 className="text-4xl font-bold font-display">How It Works</h3>
-            <p className="text-muted-foreground mt-2">A simple three-step process to your new website.</p>
+            <h3 className="text-3xl sm:text-4xl font-bold font-display">How It Works</h3>
+            <p className="text-muted-foreground mt-2">A simple two-step process to your new website.</p>
         </div>
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
             <CardHeader>
               <PenTool className="h-8 w-8 mb-2 text-primary" />
