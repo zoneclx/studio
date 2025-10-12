@@ -41,8 +41,10 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold font-display flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-primary" />
-          Monochrome Ai
+          <Link href="/" className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-primary" />
+            Monochrome Ai
+          </Link>
         </h1>
         {loading ? null : user ? (
           <div className="flex items-center gap-2 sm:gap-4">
