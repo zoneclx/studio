@@ -1,13 +1,58 @@
+'use client';
+
 import Link from 'next/link';
+import { getAuth, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Code, PenTool } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { ArrowRight, Code, LogOut, PenTool } from 'lucide-react';
+import { useUser } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { useFirebaseApp } from '@/firebase';
 
 export default function Home() {
+  const { user, loading } = useUser();
+  const { toast } = useToast();
+  const app = useFirebaseApp();
+  const auth = getAuth(app);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Signed Out',
+        description: 'You have successfully signed out.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error signing out',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="container mx-auto px-4 py-6">
+      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Monochrome Ai</h1>
+        {loading ? null : user ? (
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">{user.email}</span>
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+        ) : (
+          <Link href="/login">
+            <Button variant="outline">Sign In</Button>
+          </Link>
+        )}
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4">
@@ -15,13 +60,19 @@ export default function Home() {
           Build Websites with a Prompt
         </h2>
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mb-8">
-          Welcome to Monochrome Ai, your intelligent partner for web development. Describe your vision, and let our AI bring it to life instantly.
+          Welcome to Monochrome Ai, your intelligent partner for web development.
+          Describe your vision, and let our AI bring it to life instantly.
         </p>
         <Link href="/create">
-          <Button size="lg">
+          <Button size="lg" disabled={!user && !loading}>
             Start Creating <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
+        {!user && !loading && (
+          <p className="text-sm text-muted-foreground mt-4">
+            Please sign in to start creating.
+          </p>
+        )}
       </main>
 
       <section className="container mx-auto px-4 py-16">
@@ -33,7 +84,9 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Start with a simple description of the website you want to create. Whether it's a portfolio, a blog, or a landing page, just tell us what you need.
+                Start with a simple description of the website you want to create.
+                Whether it's a portfolio, a blog, or a landing page, just
+                tell us what you need.
               </CardDescription>
             </CardContent>
           </Card>
@@ -44,7 +97,8 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Our AI generates clean, ready-to-use HTML and Tailwind CSS code. You can download the file and use it right away.
+                Our AI generates clean, ready-to-use HTML and Tailwind CSS code.
+                You can download the file and use it right away.
               </CardDescription>
             </CardContent>
           </Card>
