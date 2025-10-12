@@ -20,7 +20,24 @@ interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
+const AUTH_STORAGE_KEY = 'monochrome-auth-users';
+const SESSION_STORAGE_KEY = 'monochrome-session-user';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const getStoredUsers = (): StoredUser[] => {
+  try {
+    const users = localStorage.getItem(AUTH_STORAGE_KEY);
+    return users ? JSON.parse(users) : [];
+  } catch (error) {
+    console.error("Failed to parse users from localStorage", error);
+    return [];
+  }
+};
+
+const setStoredUsers = (users: StoredUser[]) => {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(users));
+};
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -30,50 +47,62 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const checkUser = () => {
       try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const parsedUser: StoredUser = JSON.parse(storedUser);
-          setUser({ uid: parsedUser.uid, email: parsedUser.email });
+        const sessionUser = sessionStorage.getItem(SESSION_STORAGE_KEY);
+        if (sessionUser) {
+          const parsedUser: User = JSON.parse(sessionUser);
+          setUser(parsedUser);
         }
       } catch (error) {
-        console.error("Failed to parse user from localStorage", error);
-        localStorage.removeItem('user');
+        console.error("Failed to parse user from sessionStorage", error);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
       } finally {
         setLoading(false);
       }
     };
     checkUser();
   }, []);
+  
+  const setActiveUser = (activeUser: User | null) => {
+    setUser(activeUser);
+    if (activeUser) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeUser));
+    } else {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
+  }
 
   const signIn = async (email: string, pass: string) => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsedUser: StoredUser = JSON.parse(storedUser);
-        if (parsedUser.email === email && parsedUser.pass === pass) {
-          setUser({ uid: parsedUser.uid, email: parsedUser.email });
-          return;
-        }
-      }
-    } catch (error) {
-      console.error("Failed to parse user from localStorage during sign-in", error);
+    const storedUsers = getStoredUsers();
+    const foundUser = storedUsers.find(u => u.email === email);
+
+    if (foundUser && foundUser.pass === pass) {
+      setActiveUser({ uid: foundUser.uid, email: foundUser.email });
+      return;
     }
+    
     throw new Error('Invalid email or password');
   };
 
   const signUp = async (email: string, pass: string) => {
-    if (email && pass) {
-        const mockUser: StoredUser = { uid: 'local-user-' + new Date().getTime(), email: email, pass: pass };
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        setUser({ uid: mockUser.uid, email: mockUser.email });
-        return;
+    if (!email || !pass) {
+        throw new Error('Please provide a valid email and password');
     }
-    throw new Error('Please provide a valid email and password');
+    const storedUsers = getStoredUsers();
+    const existingUser = storedUsers.find(u => u.email === email);
+
+    if (existingUser) {
+        throw new Error('An account with this email already exists.');
+    }
+    
+    const newUser: StoredUser = { uid: 'local-user-' + new Date().getTime(), email: email, pass: pass };
+    const updatedUsers = [...storedUsers, newUser];
+    setStoredUsers(updatedUsers);
+    
+    setActiveUser({ uid: newUser.uid, email: newUser.email });
   };
 
   const signOut = async () => {
-    localStorage.removeItem('user');
-    setUser(null);
+    setActiveUser(null);
     router.push('/');
   };
 
