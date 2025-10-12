@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { Download, Share2, Sparkles } from "lucide-react";
+import { Download, Share2, Sparkles, Wand2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { handleGeneration } from "@/app/actions";
+
+const examplePrompts = [
+  "Write a short story about a robot who discovers music.",
+  "Generate a list of creative project ideas for a web developer.",
+  "Compose a haiku about the beauty of a sunrise.",
+  "Summarize the latest trends in artificial intelligence.",
+];
 
 export default function MonoMuseApp() {
   const [prompt, setPrompt] = useState("");
@@ -23,8 +30,9 @@ export default function MonoMuseApp() {
     }
   }, []);
 
-  const onGenerate = () => {
-    if (!prompt) {
+  const onGenerate = (text?: string) => {
+    const textToProcess = text || prompt;
+    if (!textToProcess) {
       toast({
         title: "Prompt is empty",
         description: "Please enter some text to generate from.",
@@ -33,9 +41,13 @@ export default function MonoMuseApp() {
       return;
     }
 
+    if (!text) {
+      setPrompt(textToProcess);
+    }
+    
     setOutput("");
     startTransition(async () => {
-      const result = await handleGeneration(prompt);
+      const result = await handleGeneration(textToProcess);
       if (result.error) {
         toast({
           title: "An error occurred",
@@ -110,28 +122,40 @@ export default function MonoMuseApp() {
       <main className="container mx-auto max-w-4xl flex-1 px-4 py-8 sm:py-12">
         <header className="text-center mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight font-headline">MonoMuse</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Minimalist AI Text Generation & Analysis</p>
+          <p className="text-muted-foreground mt-2 text-lg">Your Personal AI Text Companion</p>
         </header>
         
         <div className="space-y-6">
           <div className="grid gap-4">
             <Textarea
-              placeholder="Enter a prompt to generate text, or provide a longer text to summarize..."
+              placeholder="Craft a prompt, or paste text to summarize..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               className="min-h-[120px] text-base rounded-md focus-visible:ring-primary bg-input border-border"
               disabled={isPending}
               aria-label="Prompt Input"
             />
-            <Button onClick={onGenerate} disabled={isPending} size="lg" className="w-full sm:w-auto justify-self-center sm:justify-self-end bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button onClick={() => onGenerate()} disabled={isPending} size="lg" className="w-full sm:w-auto justify-self-center sm:justify-self-end bg-primary text-primary-foreground hover:bg-primary/90">
               <Sparkles className="mr-2 h-4 w-4" />
-              {isPending ? "Generating..." : "Generate"}
+              {isPending ? "Crafting..." : "Generate"}
             </Button>
+          </div>
+          
+          <div className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">Or, try one of these ideas:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {examplePrompts.map((example, i) => (
+                <Button key={i} variant="outline" size="sm" onClick={() => onGenerate(example)} disabled={isPending}>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  {example}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <Card className="shadow-lg border-border">
             <CardHeader>
-              <CardTitle>Output</CardTitle>
+              <CardTitle>Result</CardTitle>
             </CardHeader>
             <CardContent className="min-h-[200px]">
               {isPending ? (
@@ -142,7 +166,7 @@ export default function MonoMuseApp() {
                 </div>
               ) : (
                 <div className="whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90">
-                  {output || <p className="text-muted-foreground">AI generated content will appear here.</p>}
+                  {output || <p className="text-muted-foreground">Your AI-generated content will appear here.</p>}
                 </div>
               )}
             </CardContent>
