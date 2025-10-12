@@ -8,6 +8,10 @@ interface User {
   email: string;
 }
 
+interface StoredUser extends User {
+  pass: string;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -24,12 +28,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const router = useRouter();
 
   useEffect(() => {
-    // Simulate checking for a logged-in user
     const checkUser = () => {
       try {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-          setUser(JSON.parse(storedUser));
+          const parsedUser: StoredUser = JSON.parse(storedUser);
+          setUser({ uid: parsedUser.uid, email: parsedUser.email });
         }
       } catch (error) {
         console.error("Failed to parse user from localStorage", error);
@@ -42,29 +46,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signIn = async (email: string, pass: string) => {
-    // Simulate a sign-in process
-    if (email && pass) {
-        const mockUser = { uid: 'local-user-123', email: email };
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        setUser(mockUser);
-        return;
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser: StoredUser = JSON.parse(storedUser);
+        if (parsedUser.email === email && parsedUser.pass === pass) {
+          setUser({ uid: parsedUser.uid, email: parsedUser.email });
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse user from localStorage during sign-in", error);
     }
     throw new Error('Invalid email or password');
   };
 
   const signUp = async (email: string, pass: string) => {
-    // Simulate a sign-up process
     if (email && pass) {
-        const mockUser = { uid: 'local-user-' + new Date().getTime(), email: email };
+        const mockUser: StoredUser = { uid: 'local-user-' + new Date().getTime(), email: email, pass: pass };
         localStorage.setItem('user', JSON.stringify(mockUser));
-        setUser(mockUser);
+        setUser({ uid: mockUser.uid, email: mockUser.email });
         return;
     }
     throw new Error('Please provide a valid email and password');
   };
 
   const signOut = async () => {
-    // Simulate sign-out
     localStorage.removeItem('user');
     setUser(null);
     router.push('/');
