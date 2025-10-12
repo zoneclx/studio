@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'AI Web Builder',
+  title: 'Monochrome Ai',
   description: 'Generate websites with a single prompt.',
 };
 
