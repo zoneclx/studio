@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebaseApp } from '@/firebase';
+import { Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -49,13 +50,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-sm">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <Card className="w-full max-w-sm border-primary/20 bg-card/50 backdrop-blur-sm">
         <form onSubmit={handleSignIn}>
           <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
+            <CardTitle className="text-2xl font-display flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                Monochrome Ai
+              </Link>
+            </CardTitle>
             <CardDescription>
-              Enter your email below to login to your account.
+              Login to start building your website.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -68,6 +74,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="bg-input"
               />
             </div>
             <div className="grid gap-2">
@@ -78,6 +85,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="bg-input"
               />
             </div>
           </CardContent>
@@ -87,7 +95,7 @@ export default function LoginPage() {
             </Button>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="underline">
+              <Link href="/signup" className="underline text-primary">
                 Sign up
               </Link>
             </div>
