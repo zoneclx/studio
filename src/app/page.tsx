@@ -49,16 +49,7 @@ export default function Home() {
               <LogOut className="h-5 w-5" />
             </Button>
           </div>
-        ) : (
-          <div className='flex items-center gap-2'>
-            <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </div>
-        )}
+        ) : null}
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,15 +61,10 @@ export default function Home() {
           Describe your vision, and let our AI bring it to life instantly.
         </p>
         <Link href="/create">
-          <Button size="lg" disabled={!user && !loading} className="font-bold text-lg">
+          <Button size="lg" className="font-bold text-lg">
             Start Creating <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
-        {!user && !loading && (
-          <p className="text-sm text-muted-foreground mt-4">
-            Please sign in to start creating.
-          </p>
-        )}
       </main>
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">

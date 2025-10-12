@@ -12,7 +12,7 @@ export default function CreatePage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push('/signup');
     }
   }, [user, loading, router]);
 
