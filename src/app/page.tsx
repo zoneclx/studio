@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import TypewriterEffect from '@/components/typewriter-effect';
 
 export default function Home() {
   const { user, signOut } = useAuth();
@@ -59,17 +60,18 @@ export default function Home() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Link href="/login">
-              <Button>Login</Button>
+             <Link href="/signup">
+              <Button>Sign Up</Button>
             </Link>
           )}
         </nav>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4">
-          Build a website with a single prompt
-        </h2>
+        <TypewriterEffect
+            text="Build a website with a single prompt"
+            className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
+        />
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8">
           Monochrome AI is a powerful tool that allows you to generate
           beautiful, production-ready websites using simple text prompts.
