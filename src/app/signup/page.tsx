@@ -51,7 +51,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-sm border-primary/20 bg-card/50 backdrop-blur-sm">
+      <Card className="w-full max-w-sm border-border/50 bg-secondary/20">
         <form onSubmit={handleSignUp}>
           <CardHeader>
             <CardTitle className="text-2xl font-display flex items-center gap-2">
@@ -74,7 +74,7 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-input"
+                className="bg-background"
               />
             </div>
             <div className="grid gap-2">
@@ -85,7 +85,7 @@ export default function SignupPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-input"
+                className="bg-background"
               />
             </div>
           </CardContent>

@@ -89,7 +89,7 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">A simple two-step process to your new website.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+          <Card className="border-border/50 bg-secondary/20">
             <CardHeader>
               <PenTool className="h-8 w-8 mb-2 text-primary" />
               <CardTitle>1. Describe Your Idea</CardTitle>
@@ -102,7 +102,7 @@ export default function Home() {
               </CardDescription>
             </CardContent>
           </Card>
-          <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+          <Card className="border-border/50 bg-secondary/20">
             <CardHeader>
               <Code className="h-8 w-8 mb-2 text-primary" />
               <CardTitle>2. Get Instant Code</CardTitle>

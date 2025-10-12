@@ -139,7 +139,7 @@ export default function WebBuilder() {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
-            <Card className="shadow-lg border-primary/20 bg-card/50 backdrop-blur-sm">
+            <Card className="shadow-lg border-border/50 bg-secondary/20">
               <CardHeader>
                 <CardTitle>Describe Your Website</CardTitle>
                 <CardDescription>Enter as much detail as you'd like.</CardDescription>
@@ -149,7 +149,7 @@ export default function WebBuilder() {
                   placeholder="e.g., 'A modern landing page for a SaaS product with a pricing table...'"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary bg-input"
+                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary bg-background"
                   disabled={isPending}
                   aria-label="Website Description Input"
                 />
@@ -175,10 +175,10 @@ export default function WebBuilder() {
           </div>
           
           <div className="space-y-6 h-full min-h-[600px] lg:min-h-0">
-             <Card className="shadow-lg h-full border-primary/20 bg-card/50 backdrop-blur-sm flex flex-col">
+             <Card className="shadow-lg h-full border-border/50 bg-secondary/20 flex flex-col">
                 <Tabs defaultValue="preview" className="flex flex-col h-full w-full">
                   <CardHeader className="flex-row items-center justify-between">
-                    <TabsList className="bg-secondary">
+                    <TabsList>
                       <TabsTrigger value="preview"><Eye className="mr-2 h-4 w-4"/>Preview</TabsTrigger>
                       <TabsTrigger value="code"><Code className="mr-2 h-4 w-4"/>Code</TabsTrigger>
                     </TabsList>
@@ -198,12 +198,12 @@ export default function WebBuilder() {
                   <TabsContent value="preview" className="flex-1 h-0 mt-0">
                     <CardContent className="h-full p-2">
                        {isPending ? (
-                          <div className="flex items-center justify-center h-full rounded-md bg-secondary">
+                          <div className="flex items-center justify-center h-full rounded-md bg-background">
                              <div className="space-y-3 p-4 w-full">
-                               <Skeleton className="h-8 w-full bg-muted" />
-                               <Skeleton className="h-4 w-3/4 bg-muted" />
-                               <Skeleton className="h-20 w-full bg-muted" />
-                                <Skeleton className="h-4 w-full bg-muted" />
+                               <Skeleton className="h-8 w-full" />
+                               <Skeleton className="h-4 w-3/4" />
+                               <Skeleton className="h-20 w-full" />
+                                <Skeleton className="h-4 w-full" />
                              </div>
                           </div>
                         ) : output ? (
@@ -214,7 +214,7 @@ export default function WebBuilder() {
                               sandbox="allow-scripts"
                             />
                         ) : (
-                          <div className="flex items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-secondary">
+                          <div className="flex items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background">
                              <p>Your generated website preview will appear here.</p>
                           </div>
                         )}
@@ -223,13 +223,13 @@ export default function WebBuilder() {
                   <TabsContent value="code" className="flex-1 h-0 mt-0">
                     <CardContent className="h-full p-2">
                        {isPending ? (
-                          <div className="space-y-3 p-4 h-full rounded-md bg-secondary">
-                            <Skeleton className="h-4 w-full bg-muted" />
-                            <Skeleton className="h-4 w-full bg-muted" />
-                            <Skeleton className="h-4 w-3/4 bg-muted" />
+                          <div className="space-y-3 p-4 h-full rounded-md bg-background">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-3/4" />
                           </div>
                         ) : (
-                          <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-code text-sm bg-secondary p-4 rounded-md">
+                          <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-code text-sm bg-background p-4 rounded-md">
                             <code>
                               {output || <p className="text-muted-foreground font-sans text-center">Your generated website code will appear here.</p>}
                             </code>
