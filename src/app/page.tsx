@@ -16,11 +16,16 @@ export default function Home() {
             Monochrome Ai
           </Link>
         </h1>
-        <nav>
+        <nav className='flex items-center gap-4'>
           {user ? (
-            <Link href="/create">
-              <Button>Go to Builder</Button>
-            </Link>
+            <>
+              <Link href="/my-work">
+                <Button variant="ghost">My Work</Button>
+              </Link>
+              <Link href="/create">
+                <Button>Go to Builder</Button>
+              </Link>
+            </>
           ) : (
             <Link href="/signup">
               <Button>Sign Up</Button>

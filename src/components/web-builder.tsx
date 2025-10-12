@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
+import { useAuth } from '@/context/auth-context';
 
 const examplePrompts = [
   'A portfolio website for a photographer.',
@@ -33,6 +34,7 @@ type WebBuilderProps = {
 };
 
 export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
+  const { user } = useAuth();
   const [prompt, setPrompt] = useState(initialPrompt);
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
@@ -69,8 +71,22 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
           variant: 'destructive',
         });
       } else {
-        setOutput(result.text || '');
+        const generatedHtml = result.text || '';
+        setOutput(generatedHtml);
         setLastSuccessfulPrompt(textToProcess);
+
+        if (user && generatedHtml) {
+          try {
+            const work = {
+              html: generatedHtml,
+              prompt: textToProcess,
+              date: new Date().toISOString(),
+            };
+            localStorage.setItem(`monochrome-work-${user.uid}`, JSON.stringify(work));
+          } catch(e) {
+            console.error("Failed to save work to localStorage", e);
+          }
+        }
       }
     });
   };

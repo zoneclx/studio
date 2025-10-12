@@ -41,6 +41,7 @@ import {
 
 const MAX_GENERATIONS = 5;
 const MAX_UPGRADES = 5;
+const TRIAL_STORAGE_KEY = 'monochrome-trial';
 
 interface TrialContextType {
   generations: number;
@@ -59,20 +60,33 @@ const TrialProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-      const storedGenerations = sessionStorage.getItem('trial-generations');
-      const storedUpgrades = sessionStorage.getItem('trial-upgrades');
-      setGenerations(storedGenerations ? parseInt(storedGenerations, 10) : 0);
-      setUpgrades(storedUpgrades ? parseInt(storedUpgrades, 10) : 0);
+      const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
+      if (storedTrial) {
+        const { generations, upgrades, timestamp } = JSON.parse(storedTrial);
+        const now = new Date().getTime();
+        const oneDay = 24 * 60 * 60 * 1000;
+
+        if (now - timestamp > oneDay) {
+          // 24 hours have passed, reset limits
+          localStorage.removeItem(TRIAL_STORAGE_KEY);
+          setGenerations(0);
+          setUpgrades(0);
+        } else {
+          setGenerations(generations || 0);
+          setUpgrades(upgrades || 0);
+        }
+      }
     } catch (e) {
-      // sessionStorage not available
+      console.error("Could not read trial data from localStorage", e)
     }
   }, []);
 
-  const updateStorage = (key: string, value: number) => {
+  const updateStorage = (genCount: number, upgCount: number) => {
      try {
-      sessionStorage.setItem(key, value.toString());
+      const timestamp = new Date().getTime();
+      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ generations: genCount, upgrades: upgCount, timestamp }));
     } catch (e) {
-      // sessionStorage not available
+      // localStorage not available
     }
   };
 
@@ -83,7 +97,7 @@ const TrialProvider = ({ children }: { children: ReactNode }) => {
     }
     const newCount = generations + 1;
     setGenerations(newCount);
-    updateStorage('trial-generations', newCount);
+    updateStorage(newCount, upgrades);
     return true;
   };
 
@@ -94,7 +108,7 @@ const TrialProvider = ({ children }: { children: ReactNode }) => {
     }
     const newCount = upgrades + 1;
     setUpgrades(newCount);
-    updateStorage('trial-upgrades', newCount);
+    updateStorage(generations, newCount);
     return true;
   };
 
@@ -181,7 +195,7 @@ function TryPageInner() {
               Try Monochrome AI
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">
-              Generate up to 5 websites and make 5 edits. No account needed.
+              Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
             </p>
           </div>
           <Card className="mt-4 bg-accent/50 border-accent">
@@ -349,7 +363,7 @@ function TryPageInner() {
           <AlertDialogHeader>
             <AlertDialogTitle>You've reached the limit!</AlertDialogTitle>
             <AlertDialogDescription>
-              You've used all your free generations and edits for this session. Please create an account to continue building amazing websites.
+              You've used all your free generations and edits for this session. Please create an account to continue building amazing websites, or wait 24 hours for your trial to reset.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
