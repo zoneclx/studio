@@ -51,16 +51,20 @@ export default function AiChat({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [randomGreeting, setRandomGreeting] = useState<Message | null>(null);
+
+  useEffect(() => {
+    setRandomGreeting(defaultGreetings[Math.floor(Math.random() * defaultGreetings.length)]);
+  }, []);
 
   useEffect(() => {
     if (defaultInitialMessages && defaultInitialMessages.length > 0) {
       setMessages(defaultInitialMessages);
-    } else {
-      const randomGreeting = defaultGreetings[Math.floor(Math.random() * defaultGreetings.length)];
+    } else if(randomGreeting) {
       setMessages([randomGreeting]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultInitialMessages]);
+  }, [defaultInitialMessages, randomGreeting]);
 
 
   const saveChatHistory = (updatedMessages: Message[]) => {
@@ -135,7 +139,12 @@ export default function AiChat({
     startTransition(async () => {
       const response = await onSendMessage(userMessageContent, image || undefined);
 
-      if (response.error) {
+      if (response === false) { // Special case for trial limit
+        setMessages((prev) => prev.filter(m => m !== userMessage));
+        return;
+      }
+
+      if (response?.error) {
         toast({
           title: "An error occurred",
           description: response.error,
@@ -145,16 +154,15 @@ export default function AiChat({
         return;
       }
       
-      const responseContent = response.response || response;
+      const responseContent = response?.response;
+
       if (typeof responseContent === 'string' && responseContent) {
         const assistantMessage: Message = { role: 'assistant', content: responseContent };
         const finalMessages = [...newMessages, assistantMessage];
         setMessages(finalMessages);
         saveChatHistory(finalMessages);
-      } else if (response === false) { // Special case for trial limit
-        setMessages((prev) => prev.filter(m => m !== userMessage));
       } else {
-        // If onSendMessage fails or returns nothing, remove the optimistic user message.
+        // If onSendMessage fails or returns an unexpected structure, remove the optimistic user message.
         setMessages((prev) => prev.filter(m => m !== userMessage));
         toast({
             title: "An error occurred",

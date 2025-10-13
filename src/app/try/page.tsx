@@ -161,7 +161,7 @@ export default function TryPage() {
         return { response: `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!` };
     }
 
-    return result.response ? { response: result.response } : { error: "I don't have a response for that." };
+    return result.response ? { response: result.response } : { error: result.error || "I don't have a response for that." };
   };
 
   const handleRestart = () => {
