@@ -22,7 +22,7 @@ type AiChatProps = {
   disabled?: boolean;
   disableImageUpload?: boolean;
   placeholder?: string;
-  initialMessages?: Message[];
+  defaultInitialMessages?: Message[];
   children?: ReactNode;
 };
 
@@ -31,11 +31,11 @@ export default function AiChat({
   disabled,
   disableImageUpload,
   placeholder,
-  initialMessages = [],
+  defaultInitialMessages = [],
   children
 }: AiChatProps) {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(defaultInitialMessages);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -65,10 +65,6 @@ export default function AiChat({
         }
     }
   }, [messages]);
-
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

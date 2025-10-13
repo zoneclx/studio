@@ -18,7 +18,7 @@ type Message = {
 const defaultInitialMessages: Message[] = [
     {
         role: 'assistant' as const,
-        content: "Hello! I'm Starlight Ai. You can ask me anything."
+        content: "Hello! I'm Monochrome Ai. You can ask me anything."
     }
 ];
 
@@ -31,7 +31,7 @@ export default function ChatPage() {
   useEffect(() => {
     toast({
       title: 'Disclaimer',
-      description: 'Starlight AI is an experimental tool. The information it provides may not be 100% accurate.',
+      description: 'Monochrome AI is an experimental tool. The information it provides may not be 100% accurate.',
       duration: 5000,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,7 +81,7 @@ export default function ChatPage() {
           <div className="flex-1 w-full h-0">
             <AiChat
                 key={user ? user.uid : 'guest'} // Rerender when user logs in/out
-                initialMessages={initialMessages}
+                defaultInitialMessages={initialMessages}
                 onSendMessage={handleSendMessage}
                 disableImageUpload={false}
                 placeholder="Ask me anything..."

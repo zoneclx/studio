@@ -277,6 +277,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                     <AiChat 
                         onSendMessage={handleAiChatMessage}
                         placeholder={'Describe the changes you want...'}
+                        defaultInitialMessages={[{ role: 'assistant', content: 'I can help you make changes. Just describe what you want to modify!'}]}
                     />
                 </div>
             )}
