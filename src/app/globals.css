@@ -25,8 +25,6 @@
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
 
-    --gradient-start: hsl(262, 80%, 95%);
-    --gradient-end: hsl(0, 0%, 100%);
     --breathing-glow: hsla(262, 83.3%, 57.8%, 0.15);
   }
 
@@ -51,8 +49,6 @@
     --input: 240 3.7% 15.9%;
     --ring: 262.1 83.3% 57.8%;
     
-    --gradient-start: hsl(240, 10%, 10%);
-    --gradient-end: hsl(240, 10%, 3.9%);
     --breathing-glow: hsla(262, 83.3%, 57.8%, 0.1);
   }
 }
