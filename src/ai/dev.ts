@@ -8,4 +8,3 @@ import '@/aiflows/summarize-text.ts';
 import '@/ai/flows/create-website-from-prompt.ts';
 import '@/ai/flows/diagnose-website-change.ts';
 import '@/ai/flows/categorize-chat-request.ts';
-import '@/ai/flows/generate-background-image.ts';

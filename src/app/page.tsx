@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -9,8 +8,6 @@ import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 import Image from 'next/image';
-import { handleImageGeneration } from '@/app/actions';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -40,33 +37,21 @@ const animatedTitles = [
 
 export default function Home() {
   const { user } = useAuth();
-  const [bgImage, setBgImage] = useState<string | null>(null);
-
-  useEffect(() => {
-    handleImageGeneration().then(result => {
-        if(result.imageUrl) {
-            setBgImage(result.imageUrl)
-        }
-    })
-  }, []);
+  const bgImage = "https://images.unsplash.com/photo-1614726353900-951678b78afb?q=80&w=2942&auto=format&fit=crop";
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
 
       <main className="relative flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
-        {!bgImage ? (
-            <Skeleton className="absolute inset-0 z-0" />
-        ) : (
-            <Image
-                src={bgImage}
-                alt="AI generated image of planets"
-                layout="fill"
-                objectFit="cover"
-                className="absolute inset-0 z-0 opacity-30 animate-in fade-in duration-1000"
-                priority
-            />
-        )}
+        <Image
+            src={bgImage}
+            alt="Surface of Mars"
+            layout="fill"
+            objectFit="cover"
+            className="absolute inset-0 z-0 opacity-30"
+            priority
+        />
 
         <div className="absolute inset-0 bg-black/50 z-0"></div>
         <div className="relative z-10">
