@@ -27,15 +27,15 @@ export const WebsiteCodeSchema = z.object({
 
 export type WebsiteCode = z.infer<typeof WebsiteCodeSchema>;
 
-export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
-    return createWebsiteFromPromptFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'createWebsitePrompt',
-  input: { schema: CreateWebsiteFromPromptInputSchema },
-  output: { schema: WebsiteCodeSchema },
-  prompt: `You are an expert web developer. A user wants to create a website.
+const createWebsiteFromPromptFlow = ai.defineFlow(
+  {
+    name: 'createWebsiteFromPromptFlow',
+    inputSchema: CreateWebsiteFromPromptInputSchema,
+    outputSchema: WebsiteCodeSchema,
+  },
+  async (input) => {
+    const { output } = await ai.generate({
+        prompt: `You are an expert web developer. A user wants to create a website.
 
 Generate the HTML, CSS, and JavaScript for a visually appealing website based on the user's prompt.
 
@@ -55,22 +55,20 @@ Generate the HTML, CSS, and JavaScript for a visually appealing website based on
 **User Prompt:**
 "{{{prompt}}}"
 `,
-  config: {
-    temperature: 0.1,
-  },
-});
+        config: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+        },
+    });
 
-const createWebsiteFromPromptFlow = ai.defineFlow(
-  {
-    name: 'createWebsiteFromPromptFlow',
-    inputSchema: CreateWebsiteFromPromptInputSchema,
-    outputSchema: WebsiteCodeSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
     if (!output) {
       throw new Error('AI failed to generate website code.');
     }
     return output;
   }
 );
+
+
+export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
+    return createWebsiteFromPromptFlow(input);
+}
