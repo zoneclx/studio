@@ -56,11 +56,4 @@
   body {
     @apply bg-background text-foreground;
   }
-  .dark body {
-    background-image: url('https://i.ibb.co/yVJfQ2j/mars-background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
 }

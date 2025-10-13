@@ -41,9 +41,11 @@ export default function Home() {
   
   return (
     <div
-      className='relative min-h-screen w-full'
+      className={cn(
+        "relative min-h-screen w-full bg-white dark:bg-cover dark:bg-center dark:bg-no-repeat dark:bg-[url('https://i.ibb.co/yVJfQ2j/mars-background.jpg')]"
+      )}
     >
-      <div className="absolute inset-0 z-0 bg-black/50 dark:bg-black/50"></div>
+      <div className="absolute inset-0 z-0 bg-black/50"></div>
 
       <div className={cn("relative z-10 flex flex-col min-h-screen text-foreground dark:text-white")}>
         <Header />
