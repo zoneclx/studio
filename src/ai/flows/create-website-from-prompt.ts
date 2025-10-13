@@ -24,18 +24,12 @@ export const WebsiteCodeSchema = z.object({
     css: z.string().describe("The CSS code for styling the website. This can be empty if using only Tailwind."),
     javascript: z.string().describe("The JavaScript code for any interactivity. This can be empty.")
 });
-
 export type WebsiteCode = z.infer<typeof WebsiteCodeSchema>;
 
-// Define the flow as a local constant that is NOT exported.
-const createWebsiteFromPromptFlow = ai.defineFlow(
-  {
-    name: 'createWebsiteFromPromptFlow',
-    inputSchema: CreateWebsiteFromPromptInputSchema,
-    outputSchema: WebsiteCodeSchema,
-  },
-  async (input) => {
-    // Return mock data for speed
+
+// Export ONLY the async wrapper function and types.
+export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
+    // Return mock data for speed, directly inside the async function.
     return {
         html: `<!DOCTYPE html>
 <html lang="en">
@@ -75,10 +69,4 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     alert('Thanks for clicking! This is a mock interaction.');
 });`
     };
-  }
-);
-
-// Export ONLY the async wrapper function and types.
-export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
-    return createWebsiteFromPromptFlow(input);
 }
