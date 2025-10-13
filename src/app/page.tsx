@@ -9,6 +9,7 @@ import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 import { useTheme } from '@/context/theme-context';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -39,16 +40,30 @@ const animatedTitles = [
 export default function Home() {
   const { user } = useAuth();
   const { theme } = useTheme();
-  const isDark = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const [isDark, setIsDark] = useState(false);
 
+  useEffect(() => {
+    const checkTheme = () => {
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDark(theme === 'dark' || (theme === 'system' && isSystemDark));
+    };
+
+    checkTheme();
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', checkTheme);
+    return () => mediaQuery.removeEventListener('change', checkTheme);
+  }, [theme]);
+  
   const bgImage = "https://i.ibb.co/b3bzC8B/cosmic-deep-space-with-nebula-and-stardust-in-universe-generated-by-ai.jpg";
 
   return (
     <div
       className={cn(
         'relative min-h-screen w-full bg-cover bg-center bg-no-repeat',
-        isDark ? `bg-[url('${bgImage}')]` : 'bg-white'
+        !isDark && 'bg-white'
       )}
+      style={isDark ? { backgroundImage: `url('${bgImage}')` } : {}}
     >
       <div className={cn("absolute inset-0 z-0", isDark ? "bg-black/50" : "bg-white/0")}></div>
 
