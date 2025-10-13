@@ -130,29 +130,29 @@
     --gradient-end: 225 70% 85%;
   }
 
-  .spiderman {
-    --background: 220 40% 15%;
+  .cinematic {
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 220 40% 20%;
+    --card: 240 10% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 220 40% 10%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 80% 55%; /* Red */
+    --primary: 357 92% 46%; /* Netflix Red */
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 80% 60%; /* Blue */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 220 40% 25%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 215 80% 70%; /* Lighter Blue */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 80% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 40% 30%;
-    --input: 220 40% 25%;
-    --ring: 0 80% 55%; /* Red */
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 357 92% 46%;
 
-    --gradient-start: 220 40% 10%;
-    --gradient-end: 0 80% 30%;
+    --gradient-start: 240 10% 5%;
+    --gradient-end: 357 92% 20%;
   }
 }
 
@@ -182,18 +182,5 @@
   }
   .glass .glass-effect {
     @apply backdrop-saturate-150;
-  }
-
-  @keyframes webs-animation {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100px 100px; }
-  }
-  .spiderman-webs-background {
-      background-image:
-        radial-gradient(circle at center, hsla(var(--foreground), 0.05) 1px, transparent 1px),
-        radial-gradient(circle at center, hsla(var(--foreground), 0.05) 1px, transparent 1px);
-      background-size: 40px 40px;
-      background-position: 0 0, 20px 20px;
-      animation: webs-animation 10s linear infinite;
   }
 }

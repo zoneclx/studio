@@ -29,8 +29,7 @@ function ThemedBody({ children }: { children: React.ReactNode }) {
             className={cn(
                 'min-h-screen font-sans antialiased bg-background',
                 fontSans.variable,
-                fontDisplay.variable,
-                { 'spiderman-webs-background': theme === 'spiderman' }
+                fontDisplay.variable
             )}
         >
             <ThemeProvider>
