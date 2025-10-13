@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Info, RefreshCw, Save, Sparkles, Wand2, Eye, Code } from 'lucide-react';
+import { Info, Sparkles, Wand2, Eye, Code, RefreshCw, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -35,11 +34,16 @@ const MAX_UPGRADES = 5;
 const TRIAL_STORAGE_KEY = 'monochrome-trial';
 
 const examplePrompts = [
-  'A portfolio website for a photographer.',
-  'A landing page for a new mobile app.',
-  'A blog for a travel writer.',
-  'An e-commerce site for handmade jewelry.',
+  'A portfolio for a Product Designer',
+  'A landing page for a new mobile app',
+  'A blog for a travel writer',
 ];
+
+type TrialData = {
+  generations: number;
+  upgrades: number;
+  timestamp: number;
+};
 
 export default function TryPage() {
   const [prompt, setPrompt] = useState('');
@@ -48,41 +52,43 @@ export default function TryPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   
-  const [generations, setGenerations] = useState(0);
-  const [upgrades, setUpgrades] = useState(0);
-  const [isLimitReached, setIsLimitReached] = useState(false);
+  const [trial, setTrial] = useState<TrialData>({ generations: 0, upgrades: 0, timestamp: 0 });
+  const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
-
+  
+  // Load trial data from localStorage on component mount
   useEffect(() => {
     try {
       const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
       if (storedTrial) {
-        const { generations: storedGens, upgrades: storedUpgrades, timestamp } = JSON.parse(storedTrial);
+        const data: TrialData = JSON.parse(storedTrial);
         const oneDay = 24 * 60 * 60 * 1000;
-        if (new Date().getTime() - timestamp > oneDay) {
+        if (new Date().getTime() - data.timestamp > oneDay) {
           localStorage.removeItem(TRIAL_STORAGE_KEY);
+          setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
         } else {
-          setGenerations(storedGens || 0);
-          setUpgrades(storedUpgrades || 0);
+          setTrial(data);
         }
+      } else {
+        setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
       }
     } catch (e) {
       console.error("Could not read trial data from localStorage", e);
+      setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
     }
   }, []);
 
-  const updateStorage = (genCount: number, upgCount: number) => {
+  const updateTrialStorage = useCallback((data: TrialData) => {
     try {
-      const timestamp = new Date().getTime();
-      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ generations: genCount, upgrades: upgCount, timestamp }));
+      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
       console.error("Could not write trial data to localStorage", e);
     }
-  };
+  }, []);
   
-  const handleGenerate = (text?: string) => {
-    if (generations >= MAX_GENERATIONS) {
-      setIsLimitReached(true);
+  const handleGenerate = useCallback((text?: string) => {
+    if (trial.generations >= MAX_GENERATIONS) {
+      setIsLimitDialogOpen(true);
       return;
     }
     
@@ -96,9 +102,9 @@ export default function TryPage() {
       return;
     }
 
-    const newGenCount = generations + 1;
-    setGenerations(newGenCount);
-    updateStorage(newGenCount, upgrades);
+    const newTrialData = { ...trial, generations: trial.generations + 1, timestamp: Date.now() };
+    setTrial(newTrialData);
+    updateTrialStorage(newTrialData);
     
     setPrompt(textToProcess);
     setOutput('');
@@ -116,11 +122,11 @@ export default function TryPage() {
         setLastSuccessfulPrompt(textToProcess);
       }
     });
-  };
+  }, [prompt, trial, toast, updateTrialStorage]);
   
   const handleAiChatMessage = async (text: string, image?: string) => {
-    if (upgrades >= MAX_UPGRADES) {
-        setIsLimitReached(true);
+    if (trial.upgrades >= MAX_UPGRADES) {
+        setIsLimitDialogOpen(true);
         return false; // Indicate message sending was blocked
     }
     
@@ -130,9 +136,9 @@ export default function TryPage() {
         return "Sorry, I couldn't process that. Please try again.";
     }
 
-    const newUpgCount = upgrades + 1;
-    setUpgrades(newUpgCount);
-    updateStorage(generations, newUpgCount);
+    const newTrialData = { ...trial, upgrades: trial.upgrades + 1, timestamp: Date.now() };
+    setTrial(newTrialData);
+    updateTrialStorage(newTrialData);
 
     if (result.category === 'code_request' && result.prompt) {
         handleGenerate(result.prompt);
@@ -148,43 +154,44 @@ export default function TryPage() {
     }
   }
 
-  const handleSave = () => {
-    setIsSignupDialogOpen(true);
-  }
-
-  const isDisabled = isPending || generations >= MAX_GENERATIONS;
+  const isDisabled = isPending || trial.generations >= MAX_GENERATIONS;
+  const isChatDisabled = trial.upgrades >= MAX_UPGRADES;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-       <Header />
+      <Header />
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
             Try Monochrome Ai
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
-            Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
+          <p className="text-muted-foreground mt-2 text-lg max-w-2xl mx-auto">
+            Generate up to {MAX_GENERATIONS} websites and make {MAX_UPGRADES} edits. Your trial resets every 24 hours. Sign up to save your work.
           </p>
         </div>
-        <Card className="mt-4 bg-accent/50 border-accent">
+        <Card className="mt-4 bg-muted/50 border-border">
           <CardContent className="p-4 flex items-center justify-center gap-4 text-sm">
-              <Info className="w-5 h-5 text-accent-foreground" />
-              <p className="text-accent-foreground">
-                  Generations left: <span className="font-bold">{Math.max(0, MAX_GENERATIONS - generations)}</span>
+              <Info className="w-5 h-5 text-muted-foreground" />
+              <p>
+                  Generations left: <span className="font-bold">{Math.max(0, MAX_GENERATIONS - trial.generations)}</span>
               </p>
-              <p className="text-accent-foreground">
-                  Edits left: <span className="font-bold">{Math.max(0, MAX_UPGRADES - upgrades)}</span>
+              <p>
+                  Edits left: <span className="font-bold">{Math.max(0, MAX_UPGRADES - trial.upgrades)}</span>
               </p>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mt-8">
+          {/* Left Column */}
           <div className="space-y-6">
-            <Card className="shadow-lg border-border/50 bg-card">
+            <Card>
               <CardHeader>
-                <CardTitle>Describe Your Website</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                  Describe Your Website
+                </CardTitle>
                 <CardDescription>
-                  Enter as much detail as you'd like.
+                  Start with a detailed prompt. The more detail, the better the result.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -192,24 +199,13 @@ export default function TryPage() {
                   placeholder="e.g., 'A modern landing page for a SaaS product with a pricing table...'"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary bg-background"
+                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary"
                   disabled={isDisabled}
                   aria-label="Website Description Input"
                 />
-              </CardContent>
-              <CardFooter className="flex-col items-stretch gap-4">
-                <Button
-                  onClick={() => handleGenerate()}
-                  disabled={isDisabled}
-                  size="lg"
-                  className="w-full font-bold"
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  {isPending ? 'Building...' : 'Create Website'}
-                </Button>
-                <div className="space-y-3 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Or, try one of these ideas:
+                 <div className="mt-4 space-y-2">
+                  <p className="text-sm text-muted-foreground text-center">
+                    Or, try an example:
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {examplePrompts.map((example, i) => (
@@ -217,9 +213,7 @@ export default function TryPage() {
                         key={i}
                         variant="secondary"
                         size="sm"
-                        onClick={() => {
-                          handleGenerate(example);
-                        }}
+                        onClick={() => handleGenerate(example)}
                         disabled={isDisabled}
                       >
                         <Wand2 className="mr-2 h-4 w-4" />
@@ -228,11 +222,22 @@ export default function TryPage() {
                     ))}
                   </div>
                 </div>
-              </CardFooter>
+              </CardContent>
             </Card>
+
+             {output && !isPending && (
+                <div className="animate-in fade-in duration-500">
+                    <AiChat 
+                        onSendMessage={handleAiChatMessage}
+                        disabled={isChatDisabled}
+                        placeholder={isChatDisabled ? 'You have reached your edit limit' : 'Describe the changes you want...'}
+                    />
+                </div>
+            )}
           </div>
 
-          <div className="space-y-6 h-full min-h-[600px] lg:min-h-0">
+          {/* Right Column */}
+          <div className="space-y-6 h-full min-h-[600px] sticky top-8">
             <Card className="shadow-lg h-full border-border/50 bg-card flex flex-col">
               <Tabs
                 defaultValue="preview"
@@ -262,7 +267,7 @@ export default function TryPage() {
                        <Button
                         variant="ghost"
                         size="icon"
-                        onClick={handleSave}
+                        onClick={() => setIsSignupDialogOpen(true)}
                         aria-label="Save work"
                       >
                         <Save className="h-4 w-4" />
@@ -270,15 +275,17 @@ export default function TryPage() {
                     </div>
                   )}
                 </CardHeader>
-                <TabsContent value="preview" className="flex-1 h-0 mt-0">
-                  <CardContent className="h-full p-2">
+                <CardContent className="flex-1 h-0 p-2">
                     {isPending ? (
-                      <div className="flex items-center justify-center h-full rounded-md bg-background">
+                      <div className="flex items-center justify-center h-full rounded-md bg-background/50">
                         <div className="space-y-3 p-4 w-full">
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-4 w-3/4" />
-                          <Skeleton className="h-20 w-full" />
-                          <Skeleton className="h-4 w-full" />
+                           <div className="flex justify-center items-center gap-2">
+                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
+                               <p className="text-muted-foreground">Generating your website...</p>
+                           </div>
+                           <Skeleton className="h-20 w-full" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-3/4" />
                         </div>
                       </div>
                     ) : output ? (
@@ -289,54 +296,33 @@ export default function TryPage() {
                         sandbox="allow-scripts"
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background">
-                        <p>
-                          Your generated website preview will appear here.
-                        </p>
+                      <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
+                        <Wand2 className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                        <p className="font-medium">Your generated website preview will appear here.</p>
+                        <p className="text-sm">Describe your site and click "Create Website" to begin.</p>
                       </div>
                     )}
-                  </CardContent>
-                </TabsContent>
+                </CardContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
-                  <CardContent className="h-full p-2">
-                    {isPending ? (
-                      <div className="space-y-3 p-4 h-full rounded-md bg-background">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                      </div>
-                    ) : (
-                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                        <code>
-                          {output || (
-                            <p className="text-muted-foreground font-sans text-center">
-                              Your generated website code will appear here.
-                            </p>
-                          )}
-                        </code>
-                      </pre>
-                    )}
-                  </CardContent>
+                  <div className="h-full p-2">
+                    <pre className="h-full overflow-auto whitespace-pre-wrap font-mono text-sm bg-background p-4 rounded-md">
+                      <code>
+                        {output || (
+                          <p className="text-muted-foreground font-sans text-center">
+                            Your generated website code will appear here.
+                          </p>
+                        )}
+                      </code>
+                    </pre>
+                  </div>
                 </TabsContent>
               </Tabs>
             </Card>
           </div>
         </div>
-        {output && !isPending && (
-          <div className="mt-8">
-            <AiChat 
-                onSendMessage={handleAiChatMessage}
-                disabled={upgrades >= MAX_UPGRADES}
-            />
-          </div>
-        )}
       </main>
-      <footer className="py-6 text-center text-sm text-muted-foreground">
-        <p>
-          &copy; 2025 Monochrome Ai, All rights reserved.
-        </p>
-      </footer>
-       <AlertDialog open={isLimitReached} onOpenChange={setIsLimitReached}>
+      
+       <AlertDialog open={isLimitDialogOpen} onOpenChange={setIsLimitDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>You've reached the limit!</AlertDialogTitle>
