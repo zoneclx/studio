@@ -31,7 +31,7 @@ import {
 import Header from '@/components/header';
 
 const MAX_GENERATIONS = 5;
-const MAX_UPGRADES = 5;
+const MAX_EDITS = 5;
 const TRIAL_STORAGE_KEY = 'monochrome-demo';
 
 const examplePrompts = [
@@ -42,7 +42,7 @@ const examplePrompts = [
 
 type TrialData = {
   generations: number;
-  upgrades: number;
+  edits: number;
   timestamp: number;
 };
 
@@ -53,11 +53,10 @@ export default function DemoPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   
-  const [trial, setTrial] = useState<TrialData>({ generations: 0, upgrades: 0, timestamp: 0 });
+  const [trial, setTrial] = useState<TrialData>({ generations: 0, edits: 0, timestamp: 0 });
   const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   
-  // Load trial data from localStorage on component mount
   useEffect(() => {
     try {
       const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
@@ -66,17 +65,20 @@ export default function DemoPage() {
         const oneDay = 24 * 60 * 60 * 1000;
         if (new Date().getTime() - data.timestamp > oneDay) {
           localStorage.removeItem(TRIAL_STORAGE_KEY);
-          setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
+          setTrial({ generations: 0, edits: 0, timestamp: Date.now() });
         } else {
           setTrial(data);
         }
       } else {
-        setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
+        const newTrial = { generations: 0, edits: 0, timestamp: Date.now() };
+        setTrial(newTrial);
+        updateTrialStorage(newTrial);
       }
     } catch (e) {
       console.error("Could not read trial data from localStorage", e);
-      setTrial({ generations: 0, upgrades: 0, timestamp: Date.now() });
+      setTrial({ generations: 0, edits: 0, timestamp: Date.now() });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateTrialStorage = useCallback((data: TrialData) => {
@@ -130,13 +132,13 @@ export default function DemoPage() {
                 description: errorObj.error,
                 variant: 'destructive',
               });
-              setOutput(prev => prev); // Stop updating
+              setOutput(prev => prev);
               return; 
             }
             accumulatedOutput += chunk;
             setOutput(accumulatedOutput);
         } catch (e) {
-            // Ignore decoding errors if the chunk is not valid JSON
+            // Decoding errors can happen with streaming, ignore them.
         }
       }
       
@@ -145,12 +147,12 @@ export default function DemoPage() {
   }, [prompt, trial, toast, updateTrialStorage]);
   
   const handleAiChatMessage = async (text: string, image?: string) => {
-    if (trial.upgrades >= MAX_UPGRADES) {
+    if (trial.edits >= MAX_EDITS) {
         setIsLimitDialogOpen(true);
         return false; // Indicate message sending was blocked
     }
     
-    const newTrialData = { ...trial, upgrades: trial.upgrades + 1, timestamp: Date.now() };
+    const newTrialData = { ...trial, edits: trial.edits + 1, timestamp: Date.now() };
     setTrial(newTrialData);
     updateTrialStorage(newTrialData);
 
@@ -170,7 +172,7 @@ export default function DemoPage() {
   }
 
   const isDisabled = isPending || trial.generations >= MAX_GENERATIONS;
-  const isChatDisabled = isPending || trial.upgrades >= MAX_UPGRADES;
+  const isChatDisabled = isPending || trial.edits >= MAX_EDITS;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -181,7 +183,7 @@ export default function DemoPage() {
             Demo Monochrome Ai
           </h1>
           <p className="text-muted-foreground mt-2 text-lg max-w-2xl mx-auto">
-            Generate up to {MAX_GENERATIONS} websites and make {MAX_UPGRADES} edits. Your demo resets every 24 hours. Sign up to save your work.
+            Generate up to {MAX_GENERATIONS} websites and make {MAX_EDITS} edits. Your demo resets every 24 hours. Sign up to save your work.
           </p>
         </div>
         <Card className="mt-4 bg-muted/50 border-border">
@@ -191,7 +193,7 @@ export default function DemoPage() {
                   Generations left: <span className="font-bold">{Math.max(0, MAX_GENERATIONS - trial.generations)}</span>
               </p>
               <p>
-                  Edits left: <span className="font-bold">{Math.max(0, MAX_UPGRADES - trial.upgrades)}</span>
+                  Edits left: <span className="font-bold">{Math.max(0, MAX_EDITS - trial.edits)}</span>
               </p>
           </CardContent>
         </Card>
@@ -211,7 +213,7 @@ export default function DemoPage() {
               </CardHeader>
               <CardContent>
                 <Textarea
-                  placeholder="e.g., 'A modern landing page for a SaaS product with a pricing table...'"
+                  placeholder="e.g., 'A modern landing page for a SaaS product...'"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-[150px] text-base rounded-md focus-visible:ring-primary"
@@ -382,3 +384,5 @@ export default function DemoPage() {
     </div>
   );
 }
+
+    

@@ -35,7 +35,7 @@ const features = [
         icon: <MessageSquare className="w-8 h-8 text-primary" />,
         title: "Free AI Chat",
         description: "Our knowledgeable AI assistant is free forever. Ask questions, get ideas, or request changes to your generated website.",
-        badge: "Free Forever"
+        badge: "Free"
     },
     {
         icon: <Download className="w-8 h-8 text-primary" />,
@@ -147,3 +147,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
