@@ -17,9 +17,6 @@ export default {
       },
     },
     extend: {
-      backgroundImage: {
-        'mars': "url('https://i.ibb.co/yVJfQ2j/mars-background.jpg')",
-      },
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
         display: ['var(--font-display)', 'sans-serif'],
