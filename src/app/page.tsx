@@ -7,7 +7,6 @@ import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
-import Image from 'next/image';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -40,14 +39,10 @@ export default function Home() {
   const bgImage = "https://images.unsplash.com/photo-1614726353900-951678b78afb?q=80&w=2942&auto=format&fit=crop";
 
   return (
-    <div className="relative min-h-screen w-full">
-      <Image
-        src={bgImage}
-        alt="Surface of Mars"
-        fill
-        className="absolute inset-0 object-cover z-0"
-        priority
-      />
+    <div 
+      className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
       <div className="absolute inset-0 bg-black/50 z-0"></div>
 
       <div className="relative z-10 flex flex-col min-h-screen text-white">
