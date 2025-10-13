@@ -246,7 +246,7 @@ export default function ProfilePage() {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
+          &copy; 2025 Starlight Ai, All rights reserved.
         </p>
       </footer>
     </div>

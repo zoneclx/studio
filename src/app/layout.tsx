@@ -8,8 +8,6 @@ import { AuthProvider } from '@/context/auth-context';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/context/theme-context';
-import { useSound } from '@/hooks/use-sound';
-import { useEffect } from 'react';
 import CookieConsent from '@/components/cookie-consent';
 
 const fontSans = Inter({
@@ -26,27 +24,6 @@ const fontDisplay = SpaceGrotesk({
 //   title: 'Monochrome Ai',
 //   description: 'Generate websites with a single prompt.',
 // };
-
-function SoundProvider({ children }: { children: React.ReactNode }) {
-  const [playClick] = useSound();
-
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.closest('a, button')) {
-        playClick();
-      }
-    };
-
-    document.addEventListener('click', handleClick);
-    return () => {
-      document.removeEventListener('click', handleClick);
-    };
-  }, [playClick]);
-
-  return <>{children}</>;
-}
-
 
 export default function RootLayout({
   children,
@@ -67,13 +44,11 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider>
-          <SoundProvider>
             <div className="relative z-10">
               <AuthProvider>{children}</AuthProvider>
               <Toaster />
               <CookieConsent />
             </div>
-          </SoundProvider>
         </ThemeProvider>
       </body>
     </html>

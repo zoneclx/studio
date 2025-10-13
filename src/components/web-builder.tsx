@@ -174,7 +174,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Monochrome Ai Website Generation',
+          title: 'Starlight Ai Website Generation',
           text: output,
         });
       } catch (error) {
@@ -390,7 +390,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
+          &copy; 2025 Starlight Ai, All rights reserved.
         </p>
       </footer>
     </div>

@@ -18,7 +18,7 @@ type Message = {
 const defaultInitialMessages: Message[] = [
     {
         role: 'assistant' as const,
-        content: "Hello! I'm Monochrome Ai. You can ask me anything."
+        content: "Hello! I'm Starlight Ai. You can ask me anything."
     }
 ];
 
@@ -31,7 +31,7 @@ export default function ChatPage() {
   useEffect(() => {
     toast({
       title: 'Disclaimer',
-      description: 'Monochrome AI is an experimental tool. The information it provides may not be 100% accurate.',
+      description: 'Starlight AI is an experimental tool. The information it provides may not be 100% accurate.',
       duration: 5000,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps

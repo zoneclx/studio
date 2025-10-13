@@ -192,7 +192,7 @@ function TryPageInner() {
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-            Try Monochrome AI
+            Try Starlight AI
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
@@ -362,7 +362,7 @@ function TryPageInner() {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
+          &copy; 2025 Starlight Ai, All rights reserved.
         </p>
       </footer>
        <AlertDialog open={limitReached}>

@@ -75,7 +75,7 @@ export default function Home() {
 
       <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
         <p>
-          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
+          &copy; 2025 Starlight Ai, All rights reserved.
         </p>
       </footer>
     </div>
