@@ -8,6 +8,12 @@ import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 
+const animatedTitles = [
+    "Build a website with a single prompt.",
+    "Generate code in seconds.",
+    "Your vision, brought to life."
+];
+
 export default function Home() {
   const { user } = useAuth();
   return (
@@ -16,7 +22,7 @@ export default function Home() {
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
         <TypewriterEffect
-            text="Build a website with a single prompt"
+            texts={animatedTitles}
             className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
         />
         <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8">
