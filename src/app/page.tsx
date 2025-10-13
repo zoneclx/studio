@@ -59,7 +59,7 @@ export default function Home() {
       <main className="flex-1">
         <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden">
             <Image
-                src="https://i.ibb.co/6b0bH6X/d837b797-2933-4632-9c3a-232d3f74b413.jpg"
+                src="https://i.ibb.co/yYc8dG8/mars-surface.jpg"
                 alt="Mars background"
                 layout="fill"
                 objectFit="cover"
