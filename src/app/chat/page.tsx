@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 const initialMessages = [
     {
         role: 'assistant' as const,
-        content: "Hello! I'm your AI assistant. You can ask me anything."
+        content: "Hello! I'm Monochrome Ai. You can ask me anything."
     }
 ];
 
