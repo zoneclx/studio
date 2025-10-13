@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
+import { useAuth } from '@/context/auth-context';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -17,8 +18,6 @@ type Message = {
 };
 
 type AiChatProps = {
-  // A function that takes the user's message and optional image, 
-  // and returns the AI's response as a string.
   onSendMessage: (text: string, image?: string) => Promise<string | void | boolean>;
   disabled?: boolean;
   disableImageUpload?: boolean;
@@ -35,6 +34,7 @@ export default function AiChat({
   initialMessages = [],
   children
 }: AiChatProps) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
@@ -43,6 +43,20 @@ export default function AiChat({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  const saveChatHistory = (updatedMessages: Message[]) => {
+      if(user) {
+          try {
+            const archive = {
+                messages: updatedMessages,
+                date: new Date().toISOString(),
+            };
+            localStorage.setItem(`monochrome-chat-archive-${user.uid}`, JSON.stringify(archive));
+          } catch(e) {
+              console.error("Failed to save chat archive", e);
+          }
+      }
+  }
+  
   useEffect(() => {
     if (scrollAreaRef.current) {
         const viewport = scrollAreaRef.current.querySelector('div');
@@ -52,6 +66,9 @@ export default function AiChat({
     }
   }, [messages]);
 
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -86,8 +103,8 @@ export default function AiChat({
     const userMessageContent = input.trim();
     const userMessage: Message = { role: 'user', content: userMessageContent || 'Image attached' };
 
-    // Add user message to chat immediately
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
     setImage(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -97,10 +114,12 @@ export default function AiChat({
       
       if (typeof response === 'string' && response) {
         const assistantMessage: Message = { role: 'assistant', content: response };
-        setMessages((prev) => [...prev, assistantMessage]);
+        const finalMessages = [...newMessages, assistantMessage];
+        setMessages(finalMessages);
+        saveChatHistory(finalMessages);
       } else if (response === false) { // Special case for trial limit
         setMessages((prev) => prev.filter(m => m !== userMessage));
-      } else if (!response) {
+      } else {
         // If onSendMessage fails or returns nothing, remove the optimistic user message.
         setMessages((prev) => prev.filter(m => m !== userMessage));
         toast({
@@ -142,6 +161,9 @@ export default function AiChat({
               </div>
               {message.role === 'user' && (
                 <Avatar className="w-8 h-8 border">
+                   {user?.avatar ? (
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                    ) : null}
                   <AvatarFallback>
                     <User />
                   </AvatarFallback>
@@ -225,3 +247,5 @@ export default function AiChat({
     </div>
   );
 }
+
+    

@@ -1,15 +1,20 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 
-const initialMessages = [
+type Message = {
+    role: 'user' | 'assistant';
+    content: string;
+};
+
+const defaultInitialMessages: Message[] = [
     {
         role: 'assistant' as const,
         content: "Hello! I'm Monochrome Ai. You can ask me anything."
@@ -18,6 +23,8 @@ const initialMessages = [
 
 export default function ChatPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [initialMessages, setInitialMessages] = useState<Message[]>(defaultInitialMessages);
 
   useEffect(() => {
     toast({
@@ -27,6 +34,27 @@ export default function ChatPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+      if(user) {
+          try {
+            const savedChat = localStorage.getItem(`monochrome-chat-archive-${user.uid}`);
+            if (savedChat) {
+                const parsedChat = JSON.parse(savedChat);
+                if(parsedChat.messages && parsedChat.messages.length > 0) {
+                    setInitialMessages(parsedChat.messages);
+                }
+            } else {
+                setInitialMessages(defaultInitialMessages);
+            }
+          } catch(e) {
+              console.error("Failed to load chat archive", e);
+              setInitialMessages(defaultInitialMessages);
+          }
+      } else {
+        setInitialMessages(defaultInitialMessages);
+      }
+  }, [user]);
 
   const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim() && !image) return;
@@ -50,6 +78,7 @@ export default function ChatPage() {
       <main className="flex-1 flex flex-col h-0">
           <div className="flex-1 w-full h-0">
             <AiChat
+                key={user ? user.uid : 'guest'} // Rerender when user logs in/out
                 initialMessages={initialMessages}
                 onSendMessage={handleSendMessage}
                 disableImageUpload={false}
@@ -69,3 +98,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
