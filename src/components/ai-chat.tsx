@@ -11,10 +11,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
 import { useAuth } from '@/context/auth-context';
+import { Card } from './ui/card';
 
 type Message = {
   role: 'user' | 'assistant';
   content: string;
+  image?: string;
 };
 
 const defaultGreetings: Message[] = [
@@ -128,7 +130,11 @@ export default function AiChat({
     }
 
     const userMessageContent = input.trim();
-    const userMessage: Message = { role: 'user', content: userMessageContent || 'Image attached' };
+    const userMessage: Message = {
+      role: 'user',
+      content: userMessageContent || 'Image attached',
+      image: image || undefined,
+    };
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -153,7 +159,10 @@ export default function AiChat({
         return;
       }
       
-      const responseContent = result?.response;
+      let responseContent = result.response;
+      if (result.category === 'code_request') {
+          responseContent = `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
+      }
 
       if (typeof responseContent === 'string' && responseContent) {
         const assistantMessage: Message = { role: 'assistant', content: responseContent };
@@ -161,8 +170,7 @@ export default function AiChat({
         setMessages(finalMessages);
         saveChatHistory(finalMessages);
       } else {
-        // Fallback for unexpected structure but still potentially valid response
-        const fallbackResponse = result.category === 'code_request' ? `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!` : "I don't have a response for that.";
+        const fallbackResponse = "I don't have a response for that.";
         const assistantMessage: Message = { role: 'assistant', content: fallbackResponse };
         const finalMessages = [...newMessages, assistantMessage];
         setMessages(finalMessages);
@@ -190,15 +198,20 @@ export default function AiChat({
                   </AvatarFallback>
                 </Avatar>
               )}
-              <div
+              <Card
                 className={`rounded-lg px-3 py-2 max-w-md break-words ${
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted'
                 }`}
               >
+                {message.image && (
+                  <div className="relative w-full aspect-video rounded-md overflow-hidden mb-2 border">
+                    <Image src={message.image} alt="User attachment" layout="fill" objectFit="cover" />
+                  </div>
+                )}
                 <p className="text-sm">{message.content}</p>
-              </div>
+              </Card>
               {message.role === 'user' && (
                 <Avatar className="w-8 h-8 border">
                    {user?.avatar ? (
@@ -289,3 +302,5 @@ export default function AiChat({
     </div>
   );
 }
+
+    
