@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -86,11 +87,13 @@ export default function Home() {
               Start Creating <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Link href="/try">
-            <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto">
-              Try for Free
-            </Button>
-          </Link>
+          {!user && (
+            <Link href="/try">
+              <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto">
+                Try for Free
+              </Button>
+            </Link>
+          )}
         </div>
       </main>
 
