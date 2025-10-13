@@ -3,12 +3,12 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Code, Component, MousePointer, Paintbrush, FileCode2 } from 'lucide-react';
+import { ArrowRight, Code, Component, MousePointer, Paintbrush, FileCode2, Sparkles, Eye, Download, Wand2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -17,6 +17,29 @@ const animatedTitles = [
     "Create a portfolio for a photographer.",
     "Design a landing page for a new app.",
     "Launch a blog for a travel writer.",
+];
+
+const features = [
+    {
+        icon: <Sparkles className="w-8 h-8 text-primary" />,
+        title: "AI-Powered Generation",
+        description: "Just describe your ideal website. Our AI will understand your vision and generate the complete HTML and Tailwind CSS code for you in seconds.",
+    },
+    {
+        icon: <Eye className="w-8 h-8 text-primary" />,
+        title: "Live Preview",
+        description: "Watch your website come to life in real-time. The preview panel instantly renders the code as it's generated, giving you immediate feedback.",
+    },
+    {
+        icon: <Download className="w-8 h-8 text-primary" />,
+        title: "Full Code Export",
+        description: "You have complete ownership. Download the generated HTML file with a single click and host it on any platform you choose, no strings attached.",
+    },
+    {
+        icon: <Wand2 className="w-8 h-8 text-primary" />,
+        title: "Easy Customization",
+        description: "Refine your design by chatting with our AI assistant. Ask for changes, and the AI will intelligently update the code to match your request.",
+    },
 ];
 
 export default function Home() {
@@ -82,6 +105,30 @@ export default function Home() {
                           </div>
                       </CardContent>
                   </Card>
+                </div>
+            </div>
+        </section>
+
+        <section className="py-16 md:py-24 bg-muted/50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl sm:text-4xl font-bold font-display">Why Choose Monochrome AI?</h2>
+                    <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                        We combine cutting-edge AI with a user-friendly interface to make web development accessible to everyone.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {features.map((feature, index) => (
+                        <Card key={index} className="bg-card hover:shadow-lg transition-shadow">
+                            <CardHeader>
+                                {feature.icon}
+                                <CardTitle className="mt-4 text-xl">{feature.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">{feature.description}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             </div>
         </section>
