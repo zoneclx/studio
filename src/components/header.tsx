@@ -27,9 +27,11 @@ import { useState } from 'react';
 import { Home, Bot, FileArchive, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useTheme } from '@/context/theme-context';
 
 export default function Header() {
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const pathname = usePathname();
@@ -124,7 +126,9 @@ export default function Header() {
   );
 
   return (
-    <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center z-20 bg-transparent sticky top-0 bg-background/80 backdrop-blur-lg border-b">
+    <header className={cn("container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center z-20 bg-transparent sticky top-0 bg-background/80 backdrop-blur-lg border-b", {
+        'glass-effect': theme === 'glass'
+    })}>
       <div className="flex items-center gap-6">
         <h1 className="text-xl font-bold font-display flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">

@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/context/theme-context';
+import { ThemeProvider, useTheme } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
 
@@ -21,10 +21,29 @@ const fontDisplay = SpaceGrotesk({
   variable: '--font-display',
 });
 
-// export const metadata: Metadata = {
-//   title: 'Monochrome Ai',
-//   description: 'Generate websites with a single prompt.',
-// };
+function ThemedBody({ children }: { children: React.ReactNode }) {
+    const { theme } = useTheme();
+
+    return (
+        <body
+            className={cn(
+                'min-h-screen font-sans antialiased bg-background',
+                fontSans.variable,
+                fontDisplay.variable,
+                { 'spiderman-webs-background': theme === 'spiderman' }
+            )}
+        >
+            <ThemeProvider>
+                <AnimatedGradient />
+                <div className="relative z-10">
+                    <AuthProvider>{children}</AuthProvider>
+                    <Toaster />
+                    <CookieConsent />
+                </div>
+            </ThemeProvider>
+        </body>
+    )
+}
 
 export default function RootLayout({
   children,
@@ -37,22 +56,9 @@ export default function RootLayout({
         <title>Monochrome Ai</title>
         <meta name="description" content="Generate websites with a single prompt." />
       </head>
-      <body
-        className={cn(
-          'min-h-screen font-sans antialiased bg-background',
-          fontSans.variable,
-          fontDisplay.variable
-        )}
-      >
-        <ThemeProvider>
-            <AnimatedGradient />
-            <div className="relative z-10">
-              <AuthProvider>{children}</AuthProvider>
-              <Toaster />
-              <CookieConsent />
-            </div>
-        </ThemeProvider>
-      </body>
+      <ThemeProvider>
+          <ThemedBody>{children}</ThemedBody>
+      </ThemeProvider>
     </html>
   );
 }
