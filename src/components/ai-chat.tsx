@@ -162,7 +162,7 @@ export default function AiChat({
               {message.role === 'user' && (
                 <Avatar className="w-8 h-8 border">
                    {user?.avatar ? (
-                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarImage src={user.avatar} alt={user.name || ''} />
                     ) : null}
                   <AvatarFallback>
                     <User />
@@ -247,5 +247,3 @@ export default function AiChat({
     </div>
   );
 }
-
-    

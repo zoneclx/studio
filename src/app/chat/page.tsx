@@ -1,13 +1,14 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Terminal } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { Bot, User } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Message = {
     role: 'user' | 'assistant';
@@ -25,6 +26,7 @@ export default function ChatPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [initialMessages, setInitialMessages] = useState<Message[]>(defaultInitialMessages);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     toast({
@@ -98,5 +100,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-    

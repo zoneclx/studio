@@ -33,16 +33,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const getStoredUsers = (): StoredUser[] => {
   try {
-    const users = localStorage.getItem(AUTH_STORAGE_KEY);
-    return users ? JSON.parse(users) : [];
+    if (typeof window !== 'undefined') {
+        const users = localStorage.getItem(AUTH_STORAGE_KEY);
+        return users ? JSON.parse(users) : [];
+    }
   } catch (error) {
     console.error("Failed to parse users from localStorage", error);
-    return [];
   }
+  return [];
 };
 
 const setStoredUsers = (users: StoredUser[]) => {
-  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(users));
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(users));
+    }
+  } catch (error) {
+     console.error("Failed to set users in localStorage", error);
+  }
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -53,22 +61,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const checkUser = () => {
       try {
-        const sessionUser = sessionStorage.getItem(SESSION_STORAGE_KEY);
-        if (sessionUser) {
-          const parsedUser: User = JSON.parse(sessionUser);
-          // Sync with localStorage to get latest profile updates
-          const storedUsers = getStoredUsers();
-          const storedUserData = storedUsers.find(u => u.uid === parsedUser.uid);
-          if(storedUserData) {
-            setActiveUser(storedUserData);
-          } else {
-            // User not in storage, sign them out.
-            signOut();
-          }
+        if (typeof window !== 'undefined') {
+            const sessionUser = sessionStorage.getItem(SESSION_STORAGE_KEY);
+            if (sessionUser) {
+              const parsedUser: User = JSON.parse(sessionUser);
+              // Sync with localStorage to get latest profile updates
+              const storedUsers = getStoredUsers();
+              const storedUserData = storedUsers.find(u => u.uid === parsedUser.uid);
+              if(storedUserData) {
+                setActiveUser(storedUserData);
+              } else {
+                // User not in storage, sign them out.
+                signOut();
+              }
+            }
         }
       } catch (error) {
         console.error("Failed to parse user from sessionStorage", error);
-        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        }
       } finally {
         setLoading(false);
       }
@@ -79,12 +91,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const setActiveUser = (activeUser: User | null) => {
     setUser(activeUser);
-    if (activeUser) {
-      // Create a version of the user object without the password to store in session
-      const { pass, ...sessionUser } = activeUser as StoredUser;
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser));
-    } else {
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    try {
+        if (typeof window !== 'undefined') {
+            if (activeUser) {
+              // Create a version of the user object without the password to store in session
+              const { pass, ...sessionUser } = activeUser as StoredUser;
+              sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser));
+            } else {
+              sessionStorage.removeItem(SESSION_STORAGE_KEY);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to set user in sessionStorage", error);
     }
   }
 

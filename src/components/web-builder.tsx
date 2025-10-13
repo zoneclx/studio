@@ -16,7 +16,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration, handleCategorization } from '@/app/actions';
+import { handleGeneration, handleCategorization, handleChat } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
