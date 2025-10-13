@@ -53,7 +53,7 @@ export default function DemoPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   
-  const [trial, setTrial] = useState<TrialData>({ generations: 0, edits: 0, timestamp: 0 });
+  const [trial, setTrial] = useState<TrialData | null>(null);
   const [isLimitDialogOpen, setIsLimitDialogOpen] = useState(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   
@@ -76,7 +76,9 @@ export default function DemoPage() {
       }
     } catch (e) {
       console.error("Could not read trial data from localStorage", e);
-      setTrial({ generations: 0, edits: 0, timestamp: Date.now() });
+      const newTrial = { generations: 0, edits: 0, timestamp: Date.now() };
+      setTrial(newTrial);
+      updateTrialStorage(newTrial);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -90,6 +92,7 @@ export default function DemoPage() {
   }, []);
   
   const handleGenerate = useCallback((text?: string) => {
+    if (!trial) return;
     if (trial.generations >= MAX_GENERATIONS) {
       setIsLimitDialogOpen(true);
       return;
@@ -147,6 +150,7 @@ export default function DemoPage() {
   }, [prompt, trial, toast, updateTrialStorage]);
   
   const handleAiChatMessage = async (text: string, image?: string) => {
+    if (!trial) return false;
     if (trial.edits >= MAX_EDITS) {
         setIsLimitDialogOpen(true);
         return false; // Indicate message sending was blocked
@@ -171,8 +175,8 @@ export default function DemoPage() {
     }
   }
 
-  const isDisabled = isPending || trial.generations >= MAX_GENERATIONS;
-  const isChatDisabled = isPending || trial.edits >= MAX_EDITS;
+  const isDisabled = isPending || !trial || trial.generations >= MAX_GENERATIONS;
+  const isChatDisabled = isPending || !trial || trial.edits >= MAX_EDITS;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -190,10 +194,10 @@ export default function DemoPage() {
           <CardContent className="p-4 flex items-center justify-center gap-4 text-sm">
               <Info className="w-5 h-5 text-muted-foreground" />
               <p>
-                  Generations left: <span className="font-bold">{Math.max(0, MAX_GENERATIONS - trial.generations)}</span>
+                  Generations left: <span className="font-bold">{trial ? Math.max(0, MAX_GENERATIONS - trial.generations) : '...'}</span>
               </p>
               <p>
-                  Edits left: <span className="font-bold">{Math.max(0, MAX_EDITS - trial.edits)}</span>
+                  Edits left: <span className="font-bold">{trial ? Math.max(0, MAX_EDITS - trial.edits) : '...'}</span>
               </p>
           </CardContent>
         </Card>
@@ -393,5 +397,3 @@ export default function DemoPage() {
     </div>
   );
 }
-
-    
