@@ -1,41 +1,28 @@
 
 'use server';
 
-import { streamWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
+import { createWebsiteFromPrompt, WebsiteCode } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
 import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
 
 export async function handleGeneration(
   prompt: string
-): Promise<ReadableStream<Uint8Array>> {
+): Promise<WebsiteCode & { error?: string }> {
   try {
-    const stream = streamWebsiteFromPrompt({ prompt });
-
-    const encoder = new TextEncoder();
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        for await (const part of stream) {
-          controller.enqueue(encoder.encode(part));
-        }
-        controller.close();
-      },
-    });
-
-    return readableStream;
+    const websiteCode = await createWebsiteFromPrompt({ prompt });
+    return websiteCode;
   } catch (error) {
     console.error('AI generation failed:', error);
-    const encoder = new TextEncoder();
     let errorMessage = "Failed to process the request. Please try again.";
     if (error instanceof Error) {
         errorMessage = error.message;
     }
-    const errorPayload = JSON.stringify({ error: errorMessage });
-    return new ReadableStream({
-        start(controller) {
-            controller.enqueue(encoder.encode(`{"html": "<h1>Error</h1><p>${errorPayload}</p>", "css": "", "javascript": ""}`));
-            controller.close();
-        }
-    });
+    return {
+      error: errorMessage,
+      html: `<h1>Error</h1><p>${errorMessage}</p>`,
+      css: '',
+      javascript: ''
+    };
   }
 }
 

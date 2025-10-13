@@ -89,50 +89,27 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     setOutput(null);
 
     startTransition(async () => {
-      const resultStream = await handleGeneration(textToProcess);
-      
-      const reader = resultStream.getReader();
-      const decoder = new TextDecoder();
-      let accumulatedOutput = '';
+      const result = await handleGeneration(textToProcess);
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          accumulatedOutput += decoder.decode(value, { stream: true });
-        }
-
-        const finalJson = JSON.parse(accumulatedOutput);
-
-        if (finalJson.error) {
-             toast({
-                title: 'An error occurred',
-                description: finalJson.error,
-                variant: 'destructive',
-            });
-            setOutput(null);
-            return;
-        }
-        
-        const websiteCode: WebsiteCode = {
-            html: finalJson.html || '',
-            css: finalJson.css || '',
-            javascript: finalJson.javascript || '',
-        };
-
-        setOutput(websiteCode);
-        setLastSuccessfulPrompt(textToProcess);
-        saveWork(websiteCode, textToProcess);
-
-      } catch (e) {
-          console.error("Failed to parse stream:", e);
-          toast({
-                title: 'An error occurred',
-                description: "The AI returned an invalid response. Please try again.",
-                variant: 'destructive',
+      if (result.error) {
+           toast({
+              title: 'An error occurred',
+              description: result.error,
+              variant: 'destructive',
           });
           setOutput(null);
+          return;
       }
+      
+      const websiteCode: WebsiteCode = {
+          html: result.html || '',
+          css: result.css || '',
+          javascript: result.javascript || '',
+      };
+
+      setOutput(websiteCode);
+      setLastSuccessfulPrompt(textToProcess);
+      saveWork(websiteCode, textToProcess);
     });
   };
   
