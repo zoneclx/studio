@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "flex flex-col min-h-screen w-full bg-transparent text-foreground"
+        "flex flex-col min-h-screen w-full bg-background text-foreground"
       )}
     >
       <Header />
@@ -52,7 +52,7 @@ export default function Home() {
               className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
           />
           <p className={cn("text-base sm:text-lg lg:text-xl max-w-2xl mb-8 text-muted-foreground")}>
-            MonoMuse is a powerful tool that allows you to generate
+            Monochrome Ai is a powerful tool that allows you to generate
             beautiful, production-ready websites using simple text prompts.
             Describe your vision, and watch as our AI brings it to life, helping
             you refine and perfect your creation.
@@ -75,7 +75,7 @@ export default function Home() {
 
       <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
         <p>
-          &copy; 2025 MonoMuse, All rights reserved.
+          &copy; 2025 Monochrome Ai, All rights reserved.
         </p>
       </footer>
     </div>

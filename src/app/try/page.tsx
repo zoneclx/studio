@@ -160,7 +160,7 @@ export default function TryPage() {
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-            Try MonoMuse
+            Try Monochrome Ai
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
@@ -333,7 +333,7 @@ export default function TryPage() {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 MonoMuse, All rights reserved.
+          &copy; 2025 Monochrome Ai, All rights reserved.
         </p>
       </footer>
        <AlertDialog open={isLimitReached} onOpenChange={setIsLimitReached}>

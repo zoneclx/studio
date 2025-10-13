@@ -113,7 +113,7 @@ export default function Header() {
         <h1 className="text-2xl font-bold font-display flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
-            MonoMuse
+            Monochrome Ai
           </Link>
         </h1>
       </div>
