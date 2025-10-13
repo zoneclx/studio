@@ -133,28 +133,27 @@ export default function AiChat({
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput('');
-    setImage(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    clearImage();
 
     startTransition(async () => {
-      const response = await onSendMessage(userMessageContent, image || undefined);
+      const result = await onSendMessage(userMessageContent, image || undefined);
 
-      if (response === false) { // Special case for trial limit
+      if (result === false) { // Special case for trial limit
         setMessages((prev) => prev.filter(m => m !== userMessage));
         return;
       }
-
-      if (response?.error) {
+      
+      if (result?.error) {
         toast({
           title: "An error occurred",
-          description: response.error,
+          description: result.error,
           variant: "destructive",
         });
         setMessages((prev) => prev.filter(m => m !== userMessage));
         return;
       }
       
-      const responseContent = response?.response;
+      const responseContent = result?.response;
 
       if (typeof responseContent === 'string' && responseContent) {
         const assistantMessage: Message = { role: 'assistant', content: responseContent };
@@ -162,13 +161,12 @@ export default function AiChat({
         setMessages(finalMessages);
         saveChatHistory(finalMessages);
       } else {
-        // If onSendMessage fails or returns an unexpected structure, remove the optimistic user message.
-        setMessages((prev) => prev.filter(m => m !== userMessage));
-        toast({
-            title: "An error occurred",
-            description: "Failed to get a response from the assistant.",
-            variant: "destructive",
-        })
+        // Fallback for unexpected structure but still potentially valid response
+        const fallbackResponse = result.category === 'code_request' ? `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!` : "I don't have a response for that.";
+        const assistantMessage: Message = { role: 'assistant', content: fallbackResponse };
+        const finalMessages = [...newMessages, assistantMessage];
+        setMessages(finalMessages);
+        saveChatHistory(finalMessages);
       }
     });
   };
@@ -228,13 +226,13 @@ export default function AiChat({
           )}
         </div>
       </ScrollArea>
-      <div className="p-4 border-t bg-background/50 sticky bottom-0">
+      <div className="p-4 border-t bg-card sticky bottom-0">
         {image && !disableImageUpload && (
             <div className="relative w-24 h-24 mb-2 rounded-md overflow-hidden border">
                 <Image src={image} alt="Selected preview" layout="fill" objectFit="cover" />
-                <Button 
-                    variant="ghost" 
-                    size="icon" 
+                <Button
+                    variant="ghost"
+                    size="icon"
                     className="absolute top-1 right-1 h-6 w-6 bg-black/50 hover:bg-black/75 text-white rounded-full"
                     onClick={clearImage}
                 >
@@ -242,12 +240,12 @@ export default function AiChat({
                 </Button>
             </div>
         )}
-        <div className="relative max-w-3xl mx-auto">
+        <div className="relative">
           <Input
             type="text"
             placeholder={
               placeholder ||
-              (image ? 'Describe the image...' : 'Type your message...')
+              (disabled ? "You have reached your edit limit" : (image ? 'Describe the image...' : 'Type your message...'))
             }
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -259,6 +257,7 @@ export default function AiChat({
             {!disableImageUpload && (
               <>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => fileInputRef.current?.click()}
@@ -276,10 +275,11 @@ export default function AiChat({
               </>
             )}
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               onClick={handleLocalSendMessage}
-              disabled={isPending || (!input.trim() && !image)}
+              disabled={isPending || (!input.trim() && !image) || disabled}
             >
               <Send className="h-5 w-5" />
             </Button>

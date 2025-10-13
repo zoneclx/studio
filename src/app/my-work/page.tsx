@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Bot } from 'lucide-react';
 
 type SavedWork = {
@@ -218,7 +218,7 @@ export default function MyWorkPage() {
                             Saved {formatDistanceToNow(new Date(chat.date), { addSuffix: true })}.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
+                    <CardContent className="space-y-4 max-h-[400px] overflow-y-auto p-4">
                         {chat.messages.map((message, index) => (
                            <div
                               key={index}
@@ -244,6 +244,9 @@ export default function MyWorkPage() {
                               </div>
                               {message.role === 'user' && (
                                 <Avatar className="w-8 h-8 border">
+                                   {user?.avatar ? (
+                                        <AvatarImage src={user.avatar} alt={user.name || ''} />
+                                    ) : null}
                                   <AvatarFallback>
                                     <User />
                                   </AvatarFallback>
@@ -330,5 +333,3 @@ export default function MyWorkPage() {
     </>
   );
 }
-
-    

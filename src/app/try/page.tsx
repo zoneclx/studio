@@ -158,10 +158,9 @@ export default function TryPage() {
 
     if (result.category === 'code_request' && result.prompt) {
         handleGenerate(result.prompt);
-        return { response: `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!` };
     }
-
-    return result.response ? { response: result.response } : { error: result.error || "I don't have a response for that." };
+    
+    return result;
   };
 
   const handleRestart = () => {
@@ -243,11 +242,18 @@ export default function TryPage() {
 
              {output && !isPending && (
                 <div className="animate-in fade-in duration-500">
-                    <AiChat 
-                        onSendMessage={handleAiChatMessage}
-                        disabled={isChatDisabled}
-                        placeholder={isChatDisabled ? 'You have reached your edit limit' : 'Describe the changes you want...'}
-                    />
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>AI Assistant</CardTitle>
+                             <CardDescription>Describe any changes you'd like to make.</CardDescription>
+                         </CardHeader>
+                         <CardContent className="p-0">
+                            <AiChat 
+                                onSendMessage={handleAiChatMessage}
+                                disabled={isChatDisabled}
+                            />
+                         </CardContent>
+                    </Card>
                 </div>
             )}
           </div>

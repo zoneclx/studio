@@ -120,21 +120,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   const handleAiChatMessage = async (text: string, image?: string) => {
     const result = await handleCategorization(text, image);
 
-    if(result.error) {
-        toast({
-            title: 'An error occurred',
-            description: result.error,
-            variant: 'destructive',
-        });
-        return "Sorry, I couldn't process that. Please try again.";
-    }
-
     if (result.category === 'code_request' && result.prompt) {
         onGenerate(result.prompt);
-        return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
     }
-
-    return result.response || "I don't have a response for that.";
+    
+    return result;
   };
 
   const handleRestart = () => {
@@ -292,10 +282,17 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
              {output && !isPending && (
                 <div className="animate-in fade-in duration-500">
-                    <AiChat 
-                        onSendMessage={handleAiChatMessage}
-                        placeholder={'Describe the changes you want...'}
-                    />
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>AI Assistant</CardTitle>
+                             <CardDescription>Describe any changes you'd like to make.</CardDescription>
+                         </CardHeader>
+                         <CardContent className="p-0">
+                            <AiChat 
+                                onSendMessage={handleAiChatMessage}
+                            />
+                         </CardContent>
+                    </Card>
                 </div>
             )}
           </div>

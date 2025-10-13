@@ -1,15 +1,13 @@
 
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
-import { handleChat } from '@/app/actions';
+import { handleCategorization } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Bot, User, Trash2 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 type Message = {
     role: 'user' | 'assistant';
@@ -21,7 +19,6 @@ export default function ChatPage() {
   const { user } = useAuth();
   const [initialMessages, setInitialMessages] = useState<Message[] | undefined>(undefined);
   const [chatKey, setChatKey] = useState(user ? user.uid : 'guest');
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     toast({
@@ -62,7 +59,7 @@ export default function ChatPage() {
             localStorage.removeItem(`monochrome-chat-archive-${user.uid}`);
             setInitialMessages(undefined);
             // Change the key to force re-mounting of the AiChat component
-            setChatKey(prevKey => prevKey + '-cleared'); 
+            setChatKey(prevKey => prevKey + '-cleared');
             toast({
                 title: 'Chat Cleared',
                 description: 'Your conversation history has been removed.',
@@ -79,35 +76,29 @@ export default function ChatPage() {
   }
 
   const handleSendMessage = async (text: string, image?: string) => {
-    if (!text.trim() && !image) return;
-
-    const result = await handleChat(text, image);
-    return { responseStream: result };
+    if (!text.trim() && !image) return { error: "Message is empty" };
+    return handleCategorization(text, image);
   };
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <Header />
-      <main className="flex-1 flex flex-col h-0">
-          <div className="flex-1 w-full h-0">
-            <AiChat
-                key={chatKey}
-                defaultInitialMessages={initialMessages}
-                onSendMessage={handleSendMessage}
-                onClearChat={clearChatHistory}
-                disableImageUpload={false}
-                placeholder="Ask me anything... (or type 'clear' to start over)"
-            >
-                <div className="text-center p-4 pt-8">
-                    <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-                        AI Chat
-                    </h1>
-                    <p className="text-muted-foreground mt-2 text-lg">
-                        Ask me anything.
-                    </p>
-                </div>
-            </AiChat>
-          </div>
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        <Card className="w-full max-w-2xl h-full max-h-[80vh] flex flex-col">
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold font-display">AI Chat</CardTitle>
+                <CardDescription>Ask me anything, or type 'clear' to start over.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 h-0 p-0">
+                <AiChat
+                    key={chatKey}
+                    defaultInitialMessages={initialMessages}
+                    onSendMessage={handleSendMessage}
+                    onClearChat={clearChatHistory}
+                    disableImageUpload={false}
+                />
+            </CardContent>
+        </Card>
       </main>
     </div>
   );
