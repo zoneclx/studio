@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useTransition, useEffect } from 'react';
+import { useState, useRef, useTransition, useEffect, ReactNode } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ type AiChatProps = {
   disableImageUpload?: boolean;
   placeholder?: string;
   initialMessages?: Message[];
+  children?: ReactNode;
 };
 
 export default function AiChat({
@@ -32,6 +33,7 @@ export default function AiChat({
   disableImageUpload,
   placeholder,
   initialMessages = [],
+  children
 }: AiChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -112,8 +114,9 @@ export default function AiChat({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-        <div className="space-y-4">
+      <ScrollArea className="flex-1" ref={scrollAreaRef}>
+        {children}
+        <div className="space-y-4 p-4">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -161,7 +164,7 @@ export default function AiChat({
           )}
         </div>
       </ScrollArea>
-      <div className="p-4 border-t bg-background/50 rounded-b-lg">
+      <div className="p-4 border-t bg-background/50 sticky bottom-0">
         {image && !disableImageUpload && (
             <div className="relative w-24 h-24 mb-2 rounded-md overflow-hidden border">
                 <Image src={image} alt="Selected preview" layout="fill" objectFit="cover" />
@@ -175,7 +178,7 @@ export default function AiChat({
                 </Button>
             </div>
         )}
-        <div className="relative">
+        <div className="relative max-w-3xl mx-auto">
           <Input
             type="text"
             placeholder={

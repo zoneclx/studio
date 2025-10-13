@@ -47,29 +47,25 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8 flex flex-col h-0">
-          <div className="text-center mb-8">
-              <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-                  AI Chat
-              </h1>
-              <p className="text-muted-foreground mt-2 text-lg">
-                  Ask me anything.
-              </p>
-          </div>
-          <div className="flex-1 w-full max-w-3xl mx-auto h-0">
+      <main className="flex-1 flex flex-col h-0">
+          <div className="flex-1 w-full h-0">
             <AiChat
                 initialMessages={initialMessages}
                 onSendMessage={handleSendMessage}
                 disableImageUpload={false}
                 placeholder="Ask me anything..."
-            />
+            >
+                <div className="text-center p-4 pt-8">
+                    <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
+                        AI Chat
+                    </h1>
+                    <p className="text-muted-foreground mt-2 text-lg">
+                        Ask me anything.
+                    </p>
+                </div>
+            </AiChat>
           </div>
       </main>
-      <footer className="py-6 text-center text-sm text-muted-foreground">
-        <p>
-          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
-        </p>
-      </footer>
     </div>
   );
 }
