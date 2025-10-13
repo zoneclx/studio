@@ -16,14 +16,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Sparkles, CheckCircle } from 'lucide-react';
+import { Sparkles, CheckCircle, Mail } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1: enter email, 2: reset password, 3: success
+  const [step, setStep] = useState(1); // 1: enter email, 2: email sent, 3: reset password, 4: success
   const { toast } = useToast();
   const { forgotPassword } = useAuth();
   const router = useRouter();
@@ -32,9 +32,13 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      // In a real app, this would just check if the user exists
-      // For simulation, we can proceed if the format is okay
-      if (!email.includes('@')) throw new Error("Invalid email format");
+      // In a real app, this would trigger an email.
+      // For simulation, we check if user exists and move to next step.
+      const users = JSON.parse(localStorage.getItem('monochrome-auth-users') || '[]');
+      const userExists = users.some((u: any) => u.email === email);
+      if (!userExists) {
+        throw new Error("No account found with this email.");
+      }
       setStep(2);
     } catch (error: any) {
       toast({
@@ -60,7 +64,7 @@ export default function ForgotPasswordPage() {
         title: 'Success!',
         description: 'Your password has been reset.',
       });
-      setStep(3);
+      setStep(4);
     } catch (error: any) {
       toast({
         title: 'Reset Failed',
@@ -85,7 +89,7 @@ export default function ForgotPasswordPage() {
                 </Link>
               </CardTitle>
               <CardDescription>
-                Enter your email to reset your password.
+                Enter your email to receive a password reset link.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -104,7 +108,7 @@ export default function ForgotPasswordPage() {
             </CardContent>
             <CardFooter className="flex-col">
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Submitting...' : 'Continue'}
+                {loading ? 'Sending...' : 'Send Reset Link'}
               </Button>
                <div className="mt-4 text-center text-sm">
                 Remember your password?{' '}
@@ -116,6 +120,19 @@ export default function ForgotPasswordPage() {
           </form>
         )}
         {step === 2 && (
+            <>
+                <CardHeader className="items-center text-center">
+                    <Mail className="w-16 h-16 text-primary mb-4" />
+                    <CardTitle>Check Your Email</CardTitle>
+                    <CardDescription>A password reset link has been sent to {email}. (This is a simulation).</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex-col gap-4">
+                    <Button className="w-full" onClick={() => setStep(3)}>Reset Password (from simulated email)</Button>
+                    <Button variant="ghost" className="w-full" onClick={() => setStep(1)}>Back</Button>
+                </CardFooter>
+            </>
+        )}
+        {step === 3 && (
           <form onSubmit={handlePasswordReset}>
             <CardHeader>
               <CardTitle>Reset Password</CardTitle>
@@ -138,7 +155,7 @@ export default function ForgotPasswordPage() {
             </CardFooter>
           </form>
         )}
-        {step === 3 && (
+        {step === 4 && (
             <>
                 <CardHeader className="items-center text-center">
                     <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
