@@ -38,22 +38,11 @@ const animatedTitles = [
 export default function Home() {
   const { user } = useAuth();
   
-  const bgImage = "https://i.ibb.co/b3bzC8B/cosmic-deep-space-with-nebula-and-stardust-in-universe-generated-by-ai.jpg";
-
   return (
     <div
-      className='relative min-h-screen w-full bg-white dark:bg-cover dark:bg-center dark:bg-no-repeat'
-      style={{ backgroundImage: 'var(--bg-image)' }}
+      className='relative min-h-screen w-full bg-white dark:bg-mars dark:bg-cover dark:bg-center dark:bg-no-repeat'
     >
-        <style jsx global>{`
-            :root {
-                --bg-image: none;
-            }
-            .dark {
-                --bg-image: url('${bgImage}');
-            }
-        `}</style>
-      <div className="absolute inset-0 z-0 bg-black/50 dark:bg-black/50"></div>
+      <div className="absolute inset-0 z-0 bg-black/50"></div>
 
       <div className={cn("relative z-10 flex flex-col min-h-screen text-foreground dark:text-white")}>
         <Header />
