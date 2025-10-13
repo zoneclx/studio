@@ -120,7 +120,7 @@ export default function AiChat({
   };
 
   return (
-    <div className="flex flex-col h-full bg-card border border-border/50 rounded-lg shadow-lg">
+    <div className="flex flex-col h-full w-full">
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.map((message, index) => (
