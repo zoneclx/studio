@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, User, Menu, X } from 'lucide-react';
+import { Sparkles, User, Menu } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   DropdownMenu,
@@ -19,14 +19,21 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetClose,
 } from '@/components/ui/sheet';
 import { useState } from 'react';
+import { Separator } from './ui/separator';
+import { Home, Bot, FileArchive } from 'lucide-react';
 
 export default function Header() {
   const { user, signOut } = useAuth();
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setIsSheetOpen(false);
+    }
+  };
 
   const NavContent = () => (
     <>
@@ -55,20 +62,20 @@ export default function Header() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/my-work" onClick={() => isMobile && setIsSheetOpen(false)}>My Archive</Link>
+              <Link href="/my-work" onClick={handleLinkClick}>My Archive</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/create" onClick={() => isMobile && setIsSheetOpen(false)}>Builder</Link>
+              <Link href="/create" onClick={handleLinkClick}>Builder</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => {
               signOut();
-              if (isMobile) setIsSheetOpen(false);
+              handleLinkClick();
             }}>Sign out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link href="/signup" onClick={() => isMobile && setIsSheetOpen(false)}>
+        <Link href="/signup" onClick={handleLinkClick}>
           <Button>Sign Up</Button>
         </Link>
       )}
@@ -94,13 +101,35 @@ export default function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <nav className="flex flex-col gap-6 p-4 pt-16">
-               <NavContent />
+            <nav className="flex flex-col gap-4 p-4 pt-16 h-full">
+              <div className="flex flex-col gap-2 flex-1">
+                <Link href="/" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                  <Home className="h-5 w-5" />
+                  Home
+                </Link>
                 {user && (
-                    <div className="flex flex-col gap-4 pt-4 border-t border-border">
-                        <Link href="/create" className="text-lg" onClick={() => setIsSheetOpen(false)}>Builder</Link>
-                    </div>
+                    <>
+                        <Link href="/create" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                            <Bot className="h-5 w-5" />
+                            Builder
+                        </Link>
+                        <Link href="/my-work" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                           <FileArchive className="h-5 w-5" />
+                            My Archive
+                        </Link>
+                    </>
                 )}
+                {!user && (
+                   <Link href="/try" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                        <Bot className="h-5 w-5" />
+                        Try for Free
+                    </Link>
+                )}
+              </div>
+              <Separator />
+              <div className="flex items-center gap-4">
+                 <NavContent />
+              </div>
             </nav>
           </SheetContent>
         </Sheet>
