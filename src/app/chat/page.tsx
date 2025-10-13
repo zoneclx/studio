@@ -6,6 +6,13 @@ import { useRouter } from 'next/navigation';
 import { handleCategorization } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
+const initialMessages = [
+    {
+        role: 'assistant' as const,
+        content: "Hello! I'm your AI assistant. You can ask me for ideas, or tell me what kind of website you'd like to build."
+    }
+];
+
 export default function ChatPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -46,6 +53,7 @@ export default function ChatPage() {
                 </p>
             </div>
             <AiChat
+                initialMessages={initialMessages}
                 onCategorize={handleSendMessage}
                 disableImageUpload={true}
                 placeholder="Ask for ideas or say 'Create a blog for a traveler'"
