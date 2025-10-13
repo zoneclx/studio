@@ -3,72 +3,16 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, User } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import TypewriterEffect from '@/components/typewriter-effect';
-import { ThemeToggle } from '@/components/theme-toggle';
+import Header from '@/components/header';
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   return (
     <div className="flex flex-col min-h-screen bg-transparent text-foreground">
-      <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold font-display flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-primary" />
-            Monochrome Ai
-          </Link>
-        </h1>
-        <nav className="flex items-center gap-4">
-           <ThemeToggle />
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      <User />
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/my-work">My Archive</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                   <Link href="/create">Builder</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut}>
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-             <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          )}
-        </nav>
-      </header>
+      <Header />
 
       <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
         <TypewriterEffect

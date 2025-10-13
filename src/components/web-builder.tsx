@@ -16,11 +16,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { handleGeneration } from '@/app/actions';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
+import Header from '@/components/header';
 
 const examplePrompts = [
   'A portfolio website for a photographer.',
@@ -163,24 +162,16 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <Header />
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
-        <header className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-          <div className="text-center">
+        <div className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
               Web Builder
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">
               Describe the website you want, and let AI build it for you.
             </p>
-          </div>
-        </header>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">

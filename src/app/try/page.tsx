@@ -38,6 +38,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import Header from '@/components/header';
 
 const MAX_GENERATIONS = 5;
 const MAX_UPGRADES = 5;
@@ -181,37 +182,29 @@ function TryPageInner() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
+       <Header />
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
-        <header className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-              Try Monochrome AI
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
-            </p>
-          </div>
-          <Card className="mt-4 bg-accent/50 border-accent">
-            <CardContent className="p-4 flex items-center justify-center gap-4 text-sm">
-                <Info className="w-5 h-5 text-accent-foreground" />
-                <p className="text-accent-foreground">
-                    Generations left: <span className="font-bold">{MAX_GENERATIONS - generations}</span>
-                </p>
-                <p className="text-accent-foreground">
-                    Edits left: <span className="font-bold">{MAX_UPGRADES - upgrades}</span>
-                </p>
-            </CardContent>
-          </Card>
-        </header>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
+            Try Monochrome AI
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
+          </p>
+        </div>
+        <Card className="mt-4 bg-accent/50 border-accent">
+          <CardContent className="p-4 flex items-center justify-center gap-4 text-sm">
+              <Info className="w-5 h-5 text-accent-foreground" />
+              <p className="text-accent-foreground">
+                  Generations left: <span className="font-bold">{MAX_GENERATIONS - generations}</span>
+              </p>
+              <p className="text-accent-foreground">
+                  Edits left: <span className="font-bold">{MAX_UPGRADES - upgrades}</span>
+              </p>
+          </CardContent>
+        </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-8">
           <div className="space-y-6">
             <Card className="shadow-lg border-border/50 bg-card">
               <CardHeader>
