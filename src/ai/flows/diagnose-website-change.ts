@@ -29,21 +29,18 @@ export async function diagnoseWebsiteChange(
 ): Promise<string> {
   const { text } = await ai.generate({
     model: 'googleai/gemini-2.5-flash',
-    prompt: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
+    prompt: [
+        {text: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
 
 - Analyze the user's query (text and any optional image).
+- If the user provides an image, USE IT AS THE PRIMARY VISUAL REFERENCE to better understand their question. Your answer should reflect that you have seen and analyzed the image.
 - Provide a helpful, encouraging, and accurate response.
-- If the user provides an image, use it as a visual reference to better understand their question.
 
 **User's Message:**
-"{{{text}}}"
-
-{{#if image}}
-**Reference Image:**
-{{media url=image}}
-{{/if}}
-`,
-    input: input,
+"${input.text}"
+`},
+        ...(input.image ? [{media: {url: input.image}}] : [])
+    ],
   });
 
   return text;
