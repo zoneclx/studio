@@ -40,12 +40,12 @@ export default function Home() {
 
   return (
     <div 
-      className="relative min-h-screen w-full bg-cover bg-center bg-no-repeat"
+      className="relative min-h-screen w-full bg-white dark:bg-cover dark:bg-center dark:bg-no-repeat"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="absolute inset-0 bg-black/50 z-0"></div>
+      <div className="absolute inset-0 bg-black/50 z-0 hidden dark:block"></div>
 
-      <div className="relative z-10 flex flex-col min-h-screen text-white">
+      <div className="relative z-10 flex flex-col min-h-screen text-foreground dark:text-white">
         <Header />
 
         <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +53,7 @@ export default function Home() {
                 texts={animatedTitles}
                 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
             />
-            <p className="text-base sm:text-lg lg:text-xl text-white/80 max-w-2xl mb-8">
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground dark:text-white/80 max-w-2xl mb-8">
               Monochrome AI is a powerful tool that allows you to generate
               beautiful, production-ready websites using simple text prompts.
               Describe your vision, and watch as our AI brings it to life, helping
@@ -67,7 +67,7 @@ export default function Home() {
               </Link>
               {!user && (
                 <Link href="/try">
-                  <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto border-white text-white hover:bg-white hover:text-black">
+                  <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
                     Try for Free
                   </Button>
                 </Link>
@@ -75,7 +75,7 @@ export default function Home() {
             </div>
         </main>
 
-        <footer className="py-6 text-center text-sm text-white/70 z-10">
+        <footer className="py-6 text-center text-sm text-muted-foreground dark:text-white/70 z-10">
           <p>
             &copy; 2025 Enzo Gimena's Ai, All rights reserved.
           </p>
