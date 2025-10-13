@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -15,11 +16,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration, handleChat } from '@/app/actions';
+import { handleGeneration, handleCategorization } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
 import Header from '@/components/header';
+import { useRouter } from 'next/navigation';
 
 const examplePrompts = [
   'A portfolio website for a photographer.',
@@ -34,6 +36,7 @@ type WebBuilderProps = {
 
 export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   const { user } = useAuth();
+  const router = useRouter();
   const [prompt, setPrompt] = useState(initialPrompt);
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
@@ -97,15 +100,22 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   };
   
   const handleAiChatMessage = async (text: string, image?: string) => {
-    const result = await handleChat(text, image);
-    if (result.error) {
-      toast({
-        title: 'An error occurred',
-        description: result.error,
-        variant: 'destructive',
-      });
-      return "Sorry, I couldn't process that. Please try again.";
+    const result = await handleCategorization(text, image);
+
+    if(result.error) {
+        toast({
+            title: 'An error occurred',
+            description: result.error,
+            variant: 'destructive',
+        });
+        return "Sorry, I couldn't process that. Please try again.";
     }
+
+    if (result.category === 'code_request' && result.prompt) {
+        onGenerate(result.prompt);
+        return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
+    }
+
     return result.response || "I don't have a response for that.";
   };
 

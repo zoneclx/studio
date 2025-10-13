@@ -2,9 +2,10 @@
 'use client';
 
 import { useState, useRef, useTransition, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Paperclip, Send, User, Bot } from 'lucide-react';
+import { Paperclip, Send, User, Bot, X } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
@@ -18,7 +19,7 @@ type Message = {
 type AiChatProps = {
   // A function that takes the user's message and optional image, 
   // and returns the AI's response as a string.
-  onSendMessage: (text: string, image?: string) => Promise<string | void>;
+  onSendMessage: (text: string, image?: string) => Promise<string | void | boolean>;
   disabled?: boolean;
   disableImageUpload?: boolean;
   placeholder?: string;
@@ -53,6 +54,14 @@ export default function AiChat({
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          title: 'Image too large',
+          description: 'Please select an image smaller than 2MB.',
+          variant: 'destructive',
+        });
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
@@ -61,12 +70,19 @@ export default function AiChat({
       reader.readAsDataURL(file);
     }
   };
+  
+  const clearImage = () => {
+    setImage(null);
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  }
 
   const handleLocalSendMessage = () => {
     if (!input.trim() && !image) return;
 
     const userMessageContent = input.trim();
-    const userMessage: Message = { role: 'user', content: userMessageContent };
+    const userMessage: Message = { role: 'user', content: userMessageContent || 'Image attached' };
 
     // Add user message to chat immediately
     setMessages((prev) => [...prev, userMessage]);
@@ -77,10 +93,12 @@ export default function AiChat({
     startTransition(async () => {
       const response = await onSendMessage(userMessageContent, image || undefined);
       
-      if (response) {
+      if (typeof response === 'string' && response) {
         const assistantMessage: Message = { role: 'assistant', content: response };
         setMessages((prev) => [...prev, assistantMessage]);
-      } else {
+      } else if (response === false) { // Special case for trial limit
+        setMessages((prev) => prev.filter(m => m !== userMessage));
+      } else if (!response) {
         // If onSendMessage fails or returns nothing, remove the optimistic user message.
         setMessages((prev) => prev.filter(m => m !== userMessage));
         toast({
@@ -144,6 +162,19 @@ export default function AiChat({
         </div>
       </ScrollArea>
       <div className="p-4 border-t bg-background/50 rounded-b-lg">
+        {image && !disableImageUpload && (
+            <div className="relative w-24 h-24 mb-2 rounded-md overflow-hidden border">
+                <Image src={image} alt="Selected preview" layout="fill" objectFit="cover" />
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute top-1 right-1 h-6 w-6 bg-black/50 hover:bg-black/75 text-white rounded-full"
+                    onClick={clearImage}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
+        )}
         <div className="relative">
           <Input
             type="text"
@@ -181,17 +212,12 @@ export default function AiChat({
               variant="ghost"
               size="icon"
               onClick={handleLocalSendMessage}
-              disabled={isPending || !input.trim()}
+              disabled={isPending || (!input.trim() && !image)}
             >
               <Send className="h-5 w-5" />
             </Button>
           </div>
         </div>
-        {image && !disableImageUpload && (
-          <div className="text-xs text-muted-foreground mt-2">
-            Selected image: {fileInputRef.current?.files?.[0]?.name}
-          </div>
-        )}
       </div>
     </div>
   );

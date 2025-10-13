@@ -26,7 +26,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration } from '@/app/actions';
+import { handleGeneration, handleCategorization } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import {
@@ -141,7 +141,7 @@ function TryPageInner() {
   const [output, setOutput] = useState('');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const { generations, upgrades, incrementGenerations, limitReached } = useTrial();
+  const { generations, upgrades, incrementGenerations, incrementUpgrades, limitReached } = useTrial();
 
   const onGenerate = (text?: string) => {
     if (!incrementGenerations()) return;
@@ -342,7 +342,7 @@ function TryPageInner() {
         </div>
         {output && !isPending && (
           <div className="mt-8">
-            <TrialAiChat />
+            <TrialAiChat onGenerate={onGenerate} />
           </div>
         )}
       </main>
@@ -371,13 +371,30 @@ function TryPageInner() {
 }
 
 
-const TrialAiChat = () => {
+const TrialAiChat = ({ onGenerate }: { onGenerate: (prompt: string) => void }) => {
     const { upgrades, incrementUpgrades } = useTrial();
     
-    // This is a wrapper around the real AiChat that passes a custom handler
-    // to intercept the send message action and check trial limits.
+    const handleSendMessage = async (text: string, image?: string) => {
+        if (!incrementUpgrades()) {
+            return false; // Indicate that the action was blocked
+        }
+
+        const result = await handleCategorization(text, image);
+
+        if(result.error) {
+            // No toast here, AiChat component will handle optimistic UI reversal
+            return "Sorry, I couldn't process that. Please try again.";
+        }
     
-    return <AiChat onSendMessage={incrementUpgrades} disabled={upgrades >= MAX_UPGRADES} />
+        if (result.category === 'code_request' && result.prompt) {
+            onGenerate(result.prompt);
+            return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
+        }
+    
+        return result.response || "I don't have a response for that.";
+    }
+    
+    return <AiChat onSendMessage={handleSendMessage} disabled={upgrades >= MAX_UPGRADES} />
 }
 
 
