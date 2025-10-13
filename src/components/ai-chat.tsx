@@ -15,12 +15,20 @@ type Message = {
   content: string;
 };
 
+type CategorizationResult = {
+  handled: boolean;
+  response?: string;
+}
+
 type AiChatProps = {
-  onSendMessage?: () => boolean;
+  onSendMessage?: () => boolean; // For trial limit
   disabled?: boolean;
+  onCategorize?: (text: string, image?: string) => Promise<CategorizationResult | void>;
+  disableImageUpload?: boolean;
+  placeholder?: string;
 };
 
-export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
+export default function AiChat({ onSendMessage, disabled, onCategorize, disableImageUpload, placeholder }: AiChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
@@ -40,7 +48,7 @@ export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleLocalSendMessage = () => {
     if (onSendMessage && !onSendMessage()) {
       return;
     }
@@ -48,18 +56,31 @@ export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
     if (!input.trim() && !image) return;
 
     const userMessage = input.trim();
-    const newMessages: Message[] = [...messages];
-    if (userMessage) {
-      newMessages.push({ role: 'user', content: userMessage });
-    }
     
-    setMessages(newMessages);
+    // Add user message to chat immediately
+    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
     setImage(null);
     if(fileInputRef.current) fileInputRef.current.value = '';
 
-
     startTransition(async () => {
+      // If a categorization handler is provided, use it.
+      if (onCategorize) {
+        const result = await onCategorize(userMessage, image || undefined);
+        if (result?.handled && result.response) {
+            setMessages((prev) => [
+              ...prev,
+              { role: 'assistant', content: result.response! },
+            ]);
+        } else if (result?.handled) {
+            // Handled, but no response (e.g. redirection). Do nothing.
+            // But we need to remove the user message we added optimistically
+            setMessages((prev) => prev.slice(0, prev.length -1));
+        }
+        return;
+      }
+      
+      // Default behavior: use the `handleChat` action
       const result = await handleChat(userMessage, image || undefined);
       if (result.error) {
         toast({
@@ -67,6 +88,8 @@ export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
           description: result.error,
           variant: 'destructive',
         });
+        // Remove the optimistic user message on error
+        setMessages((prev) => prev.slice(0, prev.length - 1));
       } else if (result.response) {
         setMessages((prev) => [
           ...prev,
@@ -137,40 +160,44 @@ export default function AiChat({ onSendMessage, disabled }: AiChatProps) {
         <div className="relative">
           <Input
             type="text"
-            placeholder={image ? "Describe the image..." : "Type your message..."}
+            placeholder={placeholder || (image ? "Describe the image..." : "Type your message...")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyDown={(e) => e.key === 'Enter' && handleLocalSendMessage()}
             className="pr-20"
             disabled={isPending || disabled}
           />
           <div className="absolute inset-y-0 right-0 flex items-center">
+            {!disableImageUpload && (
+              <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isPending || disabled}
+              >
+                <Paperclip className="h-5 w-5" />
+              </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+                accept="image/*"
+              />
+              </>
+            )}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isPending || disabled}
-            >
-              <Paperclip className="h-5 w-5" />
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              className="hidden"
-              accept="image/*"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSendMessage}
+              onClick={handleLocalSendMessage}
               disabled={isPending || disabled}
             >
               <Send className="h-5 w-5" />
             </Button>
           </div>
         </div>
-        {image && (
+        {image && !disableImageUpload && (
           <div className="text-xs text-muted-foreground mt-2">
             Selected image: {fileInputRef.current?.files?.[0]?.name}
           </div>

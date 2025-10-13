@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { useState } from 'react';
 import { Separator } from './ui/separator';
-import { Home, Bot, FileArchive } from 'lucide-react';
+import { Home, Bot, FileArchive, MessageSquare } from 'lucide-react';
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -77,6 +77,12 @@ export default function Header() {
                 My Archive
               </Link>
             </DropdownMenuItem>
+             <DropdownMenuItem asChild>
+              <Link href="/chat" onClick={handleLinkClick}>
+                 <MessageSquare className="mr-2 h-4 w-4" />
+                AI Chat
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/create" onClick={handleLinkClick}>
                  <Bot className="mr-2 h-4 w-4" />
@@ -129,6 +135,10 @@ export default function Header() {
                             <Settings className="h-5 w-5" />
                             Profile
                         </Link>
+                        <Link href="/chat" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                           <MessageSquare className="h-5 w-5" />
+                            AI Chat
+                        </Link>
                         <Link href="/create" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
                             <Bot className="h-5 w-5" />
                             Builder
@@ -140,10 +150,16 @@ export default function Header() {
                     </>
                 )}
                 {!user && (
-                   <Link href="/try" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                        <Bot className="h-5 w-5" />
-                        Try for Free
+                   <>
+                    <Link href="/chat" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                        <MessageSquare className="h-5 w-5" />
+                        AI Chat
                     </Link>
+                    <Link href="/try" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                          <Bot className="h-5 w-5" />
+                          Try for Free
+                      </Link>
+                   </>
                 )}
               </div>
               <Separator />

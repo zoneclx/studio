@@ -2,6 +2,7 @@
 
 import { createWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
+import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
 
 type GenerationResult = {
   text?: string;
@@ -36,4 +37,23 @@ export async function handleChat(
     console.error('AI chat failed:', error);
     return { error: 'Failed to get a response. Please try again.' };
   }
+}
+
+type CategorizationResult = {
+  category: 'code_request' | 'general_inquiry';
+  prompt?: string;
+  response?: string;
+  error?: string;
+};
+
+export async function handleCategorization(
+  text: string
+): Promise<CategorizationResult> {
+    try {
+        const result = await categorizeChatRequest({ text });
+        return result;
+    } catch (error) {
+        console.error('AI categorization failed:', error);
+        return { category: 'general_inquiry', error: 'Failed to process the request. Please try again.' };
+    }
 }
