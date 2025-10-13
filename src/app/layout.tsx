@@ -11,7 +11,6 @@ import { ThemeProvider } from '@/context/theme-context';
 import { useSound } from '@/hooks/use-sound';
 import { useEffect } from 'react';
 import CookieConsent from '@/components/cookie-consent';
-import AnimatedBackground from '@/components/animated-background';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -62,14 +61,13 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen font-sans antialiased',
+          'min-h-screen font-sans antialiased bg-background',
           fontSans.variable,
           fontDisplay.variable
         )}
       >
         <ThemeProvider>
           <SoundProvider>
-            <AnimatedBackground />
             <div className="relative z-10">
               <AuthProvider>{children}</AuthProvider>
               <Toaster />
