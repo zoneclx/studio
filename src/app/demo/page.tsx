@@ -46,10 +46,16 @@ type TrialData = {
   timestamp: number;
 };
 
+type WebsiteCode = {
+  html: string;
+  css: string;
+  javascript: string;
+};
+
 export default function DemoPage() {
   const [prompt, setPrompt] = useState('');
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState<WebsiteCode | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   
@@ -113,7 +119,7 @@ export default function DemoPage() {
     updateTrialStorage(newTrialData);
     
     setPrompt(textToProcess);
-    setOutput('');
+    setOutput(null);
 
     startTransition(async () => {
       const resultStream = await handleGeneration(textToProcess);
@@ -122,36 +128,43 @@ export default function DemoPage() {
       const decoder = new TextDecoder();
       let accumulatedOutput = '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        try {
-            const chunk = decoder.decode(value, { stream: true });
-            // Check for our specific error format before attempting to parse
-            if (chunk.includes('{"error"')) {
-                try {
-                    const errorObj = JSON.parse(chunk);
-                    if (errorObj.error) {
-                        toast({
-                            title: 'An error occurred',
-                            description: errorObj.error,
-                            variant: 'destructive',
-                        });
-                        setOutput(prev => prev); // Stop updating
-                        return;
-                    }
-                } catch(e) {
-                    // Not a valid JSON error object, treat as regular text
-                }
-            }
-            accumulatedOutput += chunk;
-            setOutput(accumulatedOutput);
-        } catch (e) {
-            // Decoding errors can happen with streaming, ignore them.
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          accumulatedOutput += decoder.decode(value, { stream: true });
         }
+
+        const finalJson = JSON.parse(accumulatedOutput);
+
+        if (finalJson.error) {
+             toast({
+                title: 'An error occurred',
+                description: finalJson.error,
+                variant: 'destructive',
+            });
+            setOutput(null);
+            return;
+        }
+        
+        const websiteCode: WebsiteCode = {
+            html: finalJson.html || '',
+            css: finalJson.css || '',
+            javascript: finalJson.javascript || '',
+        };
+        
+        setOutput(websiteCode);
+        setLastSuccessfulPrompt(textToProcess);
+
+      } catch (e) {
+          console.error("Failed to parse stream:", e);
+          toast({
+                title: 'An error occurred',
+                description: "The AI returned an invalid response. Please try again.",
+                variant: 'destructive',
+          });
+          setOutput(null);
       }
-      
-      setLastSuccessfulPrompt(textToProcess);
     });
   }, [prompt, trial, toast, updateTrialStorage]);
   
@@ -179,6 +192,13 @@ export default function DemoPage() {
     if (lastSuccessfulPrompt) {
       handleGenerate(lastSuccessfulPrompt);
     }
+  }
+
+  const getFullHtml = () => {
+    if (!output) return '';
+    return output.html
+      .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
+      .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
   }
 
   const isDisabled = isPending || !trial || trial.generations >= MAX_GENERATIONS;
@@ -334,7 +354,7 @@ export default function DemoPage() {
                       </div>
                     ) : output ? (
                       <iframe
-                        srcDoc={output}
+                        srcDoc={getFullHtml()}
                         className="w-full h-full border rounded-md bg-white"
                         title="Website Preview"
                         sandbox="allow-scripts"
@@ -349,18 +369,43 @@ export default function DemoPage() {
                   </CardContent>
                 </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
-                  <CardContent className="h-full p-2">
-                    <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                      <code>
-                        {output || (
+                    <Tabs defaultValue='index.html' className='h-full flex flex-col'>
+                      {output ? (
+                          <>
+                              <TabsList className='mx-2 mt-2 self-start'>
+                                  <TabsTrigger value="index.html">index.html</TabsTrigger>
+                                  <TabsTrigger value="style.css">style.css</TabsTrigger>
+                                  <TabsTrigger value="script.js">script.js</TabsTrigger>
+                              </TabsList>
+                              <TabsContent value="index.html" className="flex-1 h-0 mt-0">
+                                  <CardContent className="h-full p-2">
+                                      <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                          <code>{output.html}</code>
+                                      </pre>
+                                  </CardContent>
+                              </TabsContent>
+                              <TabsContent value="style.css" className="flex-1 h-0 mt-0">
+                                  <CardContent className="h-full p-2">
+                                      <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                          <code>{output.css}</code>
+                                      </pre>
+                                  </CardContent>
+                              </TabsContent>
+                              <TabsContent value="script.js" className="flex-1 h-0 mt-0">
+                                  <CardContent className="h-full p-2">
+                                      <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                          <code>{output.javascript}</code>
+                                      </pre>
+                                  </CardContent>
+                              </TabsContent>
+                          </>
+                      ) : (
                           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
-                           <Code className="w-12 h-12 mb-4 text-muted-foreground/50" />
-                           <p className="font-medium">Your generated code will appear here.</p>
-                         </div>
-                        )}
-                      </code>
-                    </pre>
-                  </CardContent>
+                            <Code className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                            <p className="font-medium">Your generated code will appear here.</p>
+                          </div>
+                      )}
+                    </Tabs>
                 </TabsContent>
               </Tabs>
             </Card>

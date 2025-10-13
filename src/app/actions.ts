@@ -5,7 +5,6 @@ import { streamWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
 import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
 
-// This function now returns a ReadableStream for the client to consume.
 export async function handleGeneration(
   prompt: string
 ): Promise<ReadableStream<Uint8Array>> {
@@ -26,9 +25,11 @@ export async function handleGeneration(
   } catch (error) {
     console.error('AI generation failed:', error);
     const encoder = new TextEncoder();
+    const errorPayload = JSON.stringify({ error: 'Failed to process the request. Please try again.' });
     return new ReadableStream({
         start(controller) {
-            controller.enqueue(encoder.encode(JSON.stringify({ error: 'Failed to process the request. Please try again.' })));
+            // Since the expected output is a JSON object, we send an object with an error key.
+            controller.enqueue(encoder.encode(`{"html": "<h1>Error</h1><p>${errorPayload}</p>", "css": "", "javascript": ""}`));
             controller.close();
         }
     });

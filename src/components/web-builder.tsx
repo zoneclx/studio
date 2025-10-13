@@ -34,12 +34,18 @@ type WebBuilderProps = {
   initialPrompt?: string;
 };
 
+type WebsiteCode = {
+  html: string;
+  css: string;
+  javascript: string;
+};
+
 export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [prompt, setPrompt] = useState(initialPrompt);
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState<WebsiteCode | null>(null);
   const [isPending, startTransition] = useTransition();
   const [canShare, setCanShare] = useState(false);
   const { toast } = useToast();
@@ -50,11 +56,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     }
   }, []);
 
-  const saveWork = (html: string, currentPrompt: string) => {
-    if (user && html) {
+  const saveWork = (code: WebsiteCode | null, currentPrompt: string) => {
+    if (user && code) {
       try {
         const work = {
-          html: html,
+          ...code, // html, css, javascript
           prompt: currentPrompt,
           date: new Date().toISOString(),
         };
@@ -80,7 +86,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     }
 
     setPrompt(textToProcess);
-    setOutput('');
+    setOutput(null);
 
     startTransition(async () => {
       const resultStream = await handleGeneration(textToProcess);
@@ -89,37 +95,44 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       const decoder = new TextDecoder();
       let accumulatedOutput = '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        try {
-            const chunk = decoder.decode(value, { stream: true });
-             // Check for our specific error format before attempting to parse
-            if (chunk.includes('{"error"')) {
-                try {
-                    const errorObj = JSON.parse(chunk);
-                    if (errorObj.error) {
-                        toast({
-                            title: 'An error occurred',
-                            description: errorObj.error,
-                            variant: 'destructive',
-                        });
-                        setOutput(prev => prev); // Stop updating
-                        return;
-                    }
-                } catch(e) {
-                    // Not a valid JSON error object, treat as regular text
-                }
-            }
-            accumulatedOutput += chunk;
-            setOutput(accumulatedOutput);
-        } catch (e) {
-            // Ignore decoding errors if the chunk is not valid JSON
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          accumulatedOutput += decoder.decode(value, { stream: true });
         }
+
+        const finalJson = JSON.parse(accumulatedOutput);
+
+        if (finalJson.error) {
+             toast({
+                title: 'An error occurred',
+                description: finalJson.error,
+                variant: 'destructive',
+            });
+            setOutput(null);
+            return;
+        }
+        
+        const websiteCode: WebsiteCode = {
+            html: finalJson.html || '',
+            css: finalJson.css || '',
+            javascript: finalJson.javascript || '',
+        };
+
+        setOutput(websiteCode);
+        setLastSuccessfulPrompt(textToProcess);
+        saveWork(websiteCode, textToProcess);
+
+      } catch (e) {
+          console.error("Failed to parse stream:", e);
+          toast({
+                title: 'An error occurred',
+                description: "The AI returned an invalid response. Please try again.",
+                variant: 'destructive',
+          });
+          setOutput(null);
       }
-      
-      setLastSuccessfulPrompt(textToProcess);
-      saveWork(accumulatedOutput, textToProcess);
     });
   };
   
@@ -162,10 +175,21 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPrompt]);
 
+  const getFullHtml = () => {
+    if (!output) return '';
+    // This is a simplified way to combine the files for preview.
+    // A more robust solution might use blob URLs.
+    return output.html
+      .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
+      .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
+  }
+
   const handleDownload = () => {
     if (!output) return;
     try {
-      const blob = new Blob([output], { type: 'text/html' });
+      // For simplicity, we'll download the combined HTML file.
+      // A more complex implementation could zip the files.
+      const blob = new Blob([getFullHtml()], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -185,11 +209,12 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
   const handleShare = async () => {
     if (!output) return;
+    const allCode = `// index.html\n${output.html}\n\n// style.css\n${output.css}\n\n// script.js\n${output.javascript}`;
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Monochrome Ai Website Generation',
-          text: output,
+          text: allCode,
         });
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') {
@@ -204,7 +229,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       }
     } else if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(output);
+        await navigator.clipboard.writeText(allCode);
         toast({
           title: 'Copied to clipboard',
           description: 'Share API not supported, code copied to clipboard.',
@@ -375,7 +400,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                       </div>
                     ) : (
                       <iframe
-                        srcDoc={output}
+                        srcDoc={getFullHtml()}
                         className="w-full h-full border rounded-md bg-white"
                         title="Website Preview"
                         sandbox="allow-scripts"
@@ -384,19 +409,43 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                   </CardContent>
                 </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
-                  <CardContent className="h-full p-2">
-                    <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                      <code>
-                        {output || (
-                           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
-                            <Sparkles className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                  <Tabs defaultValue='index.html' className='h-full flex flex-col'>
+                    {output ? (
+                        <>
+                            <TabsList className='mx-2 mt-2 self-start'>
+                                <TabsTrigger value="index.html">index.html</TabsTrigger>
+                                <TabsTrigger value="style.css">style.css</TabsTrigger>
+                                <TabsTrigger value="script.js">script.js</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="index.html" className="flex-1 h-0 mt-0">
+                                <CardContent className="h-full p-2">
+                                    <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                        <code>{output.html}</code>
+                                    </pre>
+                                </CardContent>
+                            </TabsContent>
+                            <TabsContent value="style.css" className="flex-1 h-0 mt-0">
+                                <CardContent className="h-full p-2">
+                                    <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                        <code>{output.css}</code>
+                                    </pre>
+                                </CardContent>
+                            </TabsContent>
+                            <TabsContent value="script.js" className="flex-1 h-0 mt-0">
+                                <CardContent className="h-full p-2">
+                                    <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                                        <code>{output.javascript}</code>
+                                    </pre>
+                                </CardContent>
+                            </TabsContent>
+                        </>
+                    ) : (
+                         <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
+                            <Code className="w-12 h-12 mb-4 text-muted-foreground/50" />
                             <p className="font-medium">Your generated code will appear here.</p>
-                            <p className="text-sm">Describe your site and watch the code build in real-time.</p>
-                          </div>
-                        )}
-                      </code>
-                    </pre>
-                  </CardContent>
+                         </div>
+                    )}
+                  </Tabs>
                 </TabsContent>
               </Tabs>
             </Card>

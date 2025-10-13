@@ -27,6 +27,8 @@ import { User, Bot } from 'lucide-react';
 
 type SavedWork = {
   html: string;
+  css: string;
+  javascript: string;
   prompt: string;
   date: string;
 };
@@ -99,6 +101,13 @@ export default function MyWorkPage() {
         setDialogOpen({ web: false, chat: false });
     }
   };
+  
+  const getFullHtml = (savedWork: SavedWork | null) => {
+    if (!savedWork) return '';
+    return savedWork.html
+      .replace('<link rel="stylesheet" href="style.css">', `<style>${savedWork.css}</style>`)
+      .replace('<script src="script.js" defer></script>', `<script>${savedWork.javascript}</script>`);
+  }
 
   if (loading || (!user && !isLoading)) {
     return (
@@ -187,7 +196,7 @@ export default function MyWorkPage() {
                     <div>
                       <h3 className="font-semibold mb-2">Preview:</h3>
                       <iframe
-                          srcDoc={work.html}
+                          srcDoc={getFullHtml(work)}
                           className="w-full h-[500px] border rounded-md bg-white"
                           title="Website Preview"
                           sandbox="allow-scripts"
