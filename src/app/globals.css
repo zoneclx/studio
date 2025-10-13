@@ -24,8 +24,6 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
-
-    --breathing-glow: hsla(262, 83.3%, 57.8%, 0.25);
   }
 
   .dark {
@@ -48,8 +46,6 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 262.1 83.3% 57.8%;
-    
-    --breathing-glow: hsla(262, 83.3%, 57.8%, 0.2);
   }
 }
 
@@ -59,16 +55,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-@keyframes breathing-glow {
-  0%, 100% {
-    transform: scale(0.95);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
   }
 }
