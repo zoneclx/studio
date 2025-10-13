@@ -164,7 +164,7 @@ export default function Header() {
                  {navLinks.filter(link => user || !link.auth).map(link => (
                     <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} badge={link.badge} onClick={handleLinkClick} />
                  ))}
-                 {!user && <NavLink href="/try" label="Try for Free" icon={Bot} onClick={handleLinkClick} />}
+                 {!user && <NavLink href="/demo" label="Demo for Free" icon={Bot} onClick={handleLinkClick} />}
             </nav>
             <div className="flex items-center justify-between mt-4">
               <UserMenu />

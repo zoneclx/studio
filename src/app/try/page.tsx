@@ -32,7 +32,7 @@ import Header from '@/components/header';
 
 const MAX_GENERATIONS = 5;
 const MAX_UPGRADES = 5;
-const TRIAL_STORAGE_KEY = 'monochrome-trial';
+const TRIAL_STORAGE_KEY = 'monochrome-demo';
 
 const examplePrompts = [
   'A portfolio for a Product Designer',
@@ -46,7 +46,7 @@ type TrialData = {
   timestamp: number;
 };
 
-export default function TryPage() {
+export default function DemoPage() {
   const [prompt, setPrompt] = useState('');
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
@@ -178,10 +178,10 @@ export default function TryPage() {
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-            Try Monochrome Ai
+            Demo Monochrome Ai
           </h1>
           <p className="text-muted-foreground mt-2 text-lg max-w-2xl mx-auto">
-            Generate up to {MAX_GENERATIONS} websites and make {MAX_UPGRADES} edits. Your trial resets every 24 hours. Sign up to save your work.
+            Generate up to {MAX_GENERATIONS} websites and make {MAX_UPGRADES} edits. Your demo resets every 24 hours. Sign up to save your work.
           </p>
         </div>
         <Card className="mt-4 bg-muted/50 border-border">
@@ -352,7 +352,7 @@ export default function TryPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>You've reached the limit!</AlertDialogTitle>
             <AlertDialogDescription>
-              You've used all your free generations and edits for this session. Please create an account to continue building amazing websites, or wait 24 hours for your trial to reset.
+              You've used all your free generations and edits for this session. Please create an account to continue building amazing websites, or wait 24 hours for your demo to reset.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

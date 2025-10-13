@@ -75,9 +75,9 @@ export default function Home() {
                         </Button>
                         </Link>
                         {!user && (
-                        <Link href="/try">
+                        <Link href="/demo">
                             <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
-                            Try for Free
+                            Demo for Free
                             </Button>
                         </Link>
                         )}
