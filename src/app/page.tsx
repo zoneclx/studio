@@ -61,7 +61,7 @@ export default function Home() {
             <Image
                 src="https://i.ibb.co/yYc8dG8/mars-surface.jpg"
                 alt="Mars background"
-                layout="fill"
+                fill
                 objectFit="cover"
                 quality={90}
                 className="absolute inset-0 -z-10 opacity-40"
