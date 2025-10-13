@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useTransition, useEffect } from 'react';
@@ -120,12 +121,6 @@ export default function AiChat({
 
   return (
     <div className="flex flex-col h-full bg-card border border-border/50 rounded-lg shadow-lg">
-      <div className="p-4 border-b">
-        <h3 className="font-semibold text-lg">AI Assistant</h3>
-        <p className="text-sm text-muted-foreground">
-          Describe a change or ask for ideas.
-        </p>
-      </div>
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.map((message, index) => (
@@ -136,14 +131,14 @@ export default function AiChat({
               }`}
             >
               {message.role === 'assistant' && (
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback>
+                <Avatar className="w-8 h-8 border">
+                   <AvatarFallback className="bg-primary text-primary-foreground">
                     <Bot />
                   </AvatarFallback>
                 </Avatar>
               )}
               <div
-                className={`rounded-lg px-3 py-2 max-w-sm ${
+                className={`rounded-lg px-3 py-2 max-w-md break-words ${
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted'
@@ -152,7 +147,7 @@ export default function AiChat({
                 <p className="text-sm">{message.content}</p>
               </div>
               {message.role === 'user' && (
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-8 h-8 border">
                   <AvatarFallback>
                     <User />
                   </AvatarFallback>
@@ -162,8 +157,8 @@ export default function AiChat({
           ))}
           {isPending && (
             <div className="flex items-start gap-3">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback>
+              <Avatar className="w-8 h-8 border">
+                <AvatarFallback className="bg-primary text-primary-foreground">
                   <Bot />
                 </AvatarFallback>
               </Avatar>
@@ -213,7 +208,7 @@ export default function AiChat({
               variant="ghost"
               size="icon"
               onClick={handleLocalSendMessage}
-              disabled={isPending || disabled}
+              disabled={isPending || !input.trim()}
             >
               <Send className="h-5 w-5" />
             </Button>
