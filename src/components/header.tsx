@@ -28,6 +28,7 @@ import { Home, Bot, FileArchive, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/context/theme-context';
+import { Badge } from '@/components/ui/badge';
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -44,17 +45,18 @@ export default function Header() {
 
   const navLinks = [
     { href: '/create', label: 'Builder', icon: Bot, auth: true },
-    { href: '/chat', label: 'AI Chat', icon: MessageSquare, auth: false },
+    { href: '/chat', label: 'AI Chat', icon: MessageSquare, auth: false, badge: 'Free' },
     { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
   ];
 
-  const NavLink = ({ href, label, icon: Icon, onClick }: { href: string; label: string; icon: React.ElementType, onClick: () => void; }) => {
+  const NavLink = ({ href, label, icon: Icon, badge, onClick }: { href: string; label: string; icon: React.ElementType, badge?: string, onClick: () => void; }) => {
     const isActive = pathname === href;
     return (
         <Link href={href} onClick={onClick}>
             <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start gap-2">
                  <Icon className="h-5 w-5" />
-                {label}
+                 <span>{label}</span>
+                 {badge && <Badge variant="destructive" className="h-5">{badge}</Badge>}
             </Button>
         </Link>
     );
@@ -64,8 +66,9 @@ export default function Header() {
      <div className="hidden md:flex items-center gap-2">
         {navLinks.filter(link => user || !link.auth).map(link => (
           <Link key={link.href} href={link.href} passHref>
-             <Button variant={pathname === link.href ? "secondary" : "ghost"}>
+             <Button variant={pathname === link.href ? "secondary" : "ghost"} className="flex gap-2">
               {link.label}
+              {link.badge && <Badge variant="destructive">{link.badge}</Badge>}
             </Button>
           </Link>
         ))}
@@ -159,7 +162,7 @@ export default function Header() {
             <nav className="flex flex-col gap-2 flex-1">
                  <NavLink href="/" label="Home" icon={Home} onClick={handleLinkClick} />
                  {navLinks.filter(link => user || !link.auth).map(link => (
-                    <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} onClick={handleLinkClick} />
+                    <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} badge={link.badge} onClick={handleLinkClick} />
                  ))}
                  {!user && <NavLink href="/try" label="Try for Free" icon={Bot} onClick={handleLinkClick} />}
             </nav>

@@ -3,12 +3,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Code, Component, MousePointer, Paintbrush, FileCode2, Sparkles, Eye, Download, Wand2 } from 'lucide-react';
+import { ArrowRight, Code, Component, MousePointer, Paintbrush, FileCode2, Sparkles, Eye, Download, Wand2, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -30,15 +31,16 @@ const features = [
         title: "Live Preview",
         description: "Watch your website come to life in real-time. The preview panel instantly renders the code as it's generated, giving you immediate feedback.",
     },
+     {
+        icon: <MessageSquare className="w-8 h-8 text-primary" />,
+        title: "Free AI Chat",
+        description: "Our knowledgeable AI assistant is free forever. Ask questions, get ideas, or request changes to your generated website.",
+        badge: "Free Forever"
+    },
     {
         icon: <Download className="w-8 h-8 text-primary" />,
         title: "Full Code Export",
         description: "You have complete ownership. Download the generated HTML file with a single click and host it on any platform you choose, no strings attached.",
-    },
-    {
-        icon: <Wand2 className="w-8 h-8 text-primary" />,
-        title: "Easy Customization",
-        description: "Refine your design by chatting with our AI assistant. Ask for changes, and the AI will intelligently update the code to match your request.",
     },
 ];
 
@@ -122,7 +124,10 @@ export default function Home() {
                         <Card key={index} className="bg-card hover:shadow-lg transition-shadow">
                             <CardHeader>
                                 {feature.icon}
-                                <CardTitle className="mt-4 text-xl">{feature.title}</CardTitle>
+                                 <CardTitle className="mt-4 text-xl flex items-center gap-2">
+                                    {feature.title}
+                                    {feature.badge && <Badge variant="destructive">{feature.badge}</Badge>}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground">{feature.description}</p>
