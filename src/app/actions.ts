@@ -12,7 +12,7 @@ export async function handleGeneration(
     return websiteCode;
   } catch (error) {
     console.error('AI generation failed:', error);
-    let errorMessage = "Failed to process the request. Please try again.";
+    let errorMessage = "AI returned an invalid response. Please try again.";
     if (error instanceof Error) {
         errorMessage = error.message;
     }
