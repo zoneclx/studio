@@ -15,7 +15,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration } from '@/app/actions';
+import { handleGeneration, handleChat } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
@@ -94,6 +94,19 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
         saveWork(generatedHtml, textToProcess);
       }
     });
+  };
+  
+  const handleAiChatMessage = async (text: string, image?: string) => {
+    const result = await handleChat(text, image);
+    if (result.error) {
+      toast({
+        title: 'An error occurred',
+        description: result.error,
+        variant: 'destructive',
+      });
+      return "Sorry, I couldn't process that. Please try again.";
+    }
+    return result.response || "I don't have a response for that.";
   };
 
   const handleRestart = () => {
@@ -359,7 +372,9 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
         </div>
         {output && !isPending && (
           <div className="mt-8">
-            <AiChat />
+            <AiChat 
+              onSendMessage={handleAiChatMessage}
+            />
           </div>
         )}
       </main>
