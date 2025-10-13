@@ -3,6 +3,7 @@
 import { createWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
 import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
+import { generateBackgroundImage } from '@/ai/flows/generate-background-image';
 
 type GenerationResult = {
   text?: string;
@@ -66,4 +67,21 @@ export async function handleCategorization(
         console.error('AI categorization failed:', error);
         return { category: 'general_inquiry', response: 'Sorry, I had trouble understanding that. Could you try again?', error: 'Failed to process the request. Please try again.' };
     }
+}
+
+
+type ImageGenerationResult = {
+  imageUrl?: string;
+  error?: string;
+};
+
+export async function handleImageGeneration(): Promise<ImageGenerationResult> {
+  try {
+    const result = await generateBackgroundImage();
+    return { imageUrl: result.imageUrl };
+  } catch (error) {
+    console.error('AI image generation failed:', error);
+    // Return a fallback image on error
+    return { imageUrl: 'https://images.unsplash.com/photo-1532696190439-5641f3f33b14?q=80&w=2070&auto=format&fit=crop' };
+  }
 }
