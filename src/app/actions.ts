@@ -1,19 +1,16 @@
+
 'use server';
 
 import { streamWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
-import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
+import { streamWebsiteChange } from '@/ai/flows/diagnose-website-change';
 import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
 
 // This function now returns a ReadableStream for the client to consume.
 export async function handleGeneration(
   prompt: string
-): Promise<ReadableStream<string> | { error: string }> {
+): Promise<ReadableStream<Uint8Array>> {
   try {
-    const stream = await (async function* () {
-      for await (const part of streamWebsiteFromPrompt({ prompt })) {
-        yield part;
-      }
-    })();
+    const stream = streamWebsiteFromPrompt({ prompt });
 
     const encoder = new TextEncoder();
     const readableStream = new ReadableStream({
@@ -28,32 +25,49 @@ export async function handleGeneration(
     return readableStream;
   } catch (error) {
     console.error('AI generation failed:', error);
-    return { error: 'Failed to process the request. Please try again.' };
+    const encoder = new TextEncoder();
+    return new ReadableStream({
+        start(controller) {
+            controller.enqueue(encoder.encode(JSON.stringify({ error: 'Failed to process the request. Please try again.' })));
+            controller.close();
+        }
+    });
   }
 }
 
-type ChatResult = {
-  response?: string;
-  error?: string;
-};
 
 export async function handleChat(
   text: string,
   image?: string
-): Promise<ChatResult> {
+): Promise<ReadableStream<Uint8Array>> {
   try {
-    const result = await diagnoseWebsiteChange({ text, image });
-    return { response: result.response };
+    const stream = streamWebsiteChange({ text, image });
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        for await (const part of stream) {
+          controller.enqueue(encoder.encode(part));
+        }
+        controller.close();
+      },
+    });
+     return readableStream;
   } catch (error) {
     console.error('AI chat failed:', error);
-    return { error: 'Failed to get a response. Please try again.' };
+    const encoder = new TextEncoder();
+    return new ReadableStream({
+        start(controller) {
+            controller.enqueue(encoder.encode(JSON.stringify({ error: 'Failed to get a response. Please try again.' })));
+            controller.close();
+        }
+    });
   }
 }
 
 type CategorizationResult = {
   category: 'code_request' | 'general_inquiry';
   prompt?: string;
-  response?: string;
+  responseStream?: ReadableStream<Uint8Array>;
   error?: string;
 };
 
@@ -65,16 +79,16 @@ export async function handleCategorization(
         const result = await categorizeChatRequest({ text });
 
         if (result.category === 'general_inquiry') {
-            const chatResult = await diagnoseWebsiteChange({ text, image });
+            const chatStream = await handleChat(text, image);
             return {
                 ...result,
-                response: chatResult.response,
+                responseStream: chatStream,
             };
         }
 
         return result;
     } catch (error) {
         console.error('AI categorization failed:', error);
-        return { category: 'general_inquiry', response: 'Sorry, I had trouble understanding that. Could you try again?', error: 'Failed to process the request. Please try again.' };
+        return { category: 'general_inquiry', error: 'Failed to process the request. Please try again.' };
     }
 }

@@ -1,11 +1,11 @@
+
 'use server';
 
 /**
- * @fileOverview An AI agent that provides answers to user questions.
+ * @fileOverview An AI agent that provides answers to user questions and streams the response.
  *
- * - diagnoseWebsiteChange - A function that handles user queries with text and optional images.
- * - DiagnoseWebsiteChangeInput - The input type for the diagnoseWebsiteChange function.
- * - DiagnoseWebsiteChangeOutput - The return type for the diagnoseWebsiteChange function.
+ * - streamWebsiteChange - A function that handles user queries and streams the response.
+ * - DiagnoseWebsiteChangeInput - The input type for the streamWebsiteChange function.
  */
 
 import { ai } from '@/ai/genkit';
@@ -24,24 +24,13 @@ export type DiagnoseWebsiteChangeInput = z.infer<
   typeof DiagnoseWebsiteChangeInputSchema
 >;
 
-const DiagnoseWebsiteChangeOutputSchema = z.object({
-  response: z.string().describe("The AI's helpful and informative response to the user's query."),
-});
-export type DiagnoseWebsiteChangeOutput = z.infer<
-  typeof DiagnoseWebsiteChangeOutputSchema
->;
-
-export async function diagnoseWebsiteChange(
+export async function* streamWebsiteChange(
   input: DiagnoseWebsiteChangeInput
-): Promise<DiagnoseWebsiteChangeOutput> {
-  return diagnoseWebsiteChangeFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'diagnoseWebsiteChangePrompt',
-  input: { schema: DiagnoseWebsiteChangeInputSchema },
-  output: { schema: DiagnoseWebsiteChangeOutputSchema },
-  prompt: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
+): AsyncGenerator<string> {
+  const { stream } = await ai.generate({
+    model: 'googleai/gemini-2.5-flash',
+    stream: true,
+    prompt: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
 
 - Analyze the user's query (text and any optional image).
 - Provide a helpful, encouraging, and accurate response.
@@ -55,16 +44,13 @@ const prompt = ai.definePrompt({
 {{media url=image}}
 {{/if}}
 `,
-});
+    input: input,
+  });
 
-const diagnoseWebsiteChangeFlow = ai.defineFlow(
-  {
-    name: 'diagnoseWebsiteChangeFlow',
-    inputSchema: DiagnoseWebsiteChangeInputSchema,
-    outputSchema: DiagnoseWebsiteChangeOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  for await (const chunk of stream) {
+    const text = chunk.text;
+    if (text) {
+      yield text;
+    }
   }
-);
+}

@@ -3,7 +3,7 @@
 
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Info, Sparkles, Wand2, Eye, Code, RefreshCw, Save } from 'lucide-react';
+import { Info, Sparkles, Wand2, Eye, Code, RefreshCw, Save, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -21,12 +21,12 @@ import AiChat from '@/components/ai-chat';
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
 import Header from '@/components/header';
 
@@ -112,16 +112,44 @@ export default function TryPage() {
 
     startTransition(async () => {
       const result = await handleGeneration(textToProcess);
-      if (result.error) {
-        toast({
+      
+      if (!result.body) {
+         toast({
           title: 'An error occurred',
-          description: result.error,
+          description: 'Failed to get a response from the server.',
           variant: 'destructive',
         });
-      } else {
-        setOutput(result.text || '');
-        setLastSuccessfulPrompt(textToProcess);
+        return;
       }
+      
+      const reader = result.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedOutput = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        try {
+            const chunk = decoder.decode(value, { stream: true });
+            const errorMatch = chunk.match(/{.*"error".*}/);
+            if (errorMatch) {
+              const errorObj = JSON.parse(errorMatch[0]);
+              toast({
+                title: 'An error occurred',
+                description: errorObj.error,
+                variant: 'destructive',
+              });
+              setOutput(prev => prev); // Stop updating
+              return; 
+            }
+            accumulatedOutput += chunk;
+            setOutput(accumulatedOutput);
+        } catch (e) {
+            // Ignore decoding errors if the chunk is not valid JSON
+        }
+      }
+      
+      setLastSuccessfulPrompt(textToProcess);
     });
   }, [prompt, trial, toast, updateTrialStorage]);
   
@@ -131,22 +159,18 @@ export default function TryPage() {
         return false; // Indicate message sending was blocked
     }
     
-    const result = await handleCategorization(text, image);
-
-    if (result.error) {
-        return "Sorry, I couldn't process that. Please try again.";
-    }
-
     const newTrialData = { ...trial, upgrades: trial.upgrades + 1, timestamp: Date.now() };
     setTrial(newTrialData);
     updateTrialStorage(newTrialData);
+
+    const result = await handleCategorization(text, image);
 
     if (result.category === 'code_request' && result.prompt) {
         handleGenerate(result.prompt);
         return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
     }
 
-    return result.response || "I don't have a response for that.";
+    return result;
   };
 
   const handleRestart = () => {
@@ -277,9 +301,10 @@ export default function TryPage() {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="flex-1 h-0 p-2">
-                    {isPending ? (
-                      <div className="flex items-center justify-center h-full rounded-md bg-background/50">
+                <TabsContent value="preview" className="flex-1 h-0 mt-0">
+                  <CardContent className="h-full p-2">
+                     {isPending && !output ? (
+                      <div className="flex items-center justify-center h-full rounded-md bg-background">
                         <div className="space-y-3 p-4 w-full">
                            <div className="flex justify-center items-center gap-2">
                                <Sparkles className="w-5 h-5 animate-pulse text-primary" />
@@ -304,19 +329,35 @@ export default function TryPage() {
                         <p className="text-sm">Describe your site and click "Create Website" to begin.</p>
                       </div>
                     )}
-                </CardContent>
+                  </CardContent>
+                </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
-                  <div className="h-full p-2">
-                    <pre className="h-full overflow-auto whitespace-pre-wrap font-mono text-sm bg-background p-4 rounded-md">
-                      <code>
-                        {output || (
-                          <p className="text-muted-foreground font-sans text-center">
-                            Your generated website code will appear here.
-                          </p>
-                        )}
-                      </code>
-                    </pre>
-                  </div>
+                  <CardContent className="h-full p-2">
+                    {isPending && !output ? (
+                      <div className="flex items-center justify-center h-full rounded-md bg-background">
+                        <div className="space-y-3 p-4 w-full">
+                           <div className="flex justify-center items-center gap-2">
+                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
+                               <p className="text-muted-foreground">Generating your code...</p>
+                           </div>
+                           <Skeleton className="h-4 w-full mt-4" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-3/4" />
+                        </div>
+                      </div>
+                    ) : output ? (
+                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                        <code>
+                          {output}
+                        </code>
+                      </pre>
+                    ) : (
+                       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
+                        <Bot className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                        <p className="font-medium">Your generated code will appear here.</p>
+                      </div>
+                    )}
+                  </CardContent>
                 </TabsContent>
               </Tabs>
             </Card>

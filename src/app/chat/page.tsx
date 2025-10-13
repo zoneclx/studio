@@ -62,16 +62,7 @@ export default function ChatPage() {
     if (!text.trim() && !image) return;
 
     const result = await handleChat(text, image);
-    if (result.error) {
-      toast({
-        title: 'An error occurred',
-        description: result.error,
-        variant: 'destructive',
-      });
-      return "Sorry, I couldn't process that. Please try again.";
-    }
-    
-    return result.response || "I don't have a response for that.";
+    return { responseStream: result };
   };
 
   return (
