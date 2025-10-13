@@ -29,7 +29,7 @@ export default function ChatPage() {
   }, []);
 
   const handleSendMessage = async (text: string, image?: string) => {
-    if (!text.trim()) return;
+    if (!text.trim() && !image) return;
 
     const result = await handleChat(text, image);
     if (result.error) {
