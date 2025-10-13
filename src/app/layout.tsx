@@ -29,7 +29,7 @@ const fontDisplay = SpaceGrotesk({
 // };
 
 function SoundProvider({ children }: { children: React.ReactNode }) {
-  const [playClick] = useSound('/sounds/click.mp3'); // This is a placeholder, zzfx generates the sound
+  const [playClick] = useSound();
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
