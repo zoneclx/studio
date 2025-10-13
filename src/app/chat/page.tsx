@@ -7,8 +7,9 @@ import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Bot, User } from 'lucide-react';
+import { Bot, User, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 type Message = {
     role: 'user' | 'assistant';
@@ -19,6 +20,7 @@ export default function ChatPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [initialMessages, setInitialMessages] = useState<Message[] | undefined>(undefined);
+  const [chatKey, setChatKey] = useState(user ? user.uid : 'guest');
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -51,7 +53,30 @@ export default function ChatPage() {
       } else {
         setInitialMessages(undefined);
       }
+      setChatKey(user ? user.uid : 'guest');
   }, [user]);
+
+  const clearChatHistory = () => {
+    if (user) {
+        try {
+            localStorage.removeItem(`monochrome-chat-archive-${user.uid}`);
+            setInitialMessages(undefined);
+            // Change the key to force re-mounting of the AiChat component
+            setChatKey(prevKey => prevKey + '-cleared'); 
+            toast({
+                title: 'Chat Cleared',
+                description: 'Your conversation history has been removed.',
+            });
+        } catch(e) {
+            console.error("Failed to clear chat archive", e);
+            toast({
+                title: 'Error',
+                description: 'Could not clear your chat history.',
+                variant: 'destructive',
+            });
+        }
+    }
+  }
 
   const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim() && !image) return;
@@ -66,7 +91,7 @@ export default function ChatPage() {
       <main className="flex-1 flex flex-col h-0">
           <div className="flex-1 w-full h-0">
             <AiChat
-                key={user ? user.uid : 'guest'} // Rerender when user logs in/out
+                key={chatKey}
                 defaultInitialMessages={initialMessages}
                 onSendMessage={handleSendMessage}
                 disableImageUpload={false}
@@ -80,6 +105,14 @@ export default function ChatPage() {
                         Ask me anything.
                     </p>
                 </div>
+                {user && initialMessages && initialMessages.length > 0 && (
+                     <div className="text-center pb-4">
+                        <Button variant="outline" onClick={clearChatHistory}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Clear Chat
+                        </Button>
+                    </div>
+                )}
             </AiChat>
           </div>
       </main>
