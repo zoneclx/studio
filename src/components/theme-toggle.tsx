@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { Moon, Sun, Eclipse, Coffee, Beaker } from 'lucide-react';
 import { useTheme } from '@/context/theme-context';
+import { useAuth } from '@/context/auth-context';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -43,6 +44,7 @@ fill="currentColor"
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
+  const { user } = useAuth();
 
   return (
     <DropdownMenu>
@@ -70,12 +72,16 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme('macchiato')}>
           Macchiato
         </DropdownMenuItem>
-         <DropdownMenuItem onClick={() => setTheme('glass')}>
-          Glass
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('spiderman')}>
-          Spider-Man
-        </DropdownMenuItem>
+        {user && (
+          <>
+            <DropdownMenuItem onClick={() => setTheme('glass')}>
+              Glass
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('spiderman')}>
+              Spider-Man
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuItem onClick={() => setTheme('system')}>
           System
         </DropdownMenuItem>

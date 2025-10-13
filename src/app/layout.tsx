@@ -9,6 +9,7 @@ import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
+import AnimatedGradient from '@/components/animated-gradient';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider>
+            <AnimatedGradient />
             <div className="relative z-10">
               <AuthProvider>{children}</AuthProvider>
               <Toaster />

@@ -24,6 +24,9 @@
     --input: 0 0% 91.1%;
     --ring: 222.2 47.4% 11.2%;
     --radius: 0.5rem;
+
+    --gradient-start: 220 90% 95%;
+    --gradient-end: 220 90% 85%;
   }
 
   .dark {
@@ -46,6 +49,9 @@
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 0 0% 83%;
+
+    --gradient-start: 220 20% 10%;
+    --gradient-end: 240 20% 5%;
   }
 
   .ultra {
@@ -68,6 +74,9 @@
     --border: 0 0% 12%;
     --input: 0 0% 12%;
     --ring: 0 0% 83%;
+
+    --gradient-start: 0 0% 5%;
+    --gradient-end: 0 0% 15%;
   }
 
   .macchiato {
@@ -90,6 +99,9 @@
     --border: 25 15% 22%;
     --input: 25 15% 22%;
     --ring: 30 30% 85%;
+
+    --gradient-start: 25 15% 10%;
+    --gradient-end: 30 30% 20%;
   }
 
   .glass {
@@ -112,6 +124,9 @@
     --border: 220 20% 80% / 0.5;
     --input: 220 20% 85% / 0.5;
     --ring: 225 70% 50%;
+
+    --gradient-start: 220 50% 95%;
+    --gradient-end: 225 70% 85%;
   }
 
   .spiderman {
@@ -134,6 +149,9 @@
     --border: 220 40% 30%;
     --input: 220 40% 25%;
     --ring: 0 80% 55%; /* Red */
+
+    --gradient-start: 220 40% 10%;
+    --gradient-end: 0 80% 30%;
   }
 }
 
@@ -143,5 +161,18 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animated-gradient-background {
+      background: linear-gradient(-45deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)), hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+      background-size: 400% 400%;
+      animation: gradient-animation 15s ease infinite;
   }
 }
