@@ -29,13 +29,15 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
+          'min-h-screen font-sans antialiased',
           fontSans.variable,
           fontDisplay.variable
         )}
       >
-        <AuthProvider>{children}</AuthProvider>
-        <Toaster />
+        <div className="min-h-screen w-full bg-background/80 backdrop-blur-sm">
+          <AuthProvider>{children}</AuthProvider>
+          <Toaster />
+        </div>
       </body>
     </html>
   );

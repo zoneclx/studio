@@ -54,6 +54,21 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(300deg, hsl(240, 10%, 3.9%), hsl(262, 50%, 10%), hsl(240, 10%, 3.9%));
+    background-size: 200% 200%;
+    animation: gradient-animation 15s ease infinite;
+  }
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import WebBuilder from '@/components/web-builder';
 import CreatePageContent from '@/components/create-page-content';
 
-function CreatePageWithSuspense() {
+function CreatePage() {
   return (
     <Suspense fallback={<WebBuilder />}>
       <CreatePageContent />
@@ -12,4 +12,4 @@ function CreatePageWithSuspense() {
   );
 }
 
-export default CreatePageWithSuspense;
+export default CreatePage;
