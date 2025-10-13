@@ -47,13 +47,23 @@ type CategorizationResult = {
 };
 
 export async function handleCategorization(
-  text: string
+  text: string,
+  image?: string
 ): Promise<CategorizationResult> {
     try {
         const result = await categorizeChatRequest({ text });
+
+        if (result.category === 'general_inquiry') {
+            const chatResult = await diagnoseWebsiteChange({ text, image });
+            return {
+                ...result,
+                response: chatResult.response,
+            };
+        }
+
         return result;
     } catch (error) {
         console.error('AI categorization failed:', error);
-        return { category: 'general_inquiry', error: 'Failed to process the request. Please try again.' };
+        return { category: 'general_inquiry', response: 'Sorry, I had trouble understanding that. Could you try again?', error: 'Failed to process the request. Please try again.' };
     }
 }

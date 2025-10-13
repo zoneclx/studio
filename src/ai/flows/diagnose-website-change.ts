@@ -41,11 +41,14 @@ const prompt = ai.definePrompt({
   name: 'diagnoseWebsiteChangePrompt',
   input: { schema: DiagnoseWebsiteChangeInputSchema },
   output: { schema: DiagnoseWebsiteChangeOutputSchema },
-  prompt: `You are an expert web developer and UI/UX designer. A user is asking for changes to a website they are building.
-  
-Your task is to provide helpful feedback, suggestions, and updated prompt text based on their request.
+  prompt: `You are an expert web developer and UI/UX designer who also functions as a helpful AI assistant. A user is asking for help or ideas related to building a website.
 
-If the user provides an image, use it as a visual reference for their request.
+Your task is to analyze their request (text and any optional image) and provide a helpful, encouraging, and actionable response.
+
+- If the user provides an image, use it as a primary visual reference.
+- If the user is asking for ideas, provide creative and relevant suggestions.
+- If the user is describing a problem, offer solutions or alternative approaches.
+- If they are asking for changes, suggest a more detailed prompt they could use to get a better result from the website builder.
 
 **User Request:**
 "{{{text}}}"
@@ -54,8 +57,6 @@ If the user provides an image, use it as a visual reference for their request.
 **Reference Image:**
 {{media url=image}}
 {{/if}}
-
-Based on the user's request, provide a helpful and encouraging response. If you can, suggest a more detailed prompt they could use to get a better result.
 `,
 });
 

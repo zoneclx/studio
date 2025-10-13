@@ -21,7 +21,7 @@ export default function ChatPage() {
     // For this page, we only handle text, but the signature matches AiChat
     if (!text.trim()) return { handled: false };
 
-    const result = await handleCategorization(text);
+    const result = await handleCategorization(text, image);
     if (result.error) {
       toast({
         title: 'An error occurred',
@@ -55,7 +55,7 @@ export default function ChatPage() {
             <AiChat
                 initialMessages={initialMessages}
                 onCategorize={handleSendMessage}
-                disableImageUpload={true}
+                disableImageUpload={false}
                 placeholder="Ask for ideas or say 'Create a blog for a traveler'"
             />
         </div>
