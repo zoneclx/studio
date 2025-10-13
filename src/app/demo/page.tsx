@@ -239,6 +239,15 @@ export default function DemoPage() {
                     ))}
                   </div>
                 </div>
+                 <Button
+                  onClick={() => handleGenerate()}
+                  disabled={isDisabled}
+                  size="lg"
+                  className="w-full font-bold mt-4"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  {isPending ? 'Building...' : 'Create Website'}
+                </Button>
               </CardContent>
             </Card>
 
