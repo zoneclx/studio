@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Theme = 'dark' | 'light' | 'system' | 'ultra';
+type Theme = 'dark' | 'light' | 'system' | 'ultra' | 'macchiato';
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -35,7 +36,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove('light', 'dark', 'ultra');
+    root.classList.remove('light', 'dark', 'ultra', 'macchiato');
 
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
