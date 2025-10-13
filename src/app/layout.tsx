@@ -32,7 +32,7 @@ function ThemedBody({ children }: { children: React.ReactNode }) {
                 fontDisplay.variable
             )}
         >
-            <ThemeProvider>
+            <ThemeProvider defaultTheme='ultra'>
                 <AnimatedGradient />
                 <div className="relative z-10">
                     <AuthProvider>{children}</AuthProvider>
@@ -55,7 +55,7 @@ export default function RootLayout({
         <title>Monochrome Ai</title>
         <meta name="description" content="Generate websites with a single prompt." />
       </head>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme='ultra'>
           <ThemedBody>{children}</ThemedBody>
       </ThemeProvider>
     </html>

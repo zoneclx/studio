@@ -10,6 +10,7 @@ import Header from '@/components/header';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -56,9 +57,19 @@ export default function Home() {
       <Header />
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden">
+            <Image
+                src="https://i.ibb.co/6b0bH6X/d837b797-2933-4632-9c3a-232d3f74b413.jpg"
+                alt="Mars background"
+                layout="fill"
+                objectFit="cover"
+                quality={90}
+                className="absolute inset-0 -z-10 opacity-40"
+                data-ai-hint="mars planet"
+            />
+            <div className="absolute inset-0 -z-20 bg-gradient-to-t from-background via-transparent to-transparent"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="flex flex-col items-start text-left">
+                <div className="flex flex-col items-start text-left z-10">
                     <TypewriterEffect
                         texts={animatedTitles}
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
@@ -84,12 +95,12 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="hidden md:block">
-                  <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl">
+                <div className="hidden md:block z-10">
+                  <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
                       <CardContent className="p-2">
-                          <div className="bg-muted/50 p-4 rounded-lg">
-                              <div className="bg-background rounded-md shadow-inner-lg overflow-hidden border">
-                                  <div className="h-8 flex items-center justify-between px-3 bg-muted border-b">
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                              <div className="bg-background/80 rounded-md shadow-inner-lg overflow-hidden border">
+                                  <div className="h-8 flex items-center justify-between px-3 bg-muted/50 border-b">
                                       <div className="flex items-center gap-1.5">
                                           <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
                                           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
@@ -141,7 +152,7 @@ export default function Home() {
 
       <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
         <p>
-          © Enzo Gimena's. All rights reserved.
+          © 2025 Enzo Gimena's Ai, All rights reserved.
         </p>
       </footer>
     </div>
