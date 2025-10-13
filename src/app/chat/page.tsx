@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
-import { handleCategorization } from '@/app/actions';
+import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -77,7 +77,7 @@ export default function ChatPage() {
 
   const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim() && !image) return { error: "Message is empty" };
-    return handleCategorization(text, image);
+    return handleChat(text, image);
   };
 
   return (

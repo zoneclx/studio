@@ -158,10 +158,7 @@ export default function DemoPage() {
 
     const result = await handleChat(text, image);
 
-    return {
-        category: 'general_inquiry',
-        response: result.response,
-    };
+    return result;
   };
 
   const handleRestart = () => {

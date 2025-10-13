@@ -160,10 +160,7 @@ export default function AiChat({
       }
       
       let responseContent = result.response;
-      if (result.category === 'code_request') {
-          responseContent = `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
-      }
-
+      
       if (typeof responseContent === 'string' && responseContent) {
         const assistantMessage: Message = { role: 'assistant', content: responseContent };
         const finalMessages = [...newMessages, assistantMessage];
@@ -302,5 +299,3 @@ export default function AiChat({
     </div>
   );
 }
-
-    
