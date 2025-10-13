@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Moon, Sun, Eclipse, Coffee, Beaker } from 'lucide-react';
+import { Moon, Sun, Eclipse, Coffee, Beaker, Lock } from 'lucide-react';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 
@@ -13,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 // Custom Spider icon as an SVG component
 const Spider = (props: React.SVGProps<SVGSVGElement>) => (
@@ -45,6 +47,15 @@ fill="currentColor"
 export function ThemeToggle() {
   const { setTheme } = useTheme();
   const { user } = useAuth();
+  const router = useRouter();
+
+  const handleThemeSelect = (theme: string, isPremium: boolean) => {
+    if (isPremium && !user) {
+        router.push('/signup');
+    } else {
+        setTheme(theme as any);
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -60,29 +71,35 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem onClick={() => handleThemeSelect('light', false)}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={() => handleThemeSelect('dark', false)}>
           Dark
         </DropdownMenuItem>
-         <DropdownMenuItem onClick={() => setTheme('ultra')}>
+         <DropdownMenuItem onClick={() => handleThemeSelect('ultra', false)}>
           Ultra
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('macchiato')}>
+        <DropdownMenuItem onClick={() => handleThemeSelect('macchiato', false)}>
           Macchiato
         </DropdownMenuItem>
-        {user && (
-          <>
-            <DropdownMenuItem onClick={() => setTheme('glass')}>
-              Glass
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('spiderman')}>
-              Spider-Man
-            </DropdownMenuItem>
-          </>
-        )}
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+         <DropdownMenuItem
+          onClick={() => handleThemeSelect('glass', true)}
+          disabled={!user}
+          className={cn({"flex justify-between items-center": !user})}
+        >
+          Glass
+          {!user && <Lock className="h-3 w-3" />}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeSelect('spiderman', true)}
+          disabled={!user}
+           className={cn({"flex justify-between items-center": !user})}
+        >
+          Spider-Man
+          {!user && <Lock className="h-3 w-3" />}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleThemeSelect('system', false)}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
