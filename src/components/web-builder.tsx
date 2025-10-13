@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -16,7 +15,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration, handleCategorization, handleChat } from '@/app/actions';
+import { handleGeneration, handleCategorization } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
@@ -84,18 +83,31 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
     startTransition(async () => {
       const result = await handleGeneration(textToProcess);
-      if (result.error) {
+      
+      if ('error' in result) {
         toast({
           title: 'An error occurred',
           description: result.error,
           variant: 'destructive',
         });
-      } else {
-        const generatedHtml = result.text || '';
-        setOutput(generatedHtml);
-        setLastSuccessfulPrompt(textToProcess);
-        saveWork(generatedHtml, textToProcess);
+        return;
       }
+      
+      // Handle the stream
+      const reader = result.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedOutput = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedOutput += chunk;
+        setOutput(accumulatedOutput);
+      }
+      
+      setLastSuccessfulPrompt(textToProcess);
+      saveWork(accumulatedOutput, textToProcess);
     });
   };
   
@@ -341,7 +353,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                 </CardHeader>
                 <TabsContent value="preview" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
-                    {isPending ? (
+                    {isPending && !output ? (
                       <div className="flex items-center justify-center h-full rounded-md bg-background">
                         <div className="space-y-3 p-4 w-full">
                           <div className="flex justify-center items-center gap-2">
@@ -353,25 +365,19 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                            <Skeleton className="h-4 w-3/4" />
                         </div>
                       </div>
-                    ) : output ? (
+                    ) : (
                       <iframe
                         srcDoc={output}
                         className="w-full h-full border rounded-md bg-white"
                         title="Website Preview"
                         sandbox="allow-scripts"
                       />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background">
-                         <Wand2 className="w-12 h-12 mb-4 text-muted-foreground/50" />
-                        <p className="font-medium">Your generated website preview will appear here.</p>
-                        <p className="text-sm">Describe your site and click "Create Website" to begin.</p>
-                      </div>
                     )}
                   </CardContent>
                 </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
-                    {isPending ? (
+                    {(isPending && !output) ? (
                        <div className="flex items-center justify-center h-full rounded-md bg-background">
                         <div className="space-y-3 p-4 w-full">
                           <div className="flex justify-center items-center gap-2">

@@ -1,15 +1,14 @@
 'use server';
 
 /**
- * @fileOverview A website generation AI agent.
+ * @fileOverview A website generation AI agent that streams its output.
  *
- * - createWebsiteFromPrompt - A function that generates HTML for a website based on a prompt.
- * - CreateWebsiteFromPromptInput - The input type for the createWebsiteFromPrompt function.
- * - CreateWebsiteFromPromptOutput - The return type for the createWebsiteFromPrompt function.
+ * - streamWebsiteFromPrompt - A function that generates HTML for a website based on a prompt and streams the output.
+ * - CreateWebsiteFromPromptInput - The input type for the streamWebsiteFromPrompt function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const CreateWebsiteFromPromptInputSchema = z.object({
   prompt: z.string().describe('A description of the website to create.'),
@@ -18,24 +17,12 @@ export type CreateWebsiteFromPromptInput = z.infer<
   typeof CreateWebsiteFromPromptInputSchema
 >;
 
-const CreateWebsiteFromPromptOutputSchema = z.object({
-  websiteHtml: z.string().describe('The generated HTML code for the website, including Tailwind CSS.'),
-});
-export type CreateWebsiteFromPromptOutput = z.infer<
-  typeof CreateWebsiteFromPromptOutputSchema
->;
-
-export async function createWebsiteFromPrompt(
+// This flow now returns an AsyncGenerator that yields string chunks.
+export async function* streamWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
-): Promise<CreateWebsiteFromPromptOutput> {
-  return createWebsiteFromPromptFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'createWebsiteFromPromptPrompt',
-  input: {schema: CreateWebsiteFromPromptInputSchema},
-  output: {schema: CreateWebsiteFromPromptOutputSchema},
-  prompt: `You are an expert web developer. A user wants to create a website.
+): AsyncGenerator<string> {
+  const { stream } = await ai.generate({
+    prompt: `You are an expert web developer. A user wants to create a website.
   
 Generate a single, self-contained HTML file for a visually appealing website based on the user's prompt.
 
@@ -48,18 +35,22 @@ Generate a single, self-contained HTML file for a visually appealing website bas
 5.  **Placeholders:** Use placeholder images from 'https://picsum.photos/' where appropriate (e.g., \`https://picsum.photos/seed/1/800/600\`).
 
 **User Prompt:**
-"{{prompt}}"
+"{{{prompt}}}"
 `,
-});
+    model: 'googleai/gemini-2.5-flash',
+    stream: true,
+    config: {
+      temperature: 0.7,
+    },
+    input: {
+        prompt: input.prompt
+    }
+  });
 
-const createWebsiteFromPromptFlow = ai.defineFlow(
-  {
-    name: 'createWebsiteFromPromptFlow',
-    inputSchema: CreateWebsiteFromPromptInputSchema,
-    outputSchema: CreateWebsiteFromPromptOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  for await (const chunk of stream) {
+    const text = chunk.text;
+    if (text) {
+      yield text;
+    }
   }
-);
+}

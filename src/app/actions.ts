@@ -1,20 +1,31 @@
 'use server';
 
-import { createWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
+import { streamWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
 import { categorizeChatRequest } from '@/ai/flows/categorize-chat-request';
 
-type GenerationResult = {
-  text?: string;
-  error?: string;
-};
-
+// This function now returns a ReadableStream for the client to consume.
 export async function handleGeneration(
   prompt: string
-): Promise<GenerationResult> {
+): Promise<ReadableStream<string> | { error: string }> {
   try {
-    const result = await createWebsiteFromPrompt({ prompt });
-    return { text: result.websiteHtml };
+    const stream = await (async function* () {
+      for await (const part of streamWebsiteFromPrompt({ prompt })) {
+        yield part;
+      }
+    })();
+
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        for await (const part of stream) {
+          controller.enqueue(encoder.encode(part));
+        }
+        controller.close();
+      },
+    });
+
+    return readableStream;
   } catch (error) {
     console.error('AI generation failed:', error);
     return { error: 'Failed to process the request. Please try again.' };
