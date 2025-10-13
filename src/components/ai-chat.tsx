@@ -17,6 +17,13 @@ type Message = {
   content: string;
 };
 
+const defaultGreetings: Message[] = [
+    { role: 'assistant', content: "Hello! I'm Monochrome Ai. How can I help you build something amazing today?" },
+    { role: 'assistant', content: "Greetings! I'm Monochrome Ai, your creative partner. What's on your mind?" },
+    { role: 'assistant', content: "Monochrome Ai here! Ready to turn your ideas into reality. What are we creating?" },
+    { role: 'assistant', content: "Hi there! I'm Monochrome Ai. Ask me to build a website or make changes to your current one." },
+];
+
 type AiChatProps = {
   onSendMessage: (text: string, image?: string) => Promise<any>;
   disabled?: boolean;
@@ -31,17 +38,28 @@ export default function AiChat({
   disabled,
   disableImageUpload,
   placeholder,
-  defaultInitialMessages = [],
+  defaultInitialMessages,
   children
 }: AiChatProps) {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>(defaultInitialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (defaultInitialMessages && defaultInitialMessages.length > 0) {
+      setMessages(defaultInitialMessages);
+    } else {
+      const randomGreeting = defaultGreetings[Math.floor(Math.random() * defaultGreetings.length)];
+      setMessages([randomGreeting]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultInitialMessages]);
+
 
   const saveChatHistory = (updatedMessages: Message[]) => {
       if(user) {

@@ -247,7 +247,6 @@ export default function TryPage() {
                         onSendMessage={handleAiChatMessage}
                         disabled={isChatDisabled}
                         placeholder={isChatDisabled ? 'You have reached your edit limit' : 'Describe the changes you want...'}
-                        defaultInitialMessages={[{ role: 'assistant', content: 'I can help you make changes. Just describe what you want to modify!'}]}
                     />
                 </div>
             )}

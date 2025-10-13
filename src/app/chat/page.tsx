@@ -15,17 +15,10 @@ type Message = {
     content: string;
 };
 
-const defaultInitialMessages: Message[] = [
-    {
-        role: 'assistant' as const,
-        content: "Hello! I'm Monochrome Ai. You can ask me anything."
-    }
-];
-
 export default function ChatPage() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [initialMessages, setInitialMessages] = useState<Message[]>(defaultInitialMessages);
+  const [initialMessages, setInitialMessages] = useState<Message[] | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -45,16 +38,18 @@ export default function ChatPage() {
                 const parsedChat = JSON.parse(savedChat);
                 if(parsedChat.messages && parsedChat.messages.length > 0) {
                     setInitialMessages(parsedChat.messages);
+                } else {
+                    setInitialMessages(undefined);
                 }
             } else {
-                setInitialMessages(defaultInitialMessages);
+                setInitialMessages(undefined);
             }
           } catch(e) {
               console.error("Failed to load chat archive", e);
-              setInitialMessages(defaultInitialMessages);
+              setInitialMessages(undefined);
           }
       } else {
-        setInitialMessages(defaultInitialMessages);
+        setInitialMessages(undefined);
       }
   }, [user]);
 
