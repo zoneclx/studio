@@ -18,7 +18,7 @@ import TypewriterEffect from '@/components/typewriter-effect';
 export default function Home() {
   const { user, signOut } = useAuth();
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-transparent text-foreground">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold font-display flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
