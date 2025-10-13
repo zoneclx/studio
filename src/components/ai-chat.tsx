@@ -8,7 +8,6 @@ import { Paperclip, Send, User, Bot } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { handleChat } from '@/app/actions';
 import { Skeleton } from './ui/skeleton';
 
 type Message = {
@@ -16,15 +15,11 @@ type Message = {
   content: string;
 };
 
-type CategorizationResult = {
-  handled: boolean;
-  response?: string;
-};
-
 type AiChatProps = {
-  onSendMessage?: () => boolean; // For trial limit
+  // A function that takes the user's message and optional image, 
+  // and returns the AI's response as a string.
+  onSendMessage: (text: string, image?: string) => Promise<string | void>;
   disabled?: boolean;
-  onCategorize?: (text: string, image?: string) => Promise<CategorizationResult | void>;
   disableImageUpload?: boolean;
   placeholder?: string;
   initialMessages?: Message[];
@@ -33,7 +28,6 @@ type AiChatProps = {
 export default function AiChat({
   onSendMessage,
   disabled,
-  onCategorize,
   disableImageUpload,
   placeholder,
   initialMessages = [],
@@ -69,52 +63,31 @@ export default function AiChat({
   };
 
   const handleLocalSendMessage = () => {
-    if (onSendMessage && !onSendMessage()) {
-      return;
-    }
-
     if (!input.trim() && !image) return;
 
-    const userMessage = input.trim();
+    const userMessageContent = input.trim();
+    const userMessage: Message = { role: 'user', content: userMessageContent };
 
     // Add user message to chat immediately
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setImage(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
 
     startTransition(async () => {
-      // If a categorization handler is provided, use it.
-      if (onCategorize) {
-        const result = await onCategorize(userMessage, image || undefined);
-        if (result?.handled && result.response) {
-          setMessages((prev) => [
-            ...prev,
-            { role: 'assistant', content: result.response! },
-          ]);
-        } else if (result?.handled) {
-          // Handled, but no response (e.g. redirection). Do nothing.
-          // But we need to remove the user message we added optimistically
-          setMessages((prev) => prev.slice(0, prev.length - 1));
-        }
-        return;
-      }
-
-      // Default behavior: use the `handleChat` action
-      const result = await handleChat(userMessage, image || undefined);
-      if (result.error) {
+      const response = await onSendMessage(userMessageContent, image || undefined);
+      
+      if (response) {
+        const assistantMessage: Message = { role: 'assistant', content: response };
+        setMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        // If onSendMessage fails or returns nothing, remove the optimistic user message.
+        setMessages((prev) => prev.filter(m => m !== userMessage));
         toast({
-          title: 'An error occurred',
-          description: result.error,
-          variant: 'destructive',
-        });
-        // Remove the optimistic user message on error
-        setMessages((prev) => prev.slice(0, prev.length - 1));
-      } else if (result.response) {
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: result.response! },
-        ]);
+            title: "An error occurred",
+            description: "Failed to get a response from the assistant.",
+            variant: "destructive",
+        })
       }
     });
   };

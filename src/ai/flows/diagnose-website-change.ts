@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview An AI agent that provides feedback on website change requests.
+ * @fileOverview An AI agent that provides answers to user questions.
  *
- * - diagnoseWebsiteChange - A function that handles website change requests with text and optional images.
+ * - diagnoseWebsiteChange - A function that handles user queries with text and optional images.
  * - DiagnoseWebsiteChangeInput - The input type for the diagnoseWebsiteChange function.
  * - DiagnoseWebsiteChangeOutput - The return type for the diagnoseWebsiteChange function.
  */
@@ -12,7 +12,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const DiagnoseWebsiteChangeInputSchema = z.object({
-  text: z.string().describe('The user\'s request for a change to their website.'),
+  text: z.string().describe("The user's question or message."),
   image: z
     .string()
     .optional()
@@ -25,7 +25,7 @@ export type DiagnoseWebsiteChangeInput = z.infer<
 >;
 
 const DiagnoseWebsiteChangeOutputSchema = z.object({
-  response: z.string().describe('The AI\'s response to the user\'s request.'),
+  response: z.string().describe("The AI's helpful and informative response to the user's query."),
 });
 export type DiagnoseWebsiteChangeOutput = z.infer<
   typeof DiagnoseWebsiteChangeOutputSchema
@@ -41,16 +41,13 @@ const prompt = ai.definePrompt({
   name: 'diagnoseWebsiteChangePrompt',
   input: { schema: DiagnoseWebsiteChangeInputSchema },
   output: { schema: DiagnoseWebsiteChangeOutputSchema },
-  prompt: `You are an expert web developer and UI/UX designer who also functions as a helpful AI assistant. A user is asking for help or ideas related to building a website.
+  prompt: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
 
-Your task is to analyze their request (text and any optional image) and provide a helpful, encouraging, and actionable response.
+- Analyze the user's query (text and any optional image).
+- Provide a helpful, encouraging, and accurate response.
+- If the user provides an image, use it as a visual reference to better understand their question.
 
-- If the user provides an image, use it as a primary visual reference.
-- If the user is asking for ideas, provide creative and relevant suggestions.
-- If the user is describing a problem, offer solutions or alternative approaches.
-- If they are asking for changes, suggest a more detailed prompt they could use to get a better result from the website builder.
-
-**User Request:**
+**User's Message:**
 "{{{text}}}"
 
 {{#if image}}

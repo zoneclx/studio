@@ -3,40 +3,33 @@
 
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
-import { useRouter } from 'next/navigation';
-import { handleCategorization } from '@/app/actions';
+import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 const initialMessages = [
     {
         role: 'assistant' as const,
-        content: "Hello! I'm your AI assistant. You can ask me for ideas, or tell me what kind of website you'd like to build."
+        content: "Hello! I'm your AI assistant. You can ask me anything."
     }
 ];
 
 export default function ChatPage() {
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleSendMessage = async (text: string, image?: string) => {
-    if (!text.trim()) return { handled: false };
+    if (!text.trim()) return;
 
-    const result = await handleCategorization(text, image);
+    const result = await handleChat(text, image);
     if (result.error) {
       toast({
         title: 'An error occurred',
         description: result.error,
         variant: 'destructive',
       });
-      return { handled: true, response: "Sorry, I couldn't process that. Please try again." };
-    }
-
-    if (result.category === 'code_request' && result.prompt) {
-      router.push(`/create?prompt=${encodeURIComponent(result.prompt)}`);
-      return { handled: true }; // Prevent AiChat from adding a message
+      return "Sorry, I couldn't process that. Please try again.";
     }
     
-    return { handled: true, response: result.response };
+    return result.response || "I don't have a response for that.";
   };
 
   return (
@@ -48,15 +41,15 @@ export default function ChatPage() {
                   AI Chat
               </h1>
               <p className="text-muted-foreground mt-2 text-lg">
-                  Ask me anything or tell me what website to build.
+                  Ask me anything.
               </p>
           </div>
           <div className="flex-1 w-full max-w-3xl mx-auto h-0">
             <AiChat
                 initialMessages={initialMessages}
-                onCategorize={handleSendMessage}
+                onSendMessage={handleSendMessage}
                 disableImageUpload={false}
-                placeholder="Ask for ideas or say 'Create a blog for a traveler'"
+                placeholder="Ask me anything..."
             />
           </div>
       </main>
