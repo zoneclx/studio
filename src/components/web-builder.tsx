@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -82,28 +83,33 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     setOutput('');
 
     startTransition(async () => {
-      const result = await handleGeneration(textToProcess);
+      const resultStream = await handleGeneration(textToProcess);
       
-      if ('error' in result) {
-        toast({
-          title: 'An error occurred',
-          description: result.error,
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      // Handle the stream
-      const reader = result.getReader();
+      const reader = resultStream.getReader();
       const decoder = new TextDecoder();
       let accumulatedOutput = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        accumulatedOutput += chunk;
-        setOutput(accumulatedOutput);
+        try {
+            const chunk = decoder.decode(value, { stream: true });
+            const errorMatch = chunk.match(/{.*"error".*}/);
+            if (errorMatch) {
+              const errorObj = JSON.parse(errorMatch[0]);
+              toast({
+                title: 'An error occurred',
+                description: errorObj.error,
+                variant: 'destructive',
+              });
+              setOutput(prev => prev); // Stop updating
+              return; 
+            }
+            accumulatedOutput += chunk;
+            setOutput(accumulatedOutput);
+        } catch (e) {
+            // Ignore decoding errors if the chunk is not valid JSON
+        }
       }
       
       setLastSuccessfulPrompt(textToProcess);
@@ -377,29 +383,17 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                 </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
-                    {(isPending && !output) ? (
-                       <div className="flex items-center justify-center h-full rounded-md bg-background">
-                        <div className="space-y-3 p-4 w-full">
-                          <div className="flex justify-center items-center gap-2">
-                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
-                               <p className="text-muted-foreground">Generating your code...</p>
-                           </div>
-                           <Skeleton className="h-4 w-full mt-4" />
-                           <Skeleton className="h-4 w-full" />
-                           <Skeleton className="h-4 w-3/4" />
-                        </div>
-                      </div>
-                    ) : (
-                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                        <code>
-                          {output || (
-                            <p className="text-muted-foreground font-sans text-center">
-                              Your generated website code will appear here.
-                            </p>
-                          )}
-                        </code>
-                      </pre>
-                    )}
+                    <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                      <code>
+                        {output || (
+                           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
+                            <Sparkles className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                            <p className="font-medium">Your generated code will appear here.</p>
+                            <p className="text-sm">Describe your site and watch the code build in real-time.</p>
+                          </div>
+                        )}
+                      </code>
+                    </pre>
                   </CardContent>
                 </TabsContent>
               </Tabs>

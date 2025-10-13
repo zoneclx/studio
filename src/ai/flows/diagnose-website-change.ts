@@ -24,12 +24,11 @@ export type DiagnoseWebsiteChangeInput = z.infer<
   typeof DiagnoseWebsiteChangeInputSchema
 >;
 
-export async function* streamWebsiteChange(
+export async function diagnoseWebsiteChange(
   input: DiagnoseWebsiteChangeInput
-): AsyncGenerator<string> {
-  const { stream } = await ai.generate({
+): Promise<string> {
+  const { text } = await ai.generate({
     model: 'googleai/gemini-2.5-flash',
-    stream: true,
     prompt: `You are a friendly and knowledgeable AI assistant. Your job is to answer the user's questions clearly and concisely.
 
 - Analyze the user's query (text and any optional image).
@@ -47,10 +46,5 @@ export async function* streamWebsiteChange(
     input: input,
   });
 
-  for await (const chunk of stream) {
-    const text = chunk.text;
-    if (text) {
-      yield text;
-    }
-  }
+  return text;
 }

@@ -117,29 +117,10 @@ export default function AiChat({
         setMessages((prev) => prev.filter(m => m !== userMessage));
         return;
       }
-
-      if(response.responseStream) {
-        const reader = response.responseStream.getReader();
-        const decoder = new TextDecoder();
-        let assistantResponse = '';
-        const assistantMessage: Message = { role: 'assistant', content: assistantResponse };
-
-        // Add the empty assistant message to the list
-        setMessages(prev => [...prev, assistantMessage]);
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-             saveChatHistory([...newMessages, { role: 'assistant', content: assistantResponse }]);
-             break;
-          }
-          const chunk = decoder.decode(value, { stream: true });
-          assistantResponse += chunk;
-          setMessages(prev => prev.map((msg, i) => i === prev.length - 1 ? { ...msg, content: assistantResponse } : msg));
-        }
-
-      } else if (typeof response === 'string' && response) {
-        const assistantMessage: Message = { role: 'assistant', content: response };
+      
+      const responseContent = response.response || response;
+      if (typeof responseContent === 'string' && responseContent) {
+        const assistantMessage: Message = { role: 'assistant', content: responseContent };
         const finalMessages = [...newMessages, assistantMessage];
         setMessages(finalMessages);
         saveChatHistory(finalMessages);

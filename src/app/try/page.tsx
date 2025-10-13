@@ -3,7 +3,7 @@
 
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Info, Sparkles, Wand2, Eye, Code, RefreshCw, Save, Bot } from 'lucide-react';
+import { Info, Sparkles, Wand2, Eye, Code, RefreshCw, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -111,18 +111,9 @@ export default function TryPage() {
     setOutput('');
 
     startTransition(async () => {
-      const result = await handleGeneration(textToProcess);
+      const resultStream = await handleGeneration(textToProcess);
       
-      if (!result.body) {
-         toast({
-          title: 'An error occurred',
-          description: 'Failed to get a response from the server.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      const reader = result.body.getReader();
+      const reader = resultStream.getReader();
       const decoder = new TextDecoder();
       let accumulatedOutput = '';
 
@@ -170,7 +161,7 @@ export default function TryPage() {
         return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
     }
 
-    return result;
+    return result.response || "I don't have a response for that.";
   };
 
   const handleRestart = () => {
@@ -180,7 +171,7 @@ export default function TryPage() {
   }
 
   const isDisabled = isPending || trial.generations >= MAX_GENERATIONS;
-  const isChatDisabled = trial.upgrades >= MAX_UPGRADES;
+  const isChatDisabled = isPending || trial.upgrades >= MAX_UPGRADES;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -333,30 +324,16 @@ export default function TryPage() {
                 </TabsContent>
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
-                    {isPending && !output ? (
-                      <div className="flex items-center justify-center h-full rounded-md bg-background">
-                        <div className="space-y-3 p-4 w-full">
-                           <div className="flex justify-center items-center gap-2">
-                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
-                               <p className="text-muted-foreground">Generating your code...</p>
-                           </div>
-                           <Skeleton className="h-4 w-full mt-4" />
-                           <Skeleton className="h-4 w-full" />
-                           <Skeleton className="h-4 w-3/4" />
-                        </div>
-                      </div>
-                    ) : output ? (
-                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                        <code>
-                          {output}
-                        </code>
-                      </pre>
-                    ) : (
-                       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
-                        <Bot className="w-12 h-12 mb-4 text-muted-foreground/50" />
-                        <p className="font-medium">Your generated code will appear here.</p>
-                      </div>
-                    )}
+                    <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
+                      <code>
+                        {output || (
+                          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">
+                           <Code className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                           <p className="font-medium">Your generated code will appear here.</p>
+                         </div>
+                        )}
+                      </code>
+                    </pre>
                   </CardContent>
                 </TabsContent>
               </Tabs>
