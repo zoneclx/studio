@@ -5,6 +5,8 @@ import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
 
 const initialMessages = [
     {
@@ -44,6 +46,13 @@ export default function ChatPage() {
                   Ask me anything.
               </p>
           </div>
+          <Alert className="max-w-3xl mx-auto mb-8 bg-accent/50 border-accent">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Disclaimer</AlertTitle>
+            <AlertDescription>
+              Monochrome AI is an experimental tool. The information it provides may not be 100% accurate. Please verify important information.
+            </AlertDescription>
+          </Alert>
           <div className="flex-1 w-full max-w-3xl mx-auto h-0">
             <AiChat
                 initialMessages={initialMessages}
