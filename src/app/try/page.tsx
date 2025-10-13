@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Info,
   RefreshCw,
+  Save,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -142,6 +143,7 @@ function TryPageInner() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const { generations, upgrades, incrementGenerations, incrementUpgrades, limitReached } = useTrial();
+  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
 
   const onGenerate = (text?: string) => {
     if (!incrementGenerations()) return;
@@ -178,6 +180,10 @@ function TryPageInner() {
     if (lastSuccessfulPrompt) {
       onGenerate(lastSuccessfulPrompt);
     }
+  }
+
+  const handleSave = () => {
+    setIsSignupDialogOpen(true);
   }
 
   return (
@@ -285,6 +291,14 @@ function TryPageInner() {
                       >
                         <RefreshCw className="h-4 w-4" />
                       </Button>
+                       <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleSave}
+                        aria-label="Save work"
+                      >
+                        <Save className="h-4 w-4" />
+                      </Button>
                     </div>
                   )}
                 </CardHeader>
@@ -360,6 +374,22 @@ function TryPageInner() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
+            <Link href="/signup" passHref>
+              <AlertDialogAction>Sign Up</AlertDialogAction>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={isSignupDialogOpen} onOpenChange={setIsSignupDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Save Your Work</AlertDialogTitle>
+            <AlertDialogDescription>
+              To save your creation and continue editing later, please create an account. Your work will be saved to your personal archive.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Link href="/signup" passHref>
               <AlertDialogAction>Sign Up</AlertDialogAction>
             </Link>
