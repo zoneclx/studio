@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -16,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ArrowLeft } from 'lucide-react';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -48,7 +49,16 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <div className="w-full max-w-sm mb-4">
+            <Link
+                href="/"
+                className="inline-flex items-center text-muted-foreground hover:text-foreground"
+            >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+            </Link>
+        </div>
       <Card className="w-full max-w-sm border-border/50 bg-card">
         <form onSubmit={handleSignUp}>
           <CardHeader>
