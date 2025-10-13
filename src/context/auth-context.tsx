@@ -18,6 +18,7 @@ interface AuthContextType {
   signIn: (email: string, pass: string) => Promise<void>;
   signUp: (email: string, pass: string) => Promise<void>;
   signOut: () => Promise<void>;
+  forgotPassword: (email: string, newPass: string) => Promise<void>;
 }
 
 const AUTH_STORAGE_KEY = 'monochrome-auth-users';
@@ -101,13 +102,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setActiveUser({ uid: newUser.uid, email: newUser.email });
   };
 
+  const forgotPassword = async (email: string, newPass: string) => {
+    const storedUsers = getStoredUsers();
+    const userIndex = storedUsers.findIndex(u => u.email === email);
+
+    if (userIndex === -1) {
+      throw new Error('No account found with that email address.');
+    }
+
+    storedUsers[userIndex].pass = newPass;
+    setStoredUsers(storedUsers);
+  };
+
   const signOut = async () => {
     setActiveUser(null);
     router.push('/');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );
