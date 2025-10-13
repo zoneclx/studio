@@ -41,47 +41,43 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "relative flex flex-col min-h-screen w-full bg-white dark:bg-[url('https://i.ibb.co/yVJfQ2j/mars-background.jpg')] dark:bg-cover dark:bg-center dark:bg-no-repeat"
+        "flex flex-col min-h-screen w-full bg-background text-foreground"
       )}
     >
-      <div className="absolute inset-0 z-0 bg-black/50"></div>
+      <Header />
 
-      <div className={cn("relative z-10 flex flex-col min-h-screen text-foreground dark:text-white")}>
-        <Header />
-
-        <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
-            <TypewriterEffect
-                texts={animatedTitles}
-                className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
-            />
-            <p className={cn("text-base sm:text-lg lg:text-xl max-w-2xl mb-8 text-muted-foreground dark:text-white/80")}>
-              Monochrome AI is a powerful tool that allows you to generate
-              beautiful, production-ready websites using simple text prompts.
-              Describe your vision, and watch as our AI brings it to life, helping
-              you refine and perfect your creation.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/create">
-                <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
-                  Start Creating <ArrowRight className="ml-2 h-5 w-5" />
+      <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
+          <TypewriterEffect
+              texts={animatedTitles}
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
+          />
+          <p className={cn("text-base sm:text-lg lg:text-xl max-w-2xl mb-8 text-muted-foreground")}>
+            Monochrome AI is a powerful tool that allows you to generate
+            beautiful, production-ready websites using simple text prompts.
+            Describe your vision, and watch as our AI brings it to life, helping
+            you refine and perfect your creation.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/create">
+              <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
+                Start Creating <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            {!user && (
+              <Link href="/try">
+                <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
+                  Try for Free
                 </Button>
               </Link>
-              {!user && (
-                <Link href="/try">
-                  <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black")}>
-                    Try for Free
-                  </Button>
-                </Link>
-              )}
-            </div>
-        </main>
+            )}
+          </div>
+      </main>
 
-        <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground dark:text-white/70")}>
-          <p>
-            &copy; 2025 Enzo Gimena's Ai, All rights reserved.
-          </p>
-        </footer>
-      </div>
+      <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
+        <p>
+          &copy; 2025 Enzo Gimena's Ai, All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }
