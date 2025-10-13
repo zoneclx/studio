@@ -259,7 +259,7 @@ export default function TryPage() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6 h-full min-h-[600px] sticky top-8">
+          <div className="space-y-6 h-full min-h-[600px] sticky top-24">
             <Card className="shadow-lg h-full border-border/50 bg-card flex flex-col">
               <Tabs
                 defaultValue="preview"

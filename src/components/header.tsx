@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, User, Menu, Settings } from 'lucide-react';
+import { Sparkles, User, Menu, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   DropdownMenu,
@@ -24,13 +24,15 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useState } from 'react';
-import { Separator } from './ui/separator';
 import { Home, Bot, FileArchive, MessageSquare } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const { user, signOut } = useAuth();
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -38,17 +40,44 @@ export default function Header() {
     }
   };
 
-  const NavContent = () => (
+  const navLinks = [
+    { href: '/create', label: 'Builder', icon: Bot, auth: true },
+    { href: '/chat', label: 'AI Chat', icon: MessageSquare, auth: false },
+    { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
+  ];
+
+  const NavLink = ({ href, label, icon: Icon, onClick }: { href: string; label: string; icon: React.ElementType, onClick: () => void; }) => {
+    const isActive = pathname === href;
+    return (
+        <Link href={href} onClick={onClick}>
+            <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start gap-2">
+                 <Icon className="h-5 w-5" />
+                {label}
+            </Button>
+        </Link>
+    );
+  };
+  
+  const DesktopNavLinks = () => (
+     <div className="hidden md:flex items-center gap-2">
+        {navLinks.filter(link => user || !link.auth).map(link => (
+          <Link key={link.href} href={link.href} passHref>
+             <Button variant={pathname === link.href ? "secondary" : "ghost"}>
+              {link.label}
+            </Button>
+          </Link>
+        ))}
+     </div>
+  );
+
+  const UserMenu = () => (
     <>
       <ThemeToggle />
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full"
-            >
-              <Avatar className="h-9 w-9">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Avatar className="h-9 w-9 border">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
                   <User />
@@ -62,61 +91,50 @@ export default function Header() {
                 <p className="text-sm font-medium leading-none">
                   {user.name || user.email}
                 </p>
-                 {user.name && <p className="text-xs leading-none text-muted-foreground">
+                {user.name && <p className="text-xs leading-none text-muted-foreground">
                   {user.email}
                 </p>}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-             <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild>
               <Link href="/profile" onClick={handleLinkClick}>
                 <Settings className="mr-2 h-4 w-4" />
                 Profile
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/my-work" onClick={handleLinkClick}>
-                <FileArchive className="mr-2 h-4 w-4" />
-                My Archive
-              </Link>
-            </DropdownMenuItem>
-             <DropdownMenuItem asChild>
-              <Link href="/chat" onClick={handleLinkClick}>
-                 <MessageSquare className="mr-2 h-4 w-4" />
-                AI Chat
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/create" onClick={handleLinkClick}>
-                 <Bot className="mr-2 h-4 w-4" />
-                Builder
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {
-              signOut();
-              handleLinkClick();
-            }}>Sign out</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { signOut(); handleLinkClick(); }}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link href="/signup" onClick={handleLinkClick}>
-          <Button>Sign Up</Button>
-        </Link>
+         <div className="flex items-center gap-2">
+            <Link href="/login" passHref>
+                <Button variant="ghost">Login</Button>
+            </Link>
+            <Link href="/signup" onClick={handleLinkClick}>
+                <Button>Sign Up</Button>
+            </Link>
+         </div>
       )}
     </>
   );
 
   return (
-    <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center z-20 bg-transparent">
-      <div className="flex items-center gap-4">
-        <h1 className="text-2xl font-bold font-display flex items-center gap-2">
+    <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center z-20 bg-transparent sticky top-0 bg-background/80 backdrop-blur-lg border-b">
+      <div className="flex items-center gap-6">
+        <h1 className="text-xl font-bold font-display flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
             Monochrome Ai
           </Link>
         </h1>
+        <DesktopNavLinks />
       </div>
+
       {isMobile ? (
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
@@ -125,60 +143,31 @@ export default function Header() {
               <span className="sr-only">Open menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-4 p-4 pt-8 h-full">
-              <div className="flex flex-col gap-2 flex-1">
-                <Link href="/" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                  <Home className="h-5 w-5" />
-                  Home
-                </Link>
-                {user && (
-                    <>
-                        <Link href="/profile" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                            <Settings className="h-5 w-5" />
-                            Profile
-                        </Link>
-                        <Link href="/chat" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                           <MessageSquare className="h-5 w-5" />
-                            AI Chat
-                        </Link>
-                        <Link href="/create" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                            <Bot className="h-5 w-5" />
-                            Builder
-                        </Link>
-                        <Link href="/my-work" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                           <FileArchive className="h-5 w-5" />
-                            My Archive
-                        </Link>
-                    </>
-                )}
-                {!user && (
-                   <>
-                    <Link href="/chat" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                        <MessageSquare className="h-5 w-5" />
-                        AI Chat
+          <SheetContent className="flex flex-col p-4">
+             <SheetHeader className="text-left mb-4">
+                <SheetTitle className="text-xl font-bold font-display flex items-center gap-2">
+                    <Link href="/" onClick={handleLinkClick} className="flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                        Monochrome Ai
                     </Link>
-                    <Link href="/try" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
-                          <Bot className="h-5 w-5" />
-                          Try for Free
-                      </Link>
-                   </>
-                )}
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                 <NavContent />
-              </div>
+                </SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-2 flex-1">
+                 <NavLink href="/" label="Home" icon={Home} onClick={handleLinkClick} />
+                 {navLinks.filter(link => user || !link.auth).map(link => (
+                    <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} onClick={handleLinkClick} />
+                 ))}
+                 {!user && <NavLink href="/try" label="Try for Free" icon={Bot} onClick={handleLinkClick} />}
             </nav>
+            <div className="flex items-center justify-between mt-4">
+              <UserMenu />
+            </div>
           </SheetContent>
         </Sheet>
       ) : (
-        <nav className="flex items-center gap-4">
-          <NavContent />
-        </nav>
+        <div className="flex items-center gap-2">
+          <UserMenu />
+        </div>
       )}
     </header>
   );

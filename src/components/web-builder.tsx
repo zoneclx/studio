@@ -297,7 +297,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
             )}
           </div>
 
-          <div className="space-y-6 h-full min-h-[600px] sticky top-8">
+          <div className="space-y-6 h-full min-h-[600px] sticky top-24">
             <Card className="shadow-lg h-full border-border/50 bg-card flex flex-col">
               <Tabs
                 defaultValue="preview"
