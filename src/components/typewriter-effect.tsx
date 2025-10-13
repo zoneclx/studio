@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/theme-context';
 
 type TypewriterEffectProps = {
   texts: string[];
@@ -19,6 +20,7 @@ export default function TypewriterEffect({
   className,
   cursorClassName,
 }: TypewriterEffectProps) {
+  const { theme } = useTheme();
   const [textIndex, setTextIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -55,9 +57,14 @@ export default function TypewriterEffect({
     return () => clearInterval(cursorInterval);
   }, []);
 
+  const isRedHat = theme === 'redhat';
+
   return (
     <div className={cn('flex items-center', className)}>
-      <h2 className="relative">
+      <h2
+        className={cn('relative', { 'glitch': isRedHat })}
+        data-text={isRedHat ? displayedText : undefined}
+      >
         {displayedText}
         {showCursor && (
           <span className={cn('ml-2 text-primary', cursorClassName)}>|</span>
