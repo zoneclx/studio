@@ -50,14 +50,12 @@ export default function TypewriterEffect({
   const [showCursor, setShowCursor] = useState(true);
 
   // Hacker effect state
-  const [hackerText, setHackerText] = useState('');
+  const [hackerText, setHackerText] = useState<React.ReactNode>('');
   const intervalRef = useRef<number | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
       // Cleanup previous animations if theme changes
       if (intervalRef.current) clearInterval(intervalRef.current);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       
       if (theme === 'redhat') {
           setHackerText(texts[textIndex]);
@@ -109,18 +107,17 @@ export default function TypewriterEffect({
     }
 
     intervalRef.current = window.setInterval(() => {
-        setHackerText(
-            targetText
-                .split('')
-                .map((char, index) => {
-                    if (index < iterations) {
-                        return targetText[index];
-                    }
-                    if (char === ' ') return ' ';
-                    return characters[Math.floor(Math.random() * characters.length)];
-                })
-                .join('')
-        );
+        const newText = targetText
+            .split('')
+            .map((char, index) => {
+                if (index < iterations) {
+                    return <span key={index} className="text-foreground">{targetText[index]}</span>;
+                }
+                if (char === ' ') return <span key={index}> </span>;
+                return <span key={index} className="text-primary">{characters[Math.floor(Math.random() * characters.length)]}</span>;
+            });
+        
+        setHackerText(<>{newText}</>);
 
         if (iterations >= targetText.length) {
             if (intervalRef.current) clearInterval(intervalRef.current);
@@ -153,7 +150,7 @@ export default function TypewriterEffect({
   return (
     <div className={cn('flex items-center', className)}>
       <h2
-        className={cn('relative font-code', {'text-primary': isRedHat})}
+        className={cn('relative font-code')}
       >
         {isRedHat ? hackerText : displayedText}
         {showCursor && !isRedHat && (
