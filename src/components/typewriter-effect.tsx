@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/theme-context';
 
@@ -12,6 +12,29 @@ type TypewriterEffectProps = {
   className?: string;
   cursorClassName?: string;
 };
+
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+const useInterval = (callback: () => void, delay: number | null) => {
+  const savedCallback = useRef<() => void>();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+};
+
 
 export default function TypewriterEffect({
   texts,
@@ -26,7 +49,31 @@ export default function TypewriterEffect({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showCursor, setShowCursor] = useState(true);
 
+  // Hacker effect state
+  const [hackerText, setHackerText] = useState('');
+  const intervalRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
   useEffect(() => {
+      // Cleanup previous animations if theme changes
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      
+      if (theme === 'redhat') {
+          setHackerText(texts[textIndex]);
+      } else {
+          // Reset for typewriter effect
+          setDisplayedText('');
+          setIsDeleting(false);
+      }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme, textIndex]);
+
+
+  // Typewriter effect logic
+  useEffect(() => {
+    if (theme === 'redhat') return;
+
     const handleTyping = () => {
       const currentText = texts[textIndex];
       if (isDeleting) {
@@ -48,11 +95,55 @@ export default function TypewriterEffect({
     const typingTimeout = setTimeout(handleTyping, isDeleting ? speed / 2 : speed);
 
     return () => clearTimeout(typingTimeout);
-  }, [displayedText, isDeleting, textIndex, texts, speed, delay]);
-  
+  }, [displayedText, isDeleting, textIndex, texts, speed, delay, theme]);
+
+   // Hacker effect logic
+  useEffect(() => {
+    if (theme !== 'redhat') return;
+
+    let iterations = 0;
+    const targetText = texts[textIndex];
+
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = window.setInterval(() => {
+        setHackerText(
+            targetText
+                .split('')
+                .map((char, index) => {
+                    if (index < iterations) {
+                        return targetText[index];
+                    }
+                    if (char === ' ') return ' ';
+                    return characters[Math.floor(Math.random() * characters.length)];
+                })
+                .join('')
+        );
+
+        if (iterations >= targetText.length) {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            setTimeout(() => {
+                setTextIndex((prev) => (prev + 1) % texts.length);
+            }, delay);
+        }
+
+        iterations += 1 / 2;
+    }, 30);
+
+
+    return () => {
+        if(intervalRef.current) clearInterval(intervalRef.current);
+    }
+
+  }, [theme, textIndex, texts, delay]);
+
+
+  // Cursor blinking effect
   useEffect(() => {
     const cursorInterval = setInterval(() => {
-        setShowCursor((prev) => !prev);
+      setShowCursor((prev) => !prev);
     }, 500);
     return () => clearInterval(cursorInterval);
   }, []);
@@ -62,11 +153,10 @@ export default function TypewriterEffect({
   return (
     <div className={cn('flex items-center', className)}>
       <h2
-        className={cn('relative', { 'glitch': isRedHat })}
-        data-text={isRedHat ? displayedText : undefined}
+        className={cn('relative font-code', {'text-primary': isRedHat})}
       >
-        {displayedText}
-        {showCursor && (
+        {isRedHat ? hackerText : displayedText}
+        {showCursor && !isRedHat && (
           <span className={cn('ml-2 text-primary', cursorClassName)}>|</span>
         )}
       </h2>
