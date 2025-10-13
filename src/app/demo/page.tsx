@@ -127,16 +127,22 @@ export default function DemoPage() {
         if (done) break;
         try {
             const chunk = decoder.decode(value, { stream: true });
-            const errorMatch = chunk.match(/{.*"error".*}/);
-            if (errorMatch) {
-              const errorObj = JSON.parse(errorMatch[0]);
-              toast({
-                title: 'An error occurred',
-                description: errorObj.error,
-                variant: 'destructive',
-              });
-              setOutput(prev => prev);
-              return; 
+            // Check for our specific error format before attempting to parse
+            if (chunk.includes('{"error"')) {
+                try {
+                    const errorObj = JSON.parse(chunk);
+                    if (errorObj.error) {
+                        toast({
+                            title: 'An error occurred',
+                            description: errorObj.error,
+                            variant: 'destructive',
+                        });
+                        setOutput(prev => prev); // Stop updating
+                        return;
+                    }
+                } catch(e) {
+                    // Not a valid JSON error object, treat as regular text
+                }
             }
             accumulatedOutput += chunk;
             setOutput(accumulatedOutput);
