@@ -27,6 +27,7 @@ export const WebsiteCodeSchema = z.object({
 
 export type WebsiteCode = z.infer<typeof WebsiteCodeSchema>;
 
+// Define the flow as a local constant that is NOT exported.
 const createWebsiteFromPromptFlow = ai.defineFlow(
   {
     name: 'createWebsiteFromPromptFlow',
@@ -59,6 +60,7 @@ Generate the HTML, CSS, and JavaScript for a visually appealing website based on
             temperature: 0.1,
             responseMimeType: "application/json",
         },
+        model: 'googleai/gemini-1.5-flash-latest',
     });
 
     if (!output) {
@@ -68,7 +70,7 @@ Generate the HTML, CSS, and JavaScript for a visually appealing website based on
   }
 );
 
-
+// Export ONLY the async wrapper function and types.
 export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
     return createWebsiteFromPromptFlow(input);
 }
