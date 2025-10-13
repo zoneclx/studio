@@ -70,7 +70,7 @@ export default function RootLayout({
         <ThemeProvider>
           <SoundProvider>
             <AnimatedBackground />
-            <div className="relative z-10 min-h-screen w-full bg-background/80 backdrop-blur-sm">
+            <div className="relative z-10">
               <AuthProvider>{children}</AuthProvider>
               <Toaster />
               <CookieConsent />

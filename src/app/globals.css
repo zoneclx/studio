@@ -62,22 +62,7 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground;
-    background: linear-gradient(300deg, var(--gradient-start), var(--gradient-end), var(--gradient-start));
-    background-size: 200% 200%;
-    animation: gradient-animation 15s ease infinite;
-  }
-}
-
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
+    @apply bg-background text-foreground;
   }
 }
 
