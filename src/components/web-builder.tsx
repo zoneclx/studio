@@ -454,7 +454,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Monochrome Ai, All rights reserved.
+          © Enzo Gimena's. All rights reserved.
         </p>
       </footer>
     </div>

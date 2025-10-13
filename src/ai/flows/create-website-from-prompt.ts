@@ -28,7 +28,7 @@ export async function* streamWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
 ): AsyncGenerator<string> {
   const { stream } = await ai.generate({
-    model: 'googleai/gemini-2.5-flash',
+    model: 'googleai/gemini-1.5-flash-latest',
     stream: true,
     prompt: `You are an expert web developer. A user wants to create a website.
 
@@ -60,7 +60,7 @@ Generate the HTML, CSS, and JavaScript for a visually appealing website based on
 \`\`\`
 `,
     config: {
-      temperature: 0.7,
+      temperature: 0,
       responseMimeType: "application/json",
     },
     input: input,

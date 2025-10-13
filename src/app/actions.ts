@@ -25,10 +25,13 @@ export async function handleGeneration(
   } catch (error) {
     console.error('AI generation failed:', error);
     const encoder = new TextEncoder();
-    const errorPayload = JSON.stringify({ error: 'Failed to process the request. Please try again.' });
+    let errorMessage = "Failed to process the request. Please try again.";
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+    const errorPayload = JSON.stringify({ error: errorMessage });
     return new ReadableStream({
         start(controller) {
-            // Since the expected output is a JSON object, we send an object with an error key.
             controller.enqueue(encoder.encode(`{"html": "<h1>Error</h1><p>${errorPayload}</p>", "css": "", "javascript": ""}`));
             controller.close();
         }

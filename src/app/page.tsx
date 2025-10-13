@@ -141,7 +141,7 @@ export default function Home() {
 
       <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
         <p>
-          &copy; 2025 Monochrome Ai, All rights reserved.
+          © Enzo Gimena's. All rights reserved.
         </p>
       </footer>
     </div>
