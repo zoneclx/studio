@@ -40,18 +40,17 @@ export default function Home() {
   const bgImage = "https://images.unsplash.com/photo-1614726353900-951678b78afb?q=80&w=2942&auto=format&fit=crop";
 
   return (
-    <div className="relative min-h-screen flex flex-col">
-       <Image
-            src={bgImage}
-            alt="Surface of Mars"
-            layout="fill"
-            objectFit="cover"
-            className="absolute inset-0 z-0 opacity-30"
-            priority
-        />
-       <div className="absolute inset-0 bg-black/50 z-0"></div>
+    <div className="relative min-h-screen w-full">
+      <Image
+        src={bgImage}
+        alt="Surface of Mars"
+        fill
+        className="absolute inset-0 object-cover z-0"
+        priority
+      />
+      <div className="absolute inset-0 bg-black/50 z-0"></div>
 
-      <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground">
+      <div className="relative z-10 flex flex-col min-h-screen text-white">
         <Header />
 
         <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +58,7 @@ export default function Home() {
                 texts={animatedTitles}
                 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
             />
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8">
+            <p className="text-base sm:text-lg lg:text-xl text-white/80 max-w-2xl mb-8">
               Monochrome AI is a powerful tool that allows you to generate
               beautiful, production-ready websites using simple text prompts.
               Describe your vision, and watch as our AI brings it to life, helping
@@ -73,7 +72,7 @@ export default function Home() {
               </Link>
               {!user && (
                 <Link href="/try">
-                  <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto border-white text-white hover:bg-white hover:text-black">
                     Try for Free
                   </Button>
                 </Link>
@@ -81,7 +80,7 @@ export default function Home() {
             </div>
         </main>
 
-        <footer className="py-6 text-center text-sm text-muted-foreground z-10">
+        <footer className="py-6 text-center text-sm text-white/70 z-10">
           <p>
             &copy; 2025 Enzo Gimena's Ai, All rights reserved.
           </p>
