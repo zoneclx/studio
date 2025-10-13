@@ -106,28 +106,28 @@
   }
 
   .glass {
-    --background: 220 50% 95% / 0.1;
-    --foreground: 220 20% 10%;
-    --card: 220 30% 100% / 0.5;
-    --card-foreground: 220 20% 10%;
-    --popover: 220 30% 100% / 0.7;
-    --popover-foreground: 220 20% 10%;
+    --background: 220 50% 97%;
+    --foreground: 220 20% 8%;
+    --card: 220 30% 100% / 0.4;
+    --card-foreground: 220 20% 8%;
+    --popover: 220 30% 100% / 0.6;
+    --popover-foreground: 220 20% 8%;
     --primary: 225 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 20% 90% / 0.6;
+    --secondary: 220 20% 90% / 0.5;
     --secondary-foreground: 220 20% 10%;
-    --muted: 220 20% 90% / 0.6;
+    --muted: 220 20% 90% / 0.5;
     --muted-foreground: 220 10% 40%;
-    --accent: 220 30% 85% / 0.7;
+    --accent: 220 30% 85% / 0.6;
     --accent-foreground: 220 20% 10%;
     --destructive: 0 80% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 20% 80% / 0.4;
-    --input: 220 20% 85% / 0.4;
+    --border: 220 20% 80% / 0.3;
+    --input: 220 20% 85% / 0.3;
     --ring: 225 70% 50%;
 
-    --gradient-start: 220 50% 95%;
-    --gradient-end: 225 70% 85%;
+    --gradient-start: 220 80% 90%;
+    --gradient-end: 280 90% 85%;
   }
 
   .redhat {
@@ -178,9 +178,36 @@
   }
 
   .glass-effect {
-    @apply backdrop-blur-lg;
+    @apply backdrop-blur-lg backdrop-saturate-150;
   }
-  .glass .glass-effect {
-    @apply backdrop-saturate-150;
+
+  @property --gradient-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes gradient-border {
+    0% { --gradient-angle: 0deg; }
+    100% { --gradient-angle: 360deg; }
+  }
+
+  .glass.card-aurora::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: conic-gradient(from var(--gradient-angle), hsl(var(--primary) / 0.4), hsl(var(--accent) / 0.8), hsl(var(--primary) / 0.4));
+      -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+      mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: gradient-border 5s linear infinite;
+      z-index: -1;
   }
 }

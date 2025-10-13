@@ -9,12 +9,16 @@ const Card = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { theme } = useTheme();
+  const isGlass = theme === "glass";
   return (
     <div
         ref={ref}
         className={cn(
-        "rounded-lg border bg-card text-card-foreground shadow-sm",
-        { "glass-effect": theme === "glass" },
+        "relative rounded-lg border bg-card text-card-foreground shadow-sm",
+        { 
+          "glass-effect": isGlass,
+          "card-aurora": isGlass
+        },
         className
         )}
         {...props}
