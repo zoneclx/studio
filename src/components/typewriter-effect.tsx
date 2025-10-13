@@ -17,47 +17,28 @@ export default function TypewriterEffect({
   cursorClassName,
 }: TypewriterEffectProps) {
   const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
-  const [typingSpeed, setTypingSpeed] = useState(speed);
+  const [isTyping, setIsTyping] = useState(true);
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
-    const handleTyping = () => {
-      const i = loopNum % 1; // Only one text
-      const fullText = text;
-
-      setDisplayedText(
-        isDeleting
-          ? fullText.substring(0, displayedText.length - 1)
-          : fullText.substring(0, displayedText.length + 1)
-      );
-
-      setTypingSpeed(isDeleting ? speed / 2 : speed);
-
-      if (!isDeleting && displayedText === fullText) {
-        setShowCursor(true); // Keep cursor at the end
-      } else if (isDeleting && displayedText === '') {
-        setIsDeleting(false);
-        setLoopNum(loopNum + 1);
-      }
-    };
-
-    const typingTimeout = setTimeout(handleTyping, typingSpeed);
-    return () => clearTimeout(typingTimeout);
-  }, [displayedText, isDeleting, loopNum, speed, text, typingSpeed]);
+    if (isTyping && displayedText.length < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(text.substring(0, displayedText.length + 1));
+      }, speed);
+      return () => clearTimeout(timeout);
+    } else {
+      setIsTyping(false);
+    }
+  }, [displayedText, isTyping, speed, text]);
 
   useEffect(() => {
-    // Blinking cursor effect when typing is finished
-    if (displayedText === text) {
-        const cursorInterval = setInterval(() => {
-            setShowCursor((prev) => !prev);
-        }, 500);
-        return () => clearInterval(cursorInterval);
-    } else {
-        setShowCursor(true); // Keep cursor visible while typing
+    if (!isTyping) {
+      const cursorInterval = setInterval(() => {
+        setShowCursor((prev) => !prev);
+      }, 500);
+      return () => clearInterval(cursorInterval);
     }
-  }, [displayedText, text])
+  }, [isTyping]);
 
   return (
     <div className={cn('flex items-center', className)}>
