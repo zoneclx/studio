@@ -16,7 +16,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration, handleCategorization } from '@/app/actions';
+import { handleGeneration, handleChat } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import { useAuth } from '@/context/auth-context';
@@ -114,13 +114,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   };
   
   const handleAiChatMessage = async (text: string, image?: string) => {
-    const result = await handleCategorization(text, image);
-
-    if (result.category === 'code_request' && result.prompt) {
-        onGenerate(result.prompt);
-    }
-    
-    return result;
+    const result = await handleChat(text, image);
+    return {
+        category: 'general_inquiry',
+        response: result.response,
+    };
   };
 
   const handleRestart = () => {

@@ -15,7 +15,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { handleGeneration, handleCategorization } from '@/app/actions';
+import { handleGeneration, handleChat } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AiChat from '@/components/ai-chat';
 import {
@@ -156,13 +156,12 @@ export default function DemoPage() {
     setTrial(newTrialData);
     updateTrialStorage(newTrialData);
 
-    const result = await handleCategorization(text, image);
+    const result = await handleChat(text, image);
 
-    if (result.category === 'code_request' && result.prompt) {
-        handleGenerate(result.prompt);
-    }
-    
-    return result;
+    return {
+        category: 'general_inquiry',
+        response: result.response,
+    };
   };
 
   const handleRestart = () => {
