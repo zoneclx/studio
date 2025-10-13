@@ -91,6 +91,50 @@
     --input: 25 15% 22%;
     --ring: 30 30% 85%;
   }
+
+  .glass {
+    --background: 220 50% 95% / 0.5;
+    --foreground: 220 20% 10%;
+    --card: 220 30% 100% / 0.6;
+    --card-foreground: 220 20% 10%;
+    --popover: 220 30% 100% / 0.8;
+    --popover-foreground: 220 20% 10%;
+    --primary: 225 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 90% / 0.7;
+    --secondary-foreground: 220 20% 10%;
+    --muted: 220 20% 90% / 0.7;
+    --muted-foreground: 220 10% 40%;
+    --accent: 220 30% 85% / 0.8;
+    --accent-foreground: 220 20% 10%;
+    --destructive: 0 80% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 80% / 0.5;
+    --input: 220 20% 85% / 0.5;
+    --ring: 225 70% 50%;
+  }
+
+  .spiderman {
+    --background: 220 40% 15%;
+    --foreground: 0 0% 98%;
+    --card: 220 40% 20%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 40% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 80% 55%; /* Red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 80% 60%; /* Blue */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 40% 25%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 215 80% 70%; /* Lighter Blue */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 80% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 40% 30%;
+    --input: 220 40% 25%;
+    --ring: 0 80% 55%; /* Red */
+  }
 }
 
 @layer base {

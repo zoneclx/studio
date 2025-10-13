@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Theme = 'dark' | 'light' | 'system' | 'ultra' | 'macchiato';
+type Theme = 'dark' | 'light' | 'system' | 'ultra' | 'macchiato' | 'glass' | 'spiderman';
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -36,7 +36,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove('light', 'dark', 'ultra', 'macchiato');
+    root.classList.remove('light', 'dark', 'ultra', 'macchiato', 'glass', 'spiderman');
 
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
