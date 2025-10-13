@@ -26,6 +26,7 @@ const defaultGreetings: Message[] = [
 
 type AiChatProps = {
   onSendMessage: (text: string, image?: string) => Promise<any>;
+  onClearChat?: () => void;
   disabled?: boolean;
   disableImageUpload?: boolean;
   placeholder?: string;
@@ -35,6 +36,7 @@ type AiChatProps = {
 
 export default function AiChat({
   onSendMessage,
+  onClearChat,
   disabled,
   disableImageUpload,
   placeholder,
@@ -113,6 +115,13 @@ export default function AiChat({
 
   const handleLocalSendMessage = () => {
     if (!input.trim() && !image) return;
+
+    const command = input.trim().toLowerCase();
+    if (onClearChat && (command === 'clear' || command === 'clear chat')) {
+        onClearChat();
+        setInput('');
+        return;
+    }
 
     const userMessageContent = input.trim();
     const userMessage: Message = { role: 'user', content: userMessageContent || 'Image attached' };

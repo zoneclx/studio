@@ -94,8 +94,9 @@ export default function ChatPage() {
                 key={chatKey}
                 defaultInitialMessages={initialMessages}
                 onSendMessage={handleSendMessage}
+                onClearChat={clearChatHistory}
                 disableImageUpload={false}
-                placeholder="Ask me anything..."
+                placeholder="Ask me anything... (or type 'clear' to start over)"
             >
                 <div className="text-center p-4 pt-8">
                     <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
@@ -105,14 +106,6 @@ export default function ChatPage() {
                         Ask me anything.
                     </p>
                 </div>
-                {user && initialMessages && initialMessages.length > 0 && (
-                     <div className="text-center pb-4">
-                        <Button variant="outline" onClick={clearChatHistory}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Clear Chat
-                        </Button>
-                    </div>
-                )}
             </AiChat>
           </div>
       </main>
