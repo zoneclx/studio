@@ -11,7 +11,27 @@ import Header from '@/components/header';
 const animatedTitles = [
     "Build a website with a single prompt.",
     "Generate code in seconds.",
-    "Your vision, brought to life."
+    "Your vision, brought to life.",
+    "Create a portfolio for a photographer.",
+    "Design a landing page for a new app.",
+    "Launch a blog for a travel writer.",
+    "Set up an e-commerce store for jewelry.",
+    "Build a website for a local bakery.",
+    "Create a homepage for a startup.",
+    "Design a personal resume site.",
+    "Generate a site for a marketing agency.",
+    "Build a booking page for a consultant.",
+    "Create a gallery for an artist.",
+    "Design a site for a fitness instructor.",
+    "Launch a page for a podcast.",
+    "Set up a menu for a restaurant.",
+    "Build a community forum.",
+    "Create a real estate listing page.",
+    "Design an event invitation site.",
+    "Generate a portfolio for a developer.",
+    "Build a site for a non-profit.",
+    "Create a personal blog.",
+    "Design a landing page for a course."
 ];
 
 export default function Home() {
