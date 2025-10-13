@@ -108,7 +108,7 @@ export default function Header() {
   );
 
   return (
-    <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+    <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center z-20 bg-transparent">
       <div className="flex items-center gap-4">
         <h1 className="text-2xl font-bold font-display flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function Header() {
                 )}
               </div>
               <Separator />
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between">
                  <NavContent />
               </div>
             </nav>
