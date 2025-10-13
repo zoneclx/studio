@@ -9,13 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Edit } from 'lucide-react';
+import { User, Edit, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
-  const { user, loading, updateProfile } = useAuth();
+  const { user, loading, updateProfile, changePassword } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -23,6 +23,11 @@ export default function ProfilePage() {
   const [avatar, setAvatar] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -65,6 +70,37 @@ export default function ProfilePage() {
     }
   };
 
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        title: 'Error',
+        description: "New passwords don't match.",
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsPasswordSubmitting(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      toast({
+        title: 'Password Updated',
+        description: 'Your password has been changed successfully.',
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+    } catch (error: any) {
+      toast({
+        title: 'Password Change Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPasswordSubmitting(false);
+    }
+  };
+
   if (loading || !user) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -97,63 +133,116 @@ export default function ProfilePage() {
         <header className="mb-8">
           <h1 className="text-4xl font-bold font-display">Your Profile</h1>
           <p className="text-muted-foreground mt-2 text-lg">
-            Customize your account details.
+            Customize your account details and manage your password.
           </p>
         </header>
-        <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader className="items-center">
-              <div className="relative">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={avatar} alt={name} />
-                  <AvatarFallback>
-                    <User className="w-12 h-12" />
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="absolute bottom-0 right-0 rounded-full h-8 w-8"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Edit className="h-4 w-4" />
+        <div className="space-y-8">
+          <form onSubmit={handleSubmit}>
+            <Card>
+              <CardHeader className="items-center">
+                <div className="relative">
+                  <Avatar className="w-24 h-24">
+                    <AvatarImage src={avatar} alt={name} />
+                    <AvatarFallback>
+                      <User className="w-12 h-12" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="absolute bottom-0 right-0 rounded-full h-8 w-8"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your display name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={user.email}
+                    disabled
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                  accept="image/*"
-                />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your display name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  value={user.email}
-                  disabled
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
+              </CardFooter>
+            </Card>
+          </form>
+
+          <form onSubmit={handlePasswordChange}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <KeyRound className="w-5 h-5" />
+                  Change Password
+                </CardTitle>
+                <CardDescription>
+                  Update your password here. It's recommended to use a strong, unique password.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <Input
+                    id="current-password"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+                  <Input
+                    id="confirm-new-password"
+                    type="password"
+                    value={confirmNewPassword}
+                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={isPasswordSubmitting}>
+                  {isPasswordSubmitting ? 'Updating...' : 'Update Password'}
+                </Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </div>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>

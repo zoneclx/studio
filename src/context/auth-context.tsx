@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -22,6 +23,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   forgotPassword: (email: string, newPass: string) => Promise<void>;
   updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
+  changePassword: (currentPass: string, newPass: string) => Promise<void>;
 }
 
 const AUTH_STORAGE_KEY = 'monochrome-auth-users';
@@ -133,6 +135,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     storedUsers[userIndex].pass = newPass;
     setStoredUsers(storedUsers);
   };
+  
+  const changePassword = async (currentPass: string, newPass: string) => {
+    if (!user) throw new Error('You must be logged in.');
+
+    const storedUsers = getStoredUsers();
+    const userIndex = storedUsers.findIndex(u => u.uid === user.uid);
+
+    if (userIndex === -1) throw new Error('User not found.');
+    
+    const storedUser = storedUsers[userIndex];
+
+    if (storedUser.pass !== currentPass) {
+      throw new Error('Incorrect current password.');
+    }
+
+    storedUsers[userIndex].pass = newPass;
+    setStoredUsers(storedUsers);
+  };
+
 
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
     if (!user) throw new Error('You must be logged in to update your profile.');
@@ -156,7 +177,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, forgotPassword, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, forgotPassword, updateProfile, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
