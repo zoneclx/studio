@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import TypewriterEffect from '@/components/typewriter-effect';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function Home() {
   const { user, signOut } = useAuth();
@@ -27,6 +28,7 @@ export default function Home() {
           </Link>
         </h1>
         <nav className="flex items-center gap-4">
+           <ThemeToggle />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

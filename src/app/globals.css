@@ -24,6 +24,9 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
+
+    --gradient-start: hsl(262, 80%, 95%);
+    --gradient-end: hsl(0, 0%, 100%);
   }
 
   .dark {
@@ -46,6 +49,9 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 262.1 83.3% 57.8%;
+    
+    --gradient-start: hsl(240, 10%, 10%);
+    --gradient-end: hsl(240, 10%, 3.9%);
   }
 }
 
@@ -55,7 +61,7 @@
   }
   body {
     @apply text-foreground;
-    background: linear-gradient(300deg, hsl(0, 0%, 100%), hsl(262, 80%, 95%), hsl(0, 0%, 100%));
+    background: linear-gradient(300deg, var(--gradient-start), var(--gradient-end), var(--gradient-start));
     background-size: 200% 200%;
     animation: gradient-animation 15s ease infinite;
   }

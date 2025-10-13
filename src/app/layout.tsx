@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/context/theme-context';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
           'min-h-screen font-sans antialiased',
@@ -34,10 +35,12 @@ export default function RootLayout({
           fontDisplay.variable
         )}
       >
-        <div className="min-h-screen w-full bg-background/80 backdrop-blur-sm">
-          <AuthProvider>{children}</AuthProvider>
-          <Toaster />
-        </div>
+        <ThemeProvider>
+          <div className="min-h-screen w-full bg-background/80 backdrop-blur-sm">
+            <AuthProvider>{children}</AuthProvider>
+            <Toaster />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
