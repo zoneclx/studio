@@ -6,7 +6,7 @@
  *
  * - createWebsiteFromPrompt - A function that generates HTML for a website based on a prompt.
  * - CreateWebsiteFromPromptInput - The input type for the createWebsiteFromPrompt function.
- * - WebsiteCode - The output type for the createWebsiteFrom-prompt function.
+ * - WebsiteCode - The output type for the createWebsiteFromPrompt function.
  */
 
 import { ai } from '@/ai/genkit';
