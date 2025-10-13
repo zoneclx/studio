@@ -5,27 +5,10 @@
  * @fileOverview A website generation AI agent.
  *
  * - createWebsiteFromPrompt - A function that generates HTML for a website based on a prompt.
- * - CreateWebsiteFromPromptInput - The input type for the createWebsiteFromPrompt function.
- * - WebsiteCode - The output type for the createWebsiteFromfrom-prompt.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-
-const CreateWebsiteFromPromptInputSchema = z.object({
-  prompt: z.string().describe('A description of the website to create.'),
-});
-export type CreateWebsiteFromPromptInput = z.infer<
-  typeof CreateWebsiteFromPromptInputSchema
->;
-
-export const WebsiteCodeSchema = z.object({
-    html: z.string().describe("The complete HTML code for the website, including the DOCTYPE declaration."),
-    css: z.string().describe("The CSS code for styling the website. This can be empty if using only Tailwind."),
-    javascript: z.string().describe("The JavaScript code for any interactivity. This can be empty.")
-});
-export type WebsiteCode = z.infer<typeof WebsiteCodeSchema>;
-
+import { CreateWebsiteFromPromptInput, WebsiteCode, CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema } from '@/ai/schemas';
 
 export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
   const { prompt } = input;

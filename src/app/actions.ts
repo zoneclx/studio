@@ -1,8 +1,9 @@
 
 'use server';
 
-import { createWebsiteFromPrompt, WebsiteCode } from '@/ai/flows/create-website-from-prompt';
+import { createWebsiteFromPrompt } from '@/ai/flows/create-website-from-prompt';
 import { diagnoseWebsiteChange } from '@/ai/flows/diagnose-website-change';
+import type { WebsiteCode } from '@/ai/schemas';
 
 export async function handleGeneration(
   prompt: string
