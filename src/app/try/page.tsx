@@ -158,10 +158,10 @@ export default function TryPage() {
 
     if (result.category === 'code_request' && result.prompt) {
         handleGenerate(result.prompt);
-        return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
+        return { response: `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!` };
     }
 
-    return result.response || "I don't have a response for that.";
+    return result.response ? { response: result.response } : { error: "I don't have a response for that." };
   };
 
   const handleRestart = () => {
