@@ -220,11 +220,14 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
-            <Card className="shadow-lg border-border/50 bg-card">
+            <Card>
               <CardHeader>
-                <CardTitle>Describe Your Website</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                  Describe Your Website
+                </CardTitle>
                 <CardDescription>
-                  Enter as much detail as you'd like.
+                  Start with a detailed prompt. The more detail, the better the result.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -232,24 +235,13 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                   placeholder="e.g., 'A modern landing page for a SaaS product with a pricing table...'"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary bg-background"
+                  className="min-h-[150px] text-base rounded-md focus-visible:ring-primary"
                   disabled={isPending}
                   aria-label="Website Description Input"
                 />
-              </CardContent>
-              <CardFooter className="flex-col items-stretch gap-4">
-                <Button
-                  onClick={() => onGenerate()}
-                  disabled={isPending}
-                  size="lg"
-                  className="w-full font-bold"
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  {isPending ? 'Building...' : 'Create Website'}
-                </Button>
-                <div className="space-y-3 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Or, try one of these ideas:
+                 <div className="mt-4 space-y-2">
+                  <p className="text-sm text-muted-foreground text-center">
+                    Or, try an example:
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {examplePrompts.map((example, i) => (
@@ -257,9 +249,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         key={i}
                         variant="secondary"
                         size="sm"
-                        onClick={() => {
-                          onGenerate(example);
-                        }}
+                        onClick={() => onGenerate(example)}
                         disabled={isPending}
                       >
                         <Wand2 className="mr-2 h-4 w-4" />
@@ -268,11 +258,31 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                     ))}
                   </div>
                 </div>
+              </CardContent>
+              <CardFooter>
+                 <Button
+                  onClick={() => onGenerate()}
+                  disabled={isPending}
+                  size="lg"
+                  className="w-full font-bold"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  {isPending ? 'Building...' : 'Create Website'}
+                </Button>
               </CardFooter>
             </Card>
+
+             {output && !isPending && (
+                <div className="animate-in fade-in duration-500">
+                    <AiChat 
+                        onSendMessage={handleAiChatMessage}
+                        placeholder={'Describe the changes you want...'}
+                    />
+                </div>
+            )}
           </div>
 
-          <div className="space-y-6 h-full min-h-[600px] lg:min-h-0">
+          <div className="space-y-6 h-full min-h-[600px] sticky top-8">
             <Card className="shadow-lg h-full border-border/50 bg-card flex flex-col">
               <Tabs
                 defaultValue="preview"
@@ -333,10 +343,13 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                     {isPending ? (
                       <div className="flex items-center justify-center h-full rounded-md bg-background">
                         <div className="space-y-3 p-4 w-full">
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-4 w-3/4" />
-                          <Skeleton className="h-20 w-full" />
-                          <Skeleton className="h-4 w-full" />
+                          <div className="flex justify-center items-center gap-2">
+                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
+                               <p className="text-muted-foreground">Generating your website...</p>
+                           </div>
+                           <Skeleton className="h-20 w-full" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-3/4" />
                         </div>
                       </div>
                     ) : output ? (
@@ -347,10 +360,10 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         sandbox="allow-scripts"
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background">
-                        <p>
-                          Your generated website preview will appear here.
-                        </p>
+                      <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background">
+                         <Wand2 className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                        <p className="font-medium">Your generated website preview will appear here.</p>
+                        <p className="text-sm">Describe your site and click "Create Website" to begin.</p>
                       </div>
                     )}
                   </CardContent>
@@ -358,10 +371,16 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                 <TabsContent value="code" className="flex-1 h-0 mt-0">
                   <CardContent className="h-full p-2">
                     {isPending ? (
-                      <div className="space-y-3 p-4 h-full rounded-md bg-background">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
+                       <div className="flex items-center justify-center h-full rounded-md bg-background">
+                        <div className="space-y-3 p-4 w-full">
+                          <div className="flex justify-center items-center gap-2">
+                               <Sparkles className="w-5 h-5 animate-pulse text-primary" />
+                               <p className="text-muted-foreground">Generating your code...</p>
+                           </div>
+                           <Skeleton className="h-4 w-full mt-4" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-3/4" />
+                        </div>
                       </div>
                     ) : (
                       <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
@@ -380,13 +399,6 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
             </Card>
           </div>
         </div>
-        {output && !isPending && (
-          <div className="mt-8">
-            <AiChat 
-              onSendMessage={handleAiChatMessage}
-            />
-          </div>
-        )}
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
