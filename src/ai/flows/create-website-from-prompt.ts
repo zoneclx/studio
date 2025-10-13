@@ -27,6 +27,9 @@ export const WebsiteCodeSchema = z.object({
 
 export type WebsiteCode = z.infer<typeof WebsiteCodeSchema>;
 
+export async function createWebsiteFromPrompt(input: CreateWebsiteFromPromptInput): Promise<WebsiteCode> {
+    return createWebsiteFromPromptFlow(input);
+}
 
 const prompt = ai.definePrompt({
   name: 'createWebsitePrompt',
@@ -57,7 +60,7 @@ Generate the HTML, CSS, and JavaScript for a visually appealing website based on
   },
 });
 
-export const createWebsiteFromPrompt = ai.defineFlow(
+const createWebsiteFromPromptFlow = ai.defineFlow(
   {
     name: 'createWebsiteFromPromptFlow',
     inputSchema: CreateWebsiteFromPromptInputSchema,
