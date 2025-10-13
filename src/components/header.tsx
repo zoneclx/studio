@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -18,6 +19,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useState } from 'react';
@@ -123,7 +126,10 @@ export default function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <nav className="flex flex-col gap-4 p-4 pt-16 h-full">
+            <SheetHeader>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-4 p-4 pt-8 h-full">
               <div className="flex flex-col gap-2 flex-1">
                 <Link href="/" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
                   <Home className="h-5 w-5" />
