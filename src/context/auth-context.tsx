@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 interface User {
   uid: string;
   email: string;
+  name?: string;
+  avatar?: string;
 }
 
 interface StoredUser extends User {
@@ -19,6 +21,7 @@ interface AuthContextType {
   signUp: (email: string, pass: string) => Promise<void>;
   signOut: () => Promise<void>;
   forgotPassword: (email: string, newPass: string) => Promise<void>;
+  updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
 }
 
 const AUTH_STORAGE_KEY = 'monochrome-auth-users';
@@ -51,7 +54,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const sessionUser = sessionStorage.getItem(SESSION_STORAGE_KEY);
         if (sessionUser) {
           const parsedUser: User = JSON.parse(sessionUser);
-          setUser(parsedUser);
+          // Sync with localStorage to get latest profile updates
+          const storedUsers = getStoredUsers();
+          const storedUserData = storedUsers.find(u => u.uid === parsedUser.uid);
+          if(storedUserData) {
+            setActiveUser(storedUserData);
+          } else {
+            // User not in storage, sign them out.
+            signOut();
+          }
         }
       } catch (error) {
         console.error("Failed to parse user from sessionStorage", error);
@@ -61,12 +72,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
     checkUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const setActiveUser = (activeUser: User | null) => {
     setUser(activeUser);
     if (activeUser) {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeUser));
+      // Create a version of the user object without the password to store in session
+      const { pass, ...sessionUser } = activeUser as StoredUser;
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser));
     } else {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
     }
@@ -77,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const foundUser = storedUsers.find(u => u.email === email);
 
     if (foundUser && foundUser.pass === pass) {
-      setActiveUser({ uid: foundUser.uid, email: foundUser.email });
+      setActiveUser(foundUser);
       return;
     }
     
@@ -95,11 +109,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('An account with this email already exists.');
     }
     
-    const newUser: StoredUser = { uid: 'local-user-' + new Date().getTime(), email: email, pass: pass };
+    const newUser: StoredUser = { 
+      uid: 'local-user-' + new Date().getTime(), 
+      email: email, 
+      pass: pass,
+      name: email.split('@')[0],
+      avatar: ''
+    };
     const updatedUsers = [...storedUsers, newUser];
     setStoredUsers(updatedUsers);
     
-    setActiveUser({ uid: newUser.uid, email: newUser.email });
+    setActiveUser(newUser);
   };
 
   const forgotPassword = async (email: string, newPass: string) => {
@@ -114,13 +134,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setStoredUsers(storedUsers);
   };
 
+  const updateProfile = async (details: { name?: string; avatar?: string }) => {
+    if (!user) throw new Error('You must be logged in to update your profile.');
+
+    const storedUsers = getStoredUsers();
+    const userIndex = storedUsers.findIndex(u => u.uid === user.uid);
+
+    if (userIndex === -1) {
+      throw new Error('User not found.');
+    }
+
+    const updatedUser = { ...storedUsers[userIndex], ...details };
+    storedUsers[userIndex] = updatedUser;
+    setStoredUsers(storedUsers);
+    setActiveUser(updatedUser);
+  };
+
   const signOut = async () => {
     setActiveUser(null);
     router.push('/');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, forgotPassword }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, forgotPassword, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

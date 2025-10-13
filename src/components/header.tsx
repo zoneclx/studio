@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, User, Menu } from 'lucide-react';
+import { Sparkles, User, Menu, Settings } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -45,7 +45,8 @@ export default function Header() {
               variant="ghost"
               className="relative h-8 w-8 rounded-full"
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
                   <User />
                 </AvatarFallback>
@@ -56,16 +57,31 @@ export default function Header() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {user.email}
+                  {user.name || user.email}
                 </p>
+                 {user.name && <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/my-work" onClick={handleLinkClick}>My Archive</Link>
+             <DropdownMenuItem asChild>
+              <Link href="/profile" onClick={handleLinkClick}>
+                <Settings className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/create" onClick={handleLinkClick}>Builder</Link>
+              <Link href="/my-work" onClick={handleLinkClick}>
+                <FileArchive className="mr-2 h-4 w-4" />
+                My Archive
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/create" onClick={handleLinkClick}>
+                 <Bot className="mr-2 h-4 w-4" />
+                Builder
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => {
@@ -109,6 +125,10 @@ export default function Header() {
                 </Link>
                 {user && (
                     <>
+                        <Link href="/profile" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                            <Settings className="h-5 w-5" />
+                            Profile
+                        </Link>
                         <Link href="/create" onClick={handleLinkClick} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
                             <Bot className="h-5 w-5" />
                             Builder
