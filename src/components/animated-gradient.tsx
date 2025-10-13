@@ -17,6 +17,9 @@ export default function AnimatedGradient() {
         return null;
     }
 
+    // Only apply the gradient to premium/special themes, not the default light/dark.
+    const hasAnimatedBackground = !['light', 'dark', 'system'].includes(theme);
+
     return (
         <div
             className={cn(
@@ -24,8 +27,8 @@ export default function AnimatedGradient() {
                 "opacity-30 dark:opacity-50",
                 "transition-opacity duration-1000",
                 {
-                    "animated-gradient-background": theme !== "light",
-                    "opacity-0": theme === "light"
+                    "animated-gradient-background": hasAnimatedBackground,
+                    "opacity-0": !hasAnimatedBackground
                 }
             )}
         />
