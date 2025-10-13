@@ -8,7 +8,6 @@ import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/context/theme-context';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -42,7 +41,7 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "relative min-h-screen w-full bg-white dark:bg-cover dark:bg-center dark:bg-no-repeat dark:bg-[url('https://i.ibb.co/yVJfQ2j/mars-background.jpg')]"
+        "relative flex flex-col min-h-screen w-full bg-white dark:bg-[url('https://i.ibb.co/yVJfQ2j/mars-background.jpg')] dark:bg-cover dark:bg-center dark:bg-no-repeat"
       )}
     >
       <div className="absolute inset-0 z-0 bg-black/50"></div>
