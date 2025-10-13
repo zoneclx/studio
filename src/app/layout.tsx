@@ -21,7 +21,7 @@ const fontDisplay = SpaceGrotesk({
 });
 
 // export const metadata: Metadata = {
-//   title: 'Monochrome Ai',
+//   title: 'MonoMuse',
 //   description: 'Generate websites with a single prompt.',
 // };
 
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
        <head>
-        <title>Monochrome Ai</title>
+        <title>MonoMuse</title>
         <meta name="description" content="Generate websites with a single prompt." />
       </head>
       <body

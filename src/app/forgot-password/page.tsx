@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
               <CardTitle className="text-2xl font-display flex items-center gap-2">
                 <Link href="/" className="flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-primary" />
-                  Starlight Ai
+                  MonoMuse
                 </Link>
               </CardTitle>
               <CardDescription>

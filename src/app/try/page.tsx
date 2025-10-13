@@ -1,20 +1,9 @@
 
 'use client';
 
-import { useState, useTransition, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  Download,
-  Share2,
-  Sparkles,
-  Wand2,
-  Code,
-  Eye,
-  ArrowLeft,
-  Info,
-  RefreshCw,
-  Save,
-} from 'lucide-react';
+import { Info, RefreshCw, Save, Sparkles, Wand2, Eye, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -45,90 +34,6 @@ const MAX_GENERATIONS = 5;
 const MAX_UPGRADES = 5;
 const TRIAL_STORAGE_KEY = 'monochrome-trial';
 
-interface TrialContextType {
-  generations: number;
-  upgrades: number;
-  incrementGenerations: () => boolean;
-  incrementUpgrades: () => boolean;
-  limitReached: boolean;
-}
-
-const TrialContext = createContext<TrialContextType | undefined>(undefined);
-
-const TrialProvider = ({ children }: { children: ReactNode }) => {
-  const [generations, setGenerations] = useState(0);
-  const [upgrades, setUpgrades] = useState(0);
-  const [limitReached, setLimitReached] = useState(false);
-
-  useEffect(() => {
-    try {
-      const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
-      if (storedTrial) {
-        const { generations, upgrades, timestamp } = JSON.parse(storedTrial);
-        const now = new Date().getTime();
-        const oneDay = 24 * 60 * 60 * 1000;
-
-        if (now - timestamp > oneDay) {
-          // 24 hours have passed, reset limits
-          localStorage.removeItem(TRIAL_STORAGE_KEY);
-          setGenerations(0);
-          setUpgrades(0);
-        } else {
-          setGenerations(generations || 0);
-          setUpgrades(upgrades || 0);
-        }
-      }
-    } catch (e) {
-      console.error("Could not read trial data from localStorage", e)
-    }
-  }, []);
-
-  const updateStorage = (genCount: number, upgCount: number) => {
-     try {
-      const timestamp = new Date().getTime();
-      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ generations: genCount, upgrades: upgCount, timestamp }));
-    } catch (e) {
-      // localStorage not available
-    }
-  };
-
-  const incrementGenerations = () => {
-    if (generations >= MAX_GENERATIONS) {
-      setLimitReached(true);
-      return false;
-    }
-    const newCount = generations + 1;
-    setGenerations(newCount);
-    updateStorage(newCount, upgrades);
-    return true;
-  };
-
-  const incrementUpgrades = () => {
-    if (upgrades >= MAX_UPGRADES) {
-      setLimitReached(true);
-      return false;
-    }
-    const newCount = upgrades + 1;
-    setUpgrades(newCount);
-    updateStorage(generations, newCount);
-    return true;
-  };
-
-  return (
-    <TrialContext.Provider value={{ generations, upgrades, incrementGenerations, incrementUpgrades, limitReached }}>
-      {children}
-    </TrialContext.Provider>
-  );
-};
-
-const useTrial = () => {
-  const context = useContext(TrialContext);
-  if (!context) {
-    throw new Error('useTrial must be used within a TrialProvider');
-  }
-  return context;
-};
-
 const examplePrompts = [
   'A portfolio website for a photographer.',
   'A landing page for a new mobile app.',
@@ -136,18 +41,51 @@ const examplePrompts = [
   'An e-commerce site for handmade jewelry.',
 ];
 
-function TryPageInner() {
+export default function TryPage() {
   const [prompt, setPrompt] = useState('');
   const [lastSuccessfulPrompt, setLastSuccessfulPrompt] = useState('');
   const [output, setOutput] = useState('');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const { generations, upgrades, incrementGenerations, incrementUpgrades, limitReached } = useTrial();
+  
+  const [generations, setGenerations] = useState(0);
+  const [upgrades, setUpgrades] = useState(0);
+  const [isLimitReached, setIsLimitReached] = useState(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
 
-  const onGenerate = (text?: string) => {
-    if (!incrementGenerations()) return;
+  useEffect(() => {
+    try {
+      const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
+      if (storedTrial) {
+        const { generations: storedGens, upgrades: storedUpgrades, timestamp } = JSON.parse(storedTrial);
+        const oneDay = 24 * 60 * 60 * 1000;
+        if (new Date().getTime() - timestamp > oneDay) {
+          localStorage.removeItem(TRIAL_STORAGE_KEY);
+        } else {
+          setGenerations(storedGens || 0);
+          setUpgrades(storedUpgrades || 0);
+        }
+      }
+    } catch (e) {
+      console.error("Could not read trial data from localStorage", e);
+    }
+  }, []);
 
+  const updateStorage = (genCount: number, upgCount: number) => {
+    try {
+      const timestamp = new Date().getTime();
+      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ generations: genCount, upgrades: upgCount, timestamp }));
+    } catch (e) {
+      console.error("Could not write trial data to localStorage", e);
+    }
+  };
+  
+  const handleGenerate = (text?: string) => {
+    if (generations >= MAX_GENERATIONS) {
+      setIsLimitReached(true);
+      return;
+    }
+    
     const textToProcess = text || prompt;
     if (!textToProcess) {
       toast({
@@ -158,6 +96,10 @@ function TryPageInner() {
       return;
     }
 
+    const newGenCount = generations + 1;
+    setGenerations(newGenCount);
+    updateStorage(newGenCount, upgrades);
+    
     setPrompt(textToProcess);
     setOutput('');
 
@@ -175,10 +117,34 @@ function TryPageInner() {
       }
     });
   };
+  
+  const handleAiChatMessage = async (text: string, image?: string) => {
+    if (upgrades >= MAX_UPGRADES) {
+        setIsLimitReached(true);
+        return false; // Indicate message sending was blocked
+    }
+    
+    const result = await handleCategorization(text, image);
+
+    if (result.error) {
+        return "Sorry, I couldn't process that. Please try again.";
+    }
+
+    const newUpgCount = upgrades + 1;
+    setUpgrades(newUpgCount);
+    updateStorage(generations, newUpgCount);
+
+    if (result.category === 'code_request' && result.prompt) {
+        handleGenerate(result.prompt);
+        return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
+    }
+
+    return result.response || "I don't have a response for that.";
+  };
 
   const handleRestart = () => {
     if (lastSuccessfulPrompt) {
-      onGenerate(lastSuccessfulPrompt);
+      handleGenerate(lastSuccessfulPrompt);
     }
   }
 
@@ -186,13 +152,15 @@ function TryPageInner() {
     setIsSignupDialogOpen(true);
   }
 
+  const isDisabled = isPending || generations >= MAX_GENERATIONS;
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
        <Header />
       <main className="container mx-auto max-w-7xl flex-1 px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-            Try Starlight AI
+            Try MonoMuse
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Generate up to 5 websites and make 5 edits. Your trial resets every 24 hours.
@@ -202,10 +170,10 @@ function TryPageInner() {
           <CardContent className="p-4 flex items-center justify-center gap-4 text-sm">
               <Info className="w-5 h-5 text-accent-foreground" />
               <p className="text-accent-foreground">
-                  Generations left: <span className="font-bold">{MAX_GENERATIONS - generations}</span>
+                  Generations left: <span className="font-bold">{Math.max(0, MAX_GENERATIONS - generations)}</span>
               </p>
               <p className="text-accent-foreground">
-                  Edits left: <span className="font-bold">{MAX_UPGRADES - upgrades}</span>
+                  Edits left: <span className="font-bold">{Math.max(0, MAX_UPGRADES - upgrades)}</span>
               </p>
           </CardContent>
         </Card>
@@ -225,14 +193,14 @@ function TryPageInner() {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-[150px] text-base rounded-md focus-visible:ring-primary bg-background"
-                  disabled={isPending || generations >= MAX_GENERATIONS}
+                  disabled={isDisabled}
                   aria-label="Website Description Input"
                 />
               </CardContent>
               <CardFooter className="flex-col items-stretch gap-4">
                 <Button
-                  onClick={() => onGenerate()}
-                  disabled={isPending || generations >= MAX_GENERATIONS}
+                  onClick={() => handleGenerate()}
+                  disabled={isDisabled}
                   size="lg"
                   className="w-full font-bold"
                 >
@@ -250,9 +218,9 @@ function TryPageInner() {
                         variant="secondary"
                         size="sm"
                         onClick={() => {
-                          onGenerate(example);
+                          handleGenerate(example);
                         }}
-                        disabled={isPending || generations >= MAX_GENERATIONS}
+                        disabled={isDisabled}
                       >
                         <Wand2 className="mr-2 h-4 w-4" />
                         {example}
@@ -338,7 +306,7 @@ function TryPageInner() {
                         <Skeleton className="h-4 w-3/4" />
                       </div>
                     ) : (
-                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-code text-sm bg-background p-4 rounded-md">
+                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
                         <code>
                           {output || (
                             <p className="text-muted-foreground font-sans text-center">
@@ -356,16 +324,19 @@ function TryPageInner() {
         </div>
         {output && !isPending && (
           <div className="mt-8">
-            <TrialAiChat onGenerate={onGenerate} />
+            <AiChat 
+                onSendMessage={handleAiChatMessage}
+                disabled={upgrades >= MAX_UPGRADES}
+            />
           </div>
         )}
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Starlight Ai, All rights reserved.
+          &copy; 2025 MonoMuse, All rights reserved.
         </p>
       </footer>
-       <AlertDialog open={limitReached}>
+       <AlertDialog open={isLimitReached} onOpenChange={setIsLimitReached}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>You've reached the limit!</AlertDialogTitle>
@@ -374,6 +345,7 @@ function TryPageInner() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Link href="/signup" passHref>
               <AlertDialogAction>Sign Up</AlertDialogAction>
             </Link>
@@ -398,40 +370,4 @@ function TryPageInner() {
       </AlertDialog>
     </div>
   );
-}
-
-
-const TrialAiChat = ({ onGenerate }: { onGenerate: (prompt: string) => void }) => {
-    const { upgrades, incrementUpgrades } = useTrial();
-    
-    const handleSendMessage = async (text: string, image?: string) => {
-        if (!incrementUpgrades()) {
-            return false; // Indicate that the action was blocked
-        }
-
-        const result = await handleCategorization(text, image);
-
-        if(result.error) {
-            // No toast here, AiChat component will handle optimistic UI reversal
-            return "Sorry, I couldn't process that. Please try again.";
-        }
-    
-        if (result.category === 'code_request' && result.prompt) {
-            onGenerate(result.prompt);
-            return `I've started generating a new website based on your request: "${result.prompt}". Check out the preview!`;
-        }
-    
-        return result.response || "I don't have a response for that.";
-    }
-    
-    return <AiChat onSendMessage={handleSendMessage} disabled={upgrades >= MAX_UPGRADES} />
-}
-
-
-export default function TryPage() {
-    return (
-        <TrialProvider>
-            <TryPageInner />
-        </TrialProvider>
-    );
 }

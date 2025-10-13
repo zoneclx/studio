@@ -174,7 +174,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Starlight Ai Website Generation',
+          title: 'MonoMuse Website Generation',
           text: output,
         });
       } catch (error) {
@@ -364,7 +364,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         <Skeleton className="h-4 w-3/4" />
                       </div>
                     ) : (
-                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-code text-sm bg-background p-4 rounded-md">
+                      <pre className="h-full overflow-auto whitespace-pre-wrap animate-in fade-in duration-500 text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
                         <code>
                           {output || (
                             <p className="text-muted-foreground font-sans text-center">
@@ -390,7 +390,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          &copy; 2025 Starlight Ai, All rights reserved.
+          &copy; 2025 MonoMuse, All rights reserved.
         </p>
       </footer>
     </div>
