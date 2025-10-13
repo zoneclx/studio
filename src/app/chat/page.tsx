@@ -87,7 +87,7 @@ export default function ChatPage() {
         <Card className="w-full max-w-2xl h-full max-h-[80vh] flex flex-col">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold font-display">AI Chat</CardTitle>
-                <CardDescription>Ask me anything, or type 'clear' to start over.</CardDescription>
+                <CardDescription>Our AI Chat is free forever. Ask me anything, or type 'clear' to start over.</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 h-0 p-0">
                 <AiChat
