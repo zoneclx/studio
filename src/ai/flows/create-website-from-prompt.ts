@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,6 +23,8 @@ export async function* streamWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
 ): AsyncGenerator<string> {
   const { stream } = await ai.generate({
+    model: 'googleai/gemini-2.5-flash',
+    stream: true,
     prompt: `You are an expert web developer. A user wants to create a website.
   
 Generate a single, self-contained HTML file for a visually appealing website based on the user's prompt.
@@ -37,14 +40,10 @@ Generate a single, self-contained HTML file for a visually appealing website bas
 **User Prompt:**
 "{{{prompt}}}"
 `,
-    model: 'googleai/gemini-2.5-flash',
-    stream: true,
     config: {
       temperature: 0.7,
     },
-    input: {
-        prompt: input.prompt
-    }
+    input: input,
   });
 
   for await (const chunk of stream) {
