@@ -27,6 +27,7 @@
 
     --gradient-start: hsl(262, 80%, 95%);
     --gradient-end: hsl(0, 0%, 100%);
+    --breathing-glow: hsla(262, 83.3%, 57.8%, 0.15);
   }
 
   .dark {
@@ -52,6 +53,7 @@
     
     --gradient-start: hsl(240, 10%, 10%);
     --gradient-end: hsl(240, 10%, 3.9%);
+    --breathing-glow: hsla(262, 83.3%, 57.8%, 0.1);
   }
 }
 
@@ -76,5 +78,16 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes breathing-glow {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
   }
 }

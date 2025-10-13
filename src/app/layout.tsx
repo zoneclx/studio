@@ -11,6 +11,7 @@ import { ThemeProvider } from '@/context/theme-context';
 import { useSound } from '@/hooks/use-sound';
 import { useEffect } from 'react';
 import CookieConsent from '@/components/cookie-consent';
+import AnimatedBackground from '@/components/animated-background';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -68,7 +69,8 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <SoundProvider>
-            <div className="min-h-screen w-full bg-background/80 backdrop-blur-sm">
+            <AnimatedBackground />
+            <div className="relative z-10 min-h-screen w-full bg-background/80 backdrop-blur-sm">
               <AuthProvider>{children}</AuthProvider>
               <Toaster />
               <CookieConsent />
