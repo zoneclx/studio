@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
-import { Download, Share2, Sparkles, Wand2, Code, Eye, RefreshCw } from 'lucide-react';
+import { Download, Share2, Sparkles, Wand2, Code, Eye, RefreshCw, Save } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -47,6 +47,24 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     }
   }, []);
 
+  const saveWork = (html: string, currentPrompt: string) => {
+    if (user && html) {
+      try {
+        const work = {
+          html: html,
+          prompt: currentPrompt,
+          date: new Date().toISOString(),
+        };
+        localStorage.setItem(`monochrome-work-${user.uid}`, JSON.stringify(work));
+        return true;
+      } catch (e) {
+        console.error("Failed to save work to localStorage", e);
+        return false;
+      }
+    }
+    return false;
+  }
+
   const onGenerate = (text?: string) => {
     const textToProcess = text || prompt;
     if (!textToProcess) {
@@ -73,19 +91,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
         const generatedHtml = result.text || '';
         setOutput(generatedHtml);
         setLastSuccessfulPrompt(textToProcess);
-
-        if (user && generatedHtml) {
-          try {
-            const work = {
-              html: generatedHtml,
-              prompt: textToProcess,
-              date: new Date().toISOString(),
-            };
-            localStorage.setItem(`monochrome-work-${user.uid}`, JSON.stringify(work));
-          } catch(e) {
-            console.error("Failed to save work to localStorage", e);
-          }
-        }
+        saveWork(generatedHtml, textToProcess);
       }
     });
   };
@@ -95,6 +101,22 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       onGenerate(lastSuccessfulPrompt);
     }
   }
+  
+  const handleSave = () => {
+    if(saveWork(output, prompt)) {
+       toast({
+        title: 'Work Saved',
+        description: 'Your latest creation has been saved to your archive.',
+      });
+    } else {
+       toast({
+        title: 'Save Failed',
+        description: 'Could not save your work.',
+        variant: 'destructive',
+      });
+    }
+  };
+
 
   useEffect(() => {
     if (initialPrompt) {
@@ -103,7 +125,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPrompt]);
 
-  const handleSave = () => {
+  const handleDownload = () => {
     if (!output) return;
     try {
       const blob = new Blob([output], { type: 'text/html' });
@@ -117,7 +139,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       URL.revokeObjectURL(url);
     } catch (e) {
       toast({
-        title: 'Save failed',
+        title: 'Download failed',
         description: 'Could not save the file.',
         variant: 'destructive',
       });
@@ -258,7 +280,15 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         variant="ghost"
                         size="icon"
                         onClick={handleSave}
-                        aria-label="Save code as an HTML file"
+                        aria-label="Save work to archive"
+                      >
+                        <Save className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleDownload}
+                        aria-label="Download code as an HTML file"
                       >
                         <Download className="h-4 w-4" />
                       </Button>
