@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "flex flex-col min-h-screen w-full bg-transparent text-foreground"
+        "flex flex-col min-h-screen w-full bg-background text-foreground"
       )}
     >
       <Header />
