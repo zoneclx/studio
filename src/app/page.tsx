@@ -7,6 +7,8 @@ import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import Header from '@/components/header';
+import { useTheme } from '@/context/theme-context';
+import { cn } from '@/lib/utils';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -36,16 +38,21 @@ const animatedTitles = [
 
 export default function Home() {
   const { user } = useAuth();
-  const bgImage = "https://images.unsplash.com/photo-1614726353900-951678b78afb?q=80&w=2942&auto=format&fit=crop";
+  const { theme } = useTheme();
+  const isDark = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  const bgImage = "https://i.ibb.co/b3bzC8B/cosmic-deep-space-with-nebula-and-stardust-in-universe-generated-by-ai.jpg";
 
   return (
-    <div 
-      className="relative min-h-screen w-full bg-white dark:bg-cover dark:bg-center dark:bg-no-repeat"
-      style={{ backgroundImage: `url(${bgImage})` }}
+    <div
+      className={cn(
+        'relative min-h-screen w-full bg-cover bg-center bg-no-repeat',
+        isDark ? `bg-[url('${bgImage}')]` : 'bg-white'
+      )}
     >
-      <div className="absolute inset-0 bg-black/50 z-0 hidden dark:block"></div>
+      <div className={cn("absolute inset-0 z-0", isDark ? "bg-black/50" : "bg-white/0")}></div>
 
-      <div className="relative z-10 flex flex-col min-h-screen text-foreground dark:text-white">
+      <div className={cn("relative z-10 flex flex-col min-h-screen", isDark ? 'text-white' : 'text-foreground')}>
         <Header />
 
         <main className="flex-1 flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +60,7 @@ export default function Home() {
                 texts={animatedTitles}
                 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display tracking-tight mb-4 min-h-[80px] sm:min-h-[140px] lg:min-h-[168px]"
             />
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground dark:text-white/80 max-w-2xl mb-8">
+            <p className={cn("text-base sm:text-lg lg:text-xl max-w-2xl mb-8", isDark ? 'text-white/80' : 'text-muted-foreground')}>
               Monochrome AI is a powerful tool that allows you to generate
               beautiful, production-ready websites using simple text prompts.
               Describe your vision, and watch as our AI brings it to life, helping
@@ -67,7 +74,7 @@ export default function Home() {
               </Link>
               {!user && (
                 <Link href="/try">
-                  <Button size="lg" variant="outline" className="font-bold text-lg w-full sm:w-auto dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
+                  <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto", isDark && "dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black")}>
                     Try for Free
                   </Button>
                 </Link>
@@ -75,7 +82,7 @@ export default function Home() {
             </div>
         </main>
 
-        <footer className="py-6 text-center text-sm text-muted-foreground dark:text-white/70 z-10">
+        <footer className={cn("py-6 text-center text-sm z-10", isDark ? 'text-white/70' : 'text-muted-foreground')}>
           <p>
             &copy; 2025 Enzo Gimena's Ai, All rights reserved.
           </p>
