@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import AiChat from '@/components/ai-chat';
 import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
@@ -17,6 +18,15 @@ const initialMessages = [
 
 export default function ChatPage() {
   const { toast } = useToast();
+
+  useEffect(() => {
+    toast({
+      title: 'Disclaimer',
+      description: 'Monochrome AI is an experimental tool. The information it provides may not be 100% accurate.',
+      duration: 5000,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim()) return;
@@ -46,13 +56,6 @@ export default function ChatPage() {
                   Ask me anything.
               </p>
           </div>
-          <Alert className="max-w-3xl mx-auto mb-8 bg-accent/50 border-accent">
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Disclaimer</AlertTitle>
-            <AlertDescription>
-              Monochrome AI is an experimental tool. The information it provides may not be 100% accurate. Please verify important information.
-            </AlertDescription>
-          </Alert>
           <div className="flex-1 w-full max-w-3xl mx-auto h-0">
             <AiChat
                 initialMessages={initialMessages}
