@@ -9,6 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { generate } from 'genkit/ai';
 import { z } from 'genkit';
 
 const DiagnoseWebsiteChangeInputSchema = z.object({
@@ -27,7 +28,7 @@ export type DiagnoseWebsiteChangeInput = z.infer<
 export async function diagnoseWebsiteChange(
   input: DiagnoseWebsiteChangeInput
 ): Promise<string> {
-  const { text } = await ai.generate({
+  const { text } = await generate({
     model: 'gemini-1.5-flash',
     prompt: [
         {text: `You are a friendly and knowledgeable AI assistant for Monochrome AI, a website builder. Your job is to answer the user's questions clearly and concisely.
