@@ -30,10 +30,11 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
         Prompt: "${input.prompt}"
         
         Generate the complete HTML for the page.
+        - The response MUST be a single, complete HTML document.
         - Include the DOCTYPE, head, and body.
-        - Inline all CSS in a <style> tag in the <head>.
-        - Use Tailwind CSS classes for styling. Include the Tailwind CDN script: <script src="https://cdn.tailwindcss.com"></script>.
-        - Inline all JavaScript in a <script> tag at the end of the <body>.
+        - Inline all CSS within a <style> tag in the <head>.
+        - Use Tailwind CSS for styling. You must include the Tailwind CDN script: <script src="https://cdn.tailwindcss.com"></script>.
+        - Inline all JavaScript within a <script> tag at the end of the <body>.
 
         Your response must be a valid JSON object with a single key, "html", containing the full HTML code as a string.
         
@@ -47,7 +48,6 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     try {
         // Clean the raw text response to make it valid JSON
         let cleanedText = text;
-        // Remove markdown backticks if they exist
         if (cleanedText.startsWith("```json")) {
             cleanedText = cleanedText.substring(7, cleanedText.length - 3).trim();
         } else if (cleanedText.startsWith("```")) {
