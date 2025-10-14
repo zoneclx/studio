@@ -7,29 +7,47 @@
  * - createWebsiteFromPrompt - A function that generates HTML for a website based on a prompt.
  */
 import { ai } from '@/ai/genkit';
-import { CreateWebsiteFromPromptInput, WebsiteCodeSchema, type WebsiteCode } from '@/ai/schemas';
+import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema, type CreateWebsiteFromPromptInput, type WebsiteCode } from '@/ai/schemas';
 
 export async function createWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
 ): Promise<WebsiteCode> {
-  const { text } = await ai.generate({
-    prompt: `You are an expert web developer. Create a complete, single-page website based on the following prompt.
-
-    Prompt: "${input.prompt}"
-    
-    Your response must be ONLY the raw HTML code for a complete, valid, and modern-looking webpage.
-    - Include the DOCTYPE declaration, head, and body.
-    - All CSS must be included directly inside a <style> tag in the <head>.
-    - All JavaScript for interactivity must be included directly inside a <script> tag at the end of the <body>.
-    - Use Tailwind CSS classes for styling where possible, but embed the full Tailwind library or use a CDN link so the classes work. A good option is: <script src="https://cdn.tailwindcss.com"></script>
-    
-    Return ONLY the HTML code and nothing else. Do not wrap it in markdown or any other characters.`,
-  });
-
-  if (!text) {
-    throw new Error('AI failed to generate a response.');
-  }
-
-  // The output is now just the raw HTML string.
-  return WebsiteCodeSchema.parse({ html: text, css: '', javascript: ''});
+    console.log("createWebsiteFromPrompt input", input);
+    return createWebsiteFromPromptFlow(input);
 }
+
+
+const createWebsiteFromPromptFlow = ai.defineFlow(
+  {
+    name: 'createWebsiteFromPromptFlow',
+    inputSchema: CreateWebsiteFromPromptInputSchema,
+    outputSchema: WebsiteCodeSchema,
+  },
+  async (input) => {
+    const { output } = await ai.generate({
+        prompt: `You are an expert web developer. Create a complete, single-page website based on the following prompt.
+
+        Prompt: "${input.prompt}"
+        
+        Your response must be a valid JSON object matching this schema: { "html": "...", "css": "", "javascript": "" }.
+        
+        Inside the 'html' property, provide the raw HTML code for a complete, valid, and modern-looking webpage.
+        - The HTML must include the DOCTYPE declaration, head, and body.
+        - All CSS must be included directly inside a <style> tag in the <head>.
+        - All JavaScript for interactivity must be included directly inside a <script> tag at the end of the <body>.
+        - Use Tailwind CSS classes for styling where possible. Include the full Tailwind library via this CDN script in the head: <script src="https://cdn.tailwindcss.com"></script>
+        
+        The 'css' and 'javascript' properties in the JSON object should be empty strings, as all styling and scripts must be inlined in the HTML.
+        `,
+        output: {
+            schema: WebsiteCodeSchema,
+        },
+    });
+
+    if (!output) {
+      throw new Error('AI failed to generate a valid website structure.');
+    }
+    
+    return output;
+  }
+);

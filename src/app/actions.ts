@@ -9,15 +9,14 @@ export async function handleGeneration(
   prompt: string
 ): Promise<WebsiteCode & { error?: string }> {
   try {
-    // The function now directly returns the object with HTML.
     const websiteCode = await createWebsiteFromPrompt({ prompt });
+    if (!websiteCode || !websiteCode.html) {
+         throw new Error("AI returned an empty or invalid response. Please try again.");
+    }
     return websiteCode;
   } catch (error) {
     console.error('AI generation failed:', error);
-    let errorMessage = "AI returned an invalid response. Please try again.";
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    }
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during AI generation.";
      return {
       error: errorMessage,
       html: `<h1>Error</h1><p>${errorMessage}</p><p>Please check the server logs for more details.</p>`,
