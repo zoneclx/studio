@@ -32,9 +32,8 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
         
         Inside the 'html' property, provide the raw HTML code for a complete, valid, and modern-looking webpage.
         - The HTML must include the DOCTYPE declaration, head, and body.
-        - All CSS must be included directly inside a <style> tag in the <head>.
+        - All CSS must be included directly inside a <style> tag in the <head>. You must include the full Tailwind CSS library via this CDN script in the head: <script src="https://cdn.tailwindcss.com"></script>. Use Tailwind CSS classes for styling.
         - All JavaScript for interactivity must be included directly inside a <script> tag at the end of the <body>.
-        - Use Tailwind CSS classes for styling where possible. Include the full Tailwind library via this CDN script in the head: <script src="https://cdn.tailwindcss.com"></script>
         
         The 'css' and 'javascript' properties in the JSON object should be empty strings, as all styling and scripts must be inlined in the HTML.
         `,
