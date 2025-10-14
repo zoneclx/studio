@@ -23,30 +23,57 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     outputSchema: WebsiteCodeSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
+    const { text, usage } = await ai.generate({
         model: 'gemini-1.5-flash',
-        prompt: `You are an expert web developer. Create a complete, single-page website based on the following prompt.
-
+        prompt: `You are an expert web developer creating a single-page website.
+        
         Prompt: "${input.prompt}"
         
-        Your response must be a valid JSON object matching this schema: { "html": "...", "css": "", "javascript": "" }.
+        Generate the complete HTML for the page.
+        - Include the DOCTYPE, head, and body.
+        - Inline all CSS in a <style> tag in the <head>.
+        - Use Tailwind CSS classes for styling. Include the Tailwind CDN script: <script src="https://cdn.tailwindcss.com"></script>.
+        - Inline all JavaScript in a <script> tag at the end of the <body>.
+
+        Your response must be a valid JSON object with a single key, "html", containing the full HTML code as a string.
         
-        Inside the 'html' property, provide the raw HTML code for a complete, valid, and modern-looking webpage.
-        - The HTML must include the DOCTYPE declaration, head, and body.
-        - All CSS must be included directly inside a <style> tag in the <head>. You must include the full Tailwind CSS library via this CDN script in the head: <script src="https://cdn.tailwindcss.com"></script>. Use Tailwind CSS classes for styling.
-        - All JavaScript for interactivity must be included directly inside a <script> tag at the end of the <body>.
-        
-        The 'css' and 'javascript' properties in the JSON object should be empty strings, as all styling and scripts must be inlined in the HTML.
+        Example: { "html": "<!DOCTYPE html>..." }
         `,
-        output: {
-            schema: WebsiteCodeSchema,
+        config: {
+            temperature: 0.8,
         },
     });
 
-    if (!output) {
-      throw new Error('AI failed to generate a valid website structure.');
+    try {
+        // Clean the raw text response to make it valid JSON
+        let cleanedText = text;
+        // Remove markdown backticks if they exist
+        if (cleanedText.startsWith("```json")) {
+            cleanedText = cleanedText.substring(7, cleanedText.length - 3).trim();
+        } else if (cleanedText.startsWith("```")) {
+            cleanedText = cleanedText.substring(3, cleanedText.length - 3).trim();
+        }
+        
+        const parsedOutput = JSON.parse(cleanedText);
+        
+        if (!parsedOutput.html) {
+            throw new Error('AI response did not contain an "html" property.');
+        }
+
+        return {
+            html: parsedOutput.html,
+            css: '',
+            javascript: '',
+        };
+
+    } catch (e) {
+        console.error("Failed to parse AI response:", e);
+        // If parsing fails, wrap the raw text in a basic HTML structure as a fallback.
+        return {
+            html: `<!DOCTYPE html><html><head><title>AI Fallback</title><script src="https://cdn.tailwindcss.com"></script></head><body><div class="p-4 text-red-500">Error parsing AI response. Raw output below:</div><pre class="p-4 bg-gray-100 rounded">${text}</pre></body></html>`,
+            css: '',
+            javascript: '',
+        };
     }
-    
-    return output;
   }
 );
