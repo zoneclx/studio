@@ -12,7 +12,6 @@ import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema, type CreateWebsi
 export async function createWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
 ): Promise<WebsiteCode> {
-    console.log("createWebsiteFromPrompt input", input);
     return createWebsiteFromPromptFlow(input);
 }
 
