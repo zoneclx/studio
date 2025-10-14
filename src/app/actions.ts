@@ -7,7 +7,7 @@ import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema, type WebsiteCode
 import { z } from 'genkit';
 
 // Initialize Genkit AI instance directly in the actions file
-export const ai = genkit({
+const ai = genkit({
   plugins: [googleAI()],
 });
 
