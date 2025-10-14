@@ -28,7 +28,7 @@ export async function diagnoseWebsiteChange(
   input: DiagnoseWebsiteChangeInput
 ): Promise<string> {
   const { text } = await ai.generate({
-    model: 'gpt-3.5-turbo',
+    model: 'gemini-1.5-flash',
     prompt: [
         {text: `You are a friendly and knowledgeable AI assistant for Monochrome AI, a website builder. Your job is to answer the user's questions clearly and concisely.
 
