@@ -8,7 +8,6 @@
  */
 import { ai } from '@/ai/genkit';
 import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema, type CreateWebsiteFromPromptInput, type WebsiteCode } from '@/ai/schemas';
-import { generate } from 'genkit/ai';
 
 export async function createWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
@@ -24,7 +23,7 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     outputSchema: WebsiteCodeSchema,
   },
   async (input) => {
-    const { text, usage } = await generate({
+    const { text } = await ai.generate({
         model: 'gemini-1.5-flash',
         prompt: `You are an expert web developer creating a single-page website.
         
