@@ -8,7 +8,7 @@ import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema } from '@/ai/sche
 
 import '@/ai/flows/improve-text-quality.ts';
 import '@/ai/flows/generate-text-from-prompt.ts';
-import '@/aiflows/summarize-text.ts';
+import '@/ai/flows/summarize-text.ts';
 import '@/ai/flows/diagnose-website-change.ts';
 
 // Moved from create-website-from-prompt.ts to resolve "use server" export error
