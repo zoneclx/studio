@@ -16,7 +16,7 @@ export const ai = genkit({
 const createWebsiteFromPromptFlow = ai.defineFlow(
   {
     name: 'createWebsiteFromPromptFlow',
-    inputSchema: CreateWebsiteFrompromptInputSchema,
+    inputSchema: CreateWebsiteFromPromptInputSchema,
     outputSchema: WebsiteCodeSchema,
   },
   async (input) => {
