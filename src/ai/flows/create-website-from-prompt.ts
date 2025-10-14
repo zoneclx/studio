@@ -24,7 +24,7 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await ai.generate({
-        model: 'gpt-4',
+        model: 'gpt-3.5-turbo',
         prompt: `You are an expert web developer. Create a complete, single-page website based on the following prompt.
 
         Prompt: "${input.prompt}"
@@ -50,5 +50,6 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     return output;
   }
 );
+
 
 
