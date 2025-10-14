@@ -17,9 +17,9 @@ export async function handleGeneration(
     if (error instanceof Error) {
         errorMessage = error.message;
     }
-    return {
+     return {
       error: errorMessage,
-      html: `<h1>Error</h1><p>${errorMessage}</p>`,
+      html: `<h1>Error</h1><p>${errorMessage}</p><p>Please check the server logs for more details.</p>`,
       css: '',
       javascript: ''
     };
