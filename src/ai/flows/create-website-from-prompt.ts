@@ -23,7 +23,7 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
     outputSchema: WebsiteCodeSchema,
   },
   async (input) => {
-    const { text } = await ai.generate({
+    const { output } = await ai.generate({
         model: 'gemini-pro',
         prompt: `You are an expert web developer creating a single-page website.
         
@@ -43,33 +43,15 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
         config: {
             temperature: 0.8,
         },
+        output: {
+          schema: WebsiteCodeSchema,
+        }
     });
 
-    try {
-        // Clean the raw text response to make it valid JSON
-        let cleanedText = text;
-        if (cleanedText.startsWith("```json")) {
-            cleanedText = cleanedText.substring(7, cleanedText.length - 3).trim();
-        } else if (cleanedText.startsWith("```")) {
-            cleanedText = cleanedText.substring(3, cleanedText.length - 3).trim();
-        }
-        
-        const parsedOutput = JSON.parse(cleanedText);
-        
-        if (!parsedOutput.html) {
-            throw new Error('AI response did not contain an "html" property.');
-        }
-
-        return {
-            html: parsedOutput.html,
-        };
-
-    } catch (e) {
-        console.error("Failed to parse AI response:", e);
-        // If parsing fails, wrap the raw text in a basic HTML structure as a fallback.
-        return {
-            html: `<!DOCTYPE html><html><head><title>AI Fallback</title><script src="https://cdn.tailwindcss.com"></script></head><body><div class="p-4 text-red-500">Error parsing AI response. Raw output below:</div><pre class="p-4 bg-gray-100 rounded">${text}</pre></body></html>`,
-        };
+    if (!output) {
+      throw new Error('AI response did not contain a valid output.');
     }
+
+    return output;
   }
 );

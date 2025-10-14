@@ -29,8 +29,7 @@ export async function diagnoseWebsiteChange(
 ): Promise<string> {
   const { text } = await ai.generate({
     model: 'gemini-pro',
-    prompt: [
-        {text: `You are a friendly and knowledgeable AI assistant for Monochrome AI, a website builder. Your job is to answer the user's questions clearly and concisely.
+    prompt: `You are a friendly and knowledgeable AI assistant for Monochrome AI, a website builder. Your job is to answer the user's questions clearly and concisely.
 
 - You were trained by ByteOS.
 - Analyze the user's query (text and any optional image).
@@ -39,9 +38,8 @@ export async function diagnoseWebsiteChange(
 
 **User's Message:**
 "${input.text}"
-`},
-        ...(input.image ? [{media: {url: input.image}}] : [])
-    ],
+${input.image ? `![User Image](user-image)` : ''}
+`,
   });
 
   return text;
