@@ -7,7 +7,7 @@
  * - createWebsiteFromPrompt - A function that generates HTML for a website based on a prompt.
  */
 import { ai } from '@/ai/genkit';
-import { CreateWebsiteFromPromptInput, WebsiteCode } from '@/ai/schemas';
+import { CreateWebsiteFromPromptInput, WebsiteCode, WebsiteCodeSchema } from '@/ai/schemas';
 
 export async function createWebsiteFromPrompt(
   input: CreateWebsiteFromPromptInput
@@ -39,7 +39,7 @@ export async function createWebsiteFromPrompt(
     // Sometimes the model might wrap the JSON in markdown backticks.
     const cleanOutput = output.replace(/```json/g, '').replace(/```/g, '').trim();
     const parsedOutput = JSON.parse(cleanOutput);
-    return WebsiteCode.parse(parsedOutput);
+    return WebsiteCodeSchema.parse(parsedOutput);
   } catch (error) {
     console.error("Failed to parse AI response:", output, error);
     throw new Error("The AI returned an invalid JSON structure. Please try again.");
