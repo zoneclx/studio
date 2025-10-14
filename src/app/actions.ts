@@ -1,16 +1,22 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 import { CreateWebsiteFromPromptInputSchema, WebsiteCodeSchema, type WebsiteCode } from '@/ai/schemas';
 import { z } from 'genkit';
+
+// Initialize Genkit AI instance directly in the actions file
+export const ai = genkit({
+  plugins: [googleAI()],
+});
 
 
 // Define the flow directly in the actions file
 const createWebsiteFromPromptFlow = ai.defineFlow(
   {
     name: 'createWebsiteFromPromptFlow',
-    inputSchema: CreateWebsiteFromPromptInputSchema,
+    inputSchema: CreateWebsiteFrompromptInputSchema,
     outputSchema: WebsiteCodeSchema,
   },
   async (input) => {
