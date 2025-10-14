@@ -101,6 +101,8 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
           return;
       }
       
+      // The result is now expected to have the full HTML in the html property.
+      // css and javascript might be empty if they are inlined.
       const websiteCode: WebsiteCode = {
           html: result.html || '',
           css: result.css || '',
@@ -152,8 +154,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
   const getFullHtml = () => {
     if (!output) return '';
-    // This is a simplified way to combine the files for preview.
-    // A more robust solution might use blob URLs.
+    // The AI is now expected to return a single HTML file with everything inlined.
+    if (output.html) {
+      return output.html;
+    }
+    // Fallback for the old structure, just in case.
     return output.html
       .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
       .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
@@ -162,8 +167,6 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   const handleDownload = () => {
     if (!output) return;
     try {
-      // For simplicity, we'll download the combined HTML file.
-      // A more complex implementation could zip the files.
       const blob = new Blob([getFullHtml()], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -184,7 +187,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
   const handleShare = async () => {
     if (!output) return;
-    const allCode = `// index.html\n${output.html}\n\n// style.css\n${output.css}\n\n// script.js\n${output.javascript}`;
+    const allCode = getFullHtml();
     if (navigator.share) {
       try {
         await navigator.share({
@@ -389,27 +392,11 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         <>
                             <TabsList className='mx-2 mt-2 self-start'>
                                 <TabsTrigger value="index.html">index.html</TabsTrigger>
-                                <TabsTrigger value="style.css">style.css</TabsTrigger>
-                                <TabsTrigger value="script.js">script.js</TabsTrigger>
                             </TabsList>
                             <TabsContent value="index.html" className="flex-1 h-0 mt-0">
                                 <CardContent className="h-full p-2">
                                     <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
                                         <code>{output.html}</code>
-                                    </pre>
-                                </CardContent>
-                            </TabsContent>
-                            <TabsContent value="style.css" className="flex-1 h-0 mt-0">
-                                <CardContent className="h-full p-2">
-                                    <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                                        <code>{output.css}</code>
-                                    </pre>
-                                </CardContent>
-                            </TabsContent>
-                            <TabsContent value="script.js" className="flex-1 h-0 mt-0">
-                                <CardContent className="h-full p-2">
-                                    <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                                        <code>{output.javascript}</code>
                                     </pre>
                                 </CardContent>
                             </TabsContent>

@@ -9,6 +9,7 @@ export async function handleGeneration(
   prompt: string
 ): Promise<WebsiteCode & { error?: string }> {
   try {
+    // The function now directly returns the object with HTML.
     const websiteCode = await createWebsiteFromPrompt({ prompt });
     return websiteCode;
   } catch (error) {

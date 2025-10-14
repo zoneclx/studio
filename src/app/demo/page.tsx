@@ -146,7 +146,7 @@ export default function DemoPage() {
   }, [prompt, trial, toast, updateTrialStorage]);
   
   const handleAiChatMessage = async (text: string, image?: string) => {
-    if (!trial) return false;
+    if (!trial) return { error: "Trial not initialized" };
     if (trial.edits >= MAX_EDITS) {
         setIsLimitDialogOpen(true);
         return false; // Indicate message sending was blocked
@@ -169,6 +169,11 @@ export default function DemoPage() {
 
   const getFullHtml = () => {
     if (!output) return '';
+    // The AI is now expected to return a single HTML file with everything inlined.
+    if (output.html) {
+      return output.html;
+    }
+    // Fallback for old structure
     return output.html
       .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
       .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
@@ -347,27 +352,11 @@ export default function DemoPage() {
                           <>
                               <TabsList className='mx-2 mt-2 self-start'>
                                   <TabsTrigger value="index.html">index.html</TabsTrigger>
-                                  <TabsTrigger value="style.css">style.css</TabsTrigger>
-                                  <TabsTrigger value="script.js">script.js</TabsTrigger>
                               </TabsList>
                               <TabsContent value="index.html" className="flex-1 h-0 mt-0">
                                   <CardContent className="h-full p-2">
                                       <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
                                           <code>{output.html}</code>
-                                      </pre>
-                                  </CardContent>
-                              </TabsContent>
-                              <TabsContent value="style.css" className="flex-1 h-0 mt-0">
-                                  <CardContent className="h-full p-2">
-                                      <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                                          <code>{output.css}</code>
-                                      </pre>
-                                  </CardContent>
-                              </TabsContent>
-                              <TabsContent value="script.js" className="flex-1 h-0 mt-0">
-                                  <CardContent className="h-full p-2">
-                                      <pre className="h-full overflow-auto whitespace-pre-wrap text-foreground/90 font-mono text-sm bg-background p-4 rounded-md">
-                                          <code>{output.javascript}</code>
                                       </pre>
                                   </CardContent>
                               </TabsContent>
