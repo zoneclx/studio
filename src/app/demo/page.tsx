@@ -168,15 +168,8 @@ export default function DemoPage() {
   }
 
   const getFullHtml = () => {
-    if (!output) return '';
-    // The AI is now expected to return a single HTML file with everything inlined.
-    if (output.html) {
-      return output.html;
-    }
-    // Fallback for old structure
-    return output.html
-      .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
-      .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
+    if (!output || !output.html) return '';
+    return output.html;
   }
 
   const isDisabled = isPending || !trial || trial.generations >= MAX_GENERATIONS;
@@ -335,7 +328,7 @@ export default function DemoPage() {
                         srcDoc={getFullHtml()}
                         className="w-full h-full border rounded-md bg-white"
                         title="Website Preview"
-                        sandbox="allow-scripts"
+                        sandbox="allow-scripts allow-same-origin"
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-8 rounded-md bg-background/50">

@@ -111,16 +111,18 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
 
       setOutput(websiteCode);
       setLastSuccessfulPrompt(textToProcess);
-      saveWork(websiteCode, textToProcess);
+      if(saveWork(websiteCode, textToProcess)) {
+        toast({
+            title: 'Work Saved',
+            description: 'Your creation has been automatically saved to your archive.',
+        });
+      }
     });
   };
   
   const handleAiChatMessage = async (text: string, image?: string) => {
     const result = await handleChat(text, image);
-    return {
-        category: 'general_inquiry',
-        response: result.response,
-    };
+    return result;
   };
 
   const handleRestart = () => {
@@ -138,7 +140,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
     } else {
        toast({
         title: 'Save Failed',
-        description: 'Could not save your work.',
+        description: 'Could not save your work. You may need to be logged in.',
         variant: 'destructive',
       });
     }
@@ -153,15 +155,8 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
   }, [initialPrompt]);
 
   const getFullHtml = () => {
-    if (!output) return '';
-    // The AI is now expected to return a single HTML file with everything inlined.
-    if (output.html) {
-      return output.html;
-    }
-    // Fallback for the old structure, just in case.
-    return output.html
-      .replace('<link rel="stylesheet" href="style.css">', `<style>${output.css}</style>`)
-      .replace('<script src="script.js" defer></script>', `<script>${output.javascript}</script>`);
+    if (!output || !output.html) return '';
+    return output.html;
   }
 
   const handleDownload = () => {
@@ -294,7 +289,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                     <Card>
                          <CardHeader>
                             <CardTitle>AI Assistant</CardTitle>
-                             <CardDescription>Describe any changes you'd like to make.</CardDescription>
+                             <CardDescription>Your work is saved automatically. Ask the AI to make changes, or start a new generation above.</CardDescription>
                          </CardHeader>
                          <CardContent className="p-0">
                             <AiChat 
@@ -329,7 +324,8 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         variant="ghost"
                         size="icon"
                         onClick={handleRestart}
-                        aria-label="Restart"
+                        aria-label="Restart Generation"
+                        title="Restart Generation"
                       >
                         <RefreshCw className="h-4 w-4" />
                       </Button>
@@ -338,6 +334,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         size="icon"
                         onClick={handleSave}
                         aria-label="Save work to archive"
+                        title="Save to Archive"
                       >
                         <Save className="h-4 w-4" />
                       </Button>
@@ -346,6 +343,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         size="icon"
                         onClick={handleDownload}
                         aria-label="Download code as an HTML file"
+                        title="Download HTML"
                       >
                         <Download className="h-4 w-4" />
                       </Button>
@@ -355,6 +353,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                           size="icon"
                           onClick={handleShare}
                           aria-label="Share generated code"
+                          title="Share"
                         >
                           <Share2 className="h-4 w-4" />
                         </Button>
@@ -381,7 +380,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
                         srcDoc={getFullHtml()}
                         className="w-full h-full border rounded-md bg-white"
                         title="Website Preview"
-                        sandbox="allow-scripts"
+                        sandbox="allow-scripts allow-same-origin"
                       />
                     )}
                   </CardContent>
@@ -416,7 +415,7 @@ export default function WebBuilder({ initialPrompt = '' }: WebBuilderProps) {
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
         <p>
-          © Enzo Gimena's. All rights reserved.
+          © 2025 Enzo Gimena's Ai. All rights reserved.
         </p>
       </footer>
     </div>
