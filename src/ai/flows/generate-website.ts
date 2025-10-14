@@ -8,7 +8,7 @@ export async function generateWebsite(
   input: WebsiteGenInput
 ): Promise<WebsiteGenOutput> {
     const { text } = await ai.generate({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-pro',
         prompt: `Generate a single-page HTML website based on this prompt: "${input.prompt}". The response MUST be a single, complete HTML document. Inline all CSS using a <style> tag. Use Tailwind CSS via the CDN: <script src="https://cdn.tailwindcss.com"></script>. Your entire response must be a valid JSON object with a single key "html".`,
         config: {
             temperature: 0.7,

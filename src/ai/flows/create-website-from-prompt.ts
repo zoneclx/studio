@@ -24,7 +24,7 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
   },
   async (input) => {
     const { text } = await ai.generate({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-pro',
         prompt: `You are an expert web developer creating a single-page website.
         
         Prompt: "${input.prompt}"
@@ -62,8 +62,6 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
 
         return {
             html: parsedOutput.html,
-            css: '',
-            javascript: '',
         };
 
     } catch (e) {
@@ -71,8 +69,6 @@ const createWebsiteFromPromptFlow = ai.defineFlow(
         // If parsing fails, wrap the raw text in a basic HTML structure as a fallback.
         return {
             html: `<!DOCTYPE html><html><head><title>AI Fallback</title><script src="https://cdn.tailwindcss.com"></script></head><body><div class="p-4 text-red-500">Error parsing AI response. Raw output below:</div><pre class="p-4 bg-gray-100 rounded">${text}</pre></body></html>`,
-            css: '',
-            javascript: '',
         };
     }
   }
