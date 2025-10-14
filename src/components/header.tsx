@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, User, Menu, Settings, LogOut } from 'lucide-react';
+import { Sparkles, User, Menu, Settings, LogOut, Bot as BotIcon } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   DropdownMenu,
@@ -164,7 +164,7 @@ export default function Header() {
                  {navLinks.filter(link => user || !link.auth).map(link => (
                     <NavLink key={link.href} href={link.href} label={link.label} icon={link.icon} badge={link.badge} onClick={handleLinkClick} />
                  ))}
-                 {!user && <NavLink href="/demo" label="Demo for Free" icon={Bot} onClick={handleLinkClick} />}
+                 {!user && <NavLink href="/try" label="Demo for Free" icon={BotIcon} onClick={handleLinkClick} />}
             </nav>
             <div className="flex items-center justify-between mt-4">
               <UserMenu />
@@ -179,5 +179,3 @@ export default function Header() {
     </header>
   );
 }
-
-    

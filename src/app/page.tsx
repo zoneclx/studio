@@ -86,7 +86,7 @@ export default function Home() {
                         </Button>
                         </Link>
                         {!user && (
-                        <Link href="/demo">
+                        <Link href="/try">
                             <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
                             Demo for Free
                             </Button>
@@ -158,5 +158,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
