@@ -113,7 +113,7 @@ const AiChatPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
       {messages.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-4">
             <div className="text-center">
