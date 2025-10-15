@@ -10,6 +10,13 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -127,20 +134,41 @@ export default function Home() {
                         We combine a powerful AI model with an intuitive interface to make web development accessible to everyone.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {features.map((feature, index) => (
-                        <Card key={index} className="bg-card hover:shadow-lg transition-shadow animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.3}s` }}>
-                            <CardHeader>
-                                {feature.icon}
-                                 <CardTitle className="mt-4 text-xl flex items-center gap-2">
-                                    {feature.title}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <Accordion type="single" collapsible className="w-full space-y-4">
+                        {features.slice(0, 2).map((feature, index) => (
+                            <AccordionItem value={`item-${index}`} key={index} className="bg-card border-none rounded-lg shadow-sm animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.3}s` }}>
+                                <AccordionTrigger className="p-6 text-left hover:no-underline hover:shadow-md hover:shadow-primary/20 data-[state=open]:shadow-md data-[state=open]:shadow-primary/20 transition-shadow rounded-lg">
+                                    <div className="flex items-start gap-4">
+                                        {feature.icon}
+                                        <div>
+                                            <h3 className="text-xl font-semibold">{feature.title}</h3>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="p-6 pt-0">
+                                    <p className="text-muted-foreground ml-12">{feature.description}</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                     <Accordion type="single" collapsible className="w-full space-y-4">
+                        {features.slice(2).map((feature, index) => (
+                           <AccordionItem value={`item-${index + 2}`} key={index+2} className="bg-card border-none rounded-lg shadow-sm animate-fade-in-up" style={{ animationDelay: `${(index+2) * 0.1 + 0.3}s` }}>
+                                <AccordionTrigger className="p-6 text-left hover:no-underline hover:shadow-md hover:shadow-primary/20 data-[state=open]:shadow-md data-[state=open]:shadow-primary/20 transition-shadow rounded-lg">
+                                    <div className="flex items-start gap-4">
+                                        {feature.icon}
+                                        <div>
+                                            <h3 className="text-xl font-semibold">{feature.title}</h3>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="p-6 pt-0">
+                                    <p className="text-muted-foreground ml-12">{feature.description}</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
                 </div>
             </div>
         </section>
@@ -194,3 +222,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
