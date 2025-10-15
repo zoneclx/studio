@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Eye, Wand2, Sparkles, Image as ImageIcon, Bot, MessageSquare } from 'lucide-react';
+import { ArrowRight, Wand2, Sparkles, Image as ImageIcon, Bot, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
@@ -79,9 +79,9 @@ export default function Home() {
                         </Button>
                         </Link>
                         {!user && (
-                        <Link href="/try">
+                        <Link href="/login">
                             <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
-                            Try for Free
+                            Sign In
                             </Button>
                         </Link>
                         )}
@@ -193,3 +193,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

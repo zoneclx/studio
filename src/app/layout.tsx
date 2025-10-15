@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from 'next-themes';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
-import Header from '@/components/header';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -48,7 +47,6 @@ export default function RootLayout({
         >
             <AuthProvider>
                 <AnimatedGradient />
-                <Header />
                 <main className="relative z-10">
                   {children}
                 </main>
