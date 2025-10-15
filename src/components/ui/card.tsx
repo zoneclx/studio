@@ -2,29 +2,20 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { useTheme } from "@/context/theme-context";
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { theme } = useTheme();
-  const isGlass = theme === "glass";
-  return (
+>(({ className, ...props }, ref) => (
     <div
         ref={ref}
         className={cn(
         "relative rounded-lg border bg-card text-card-foreground shadow-sm",
-        { 
-          "glass-effect": isGlass,
-          "card-aurora": isGlass
-        },
         className
         )}
         {...props}
     />
-  )
-});
+));
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<

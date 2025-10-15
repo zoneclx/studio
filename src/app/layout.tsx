@@ -40,7 +40,12 @@ export default function RootLayout({
           fontDisplay.variable
         )}
       >
-        <ThemeProvider defaultTheme='dark'>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
             <AuthProvider>
                 <AnimatedGradient />
                 <Header />

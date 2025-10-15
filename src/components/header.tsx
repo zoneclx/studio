@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bot, FileArchive, User, LogOut, Sparkles, Moon, Sun, Menu } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { useTheme } from '@/context/theme-context';
+import { useTheme } from 'next-themes';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -15,16 +15,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetClose,
 } from "@/components/ui/sheet"
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -32,19 +27,6 @@ import { useState } from 'react';
 const navLinks = [
   { href: '/create', label: 'Builder', icon: Bot, auth: true },
   { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
-];
-
-const themes = [
-    { name: 'Light', value: 'light' },
-    { name: 'Dark', value: 'dark' },
-    { name: 'System', value: 'system' },
-    { name: 'Rose', value: 'rose' },
-    { name: 'Violet', value: 'violet' },
-    { name: 'Macchiato', value: 'macchiato' },
-    { name: 'Glass', value: 'glass' },
-    { name: 'Red Hat', value: 'redhat' },
-    { name: 'Ultra', value: 'ultra' },
-    { name: 'Material', value: 'material' },
 ];
 
 function ThemeToggle() {
@@ -60,13 +42,15 @@ function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Select Theme</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {themes.map(theme => (
-            <DropdownMenuItem key={theme.value} onClick={() => setTheme(theme.value as any)}>
-                {theme.name}
-            </DropdownMenuItem>
-        ))}
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('system')}>
+          System
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -156,7 +140,7 @@ function MobileNav() {
                         <span className="sr-only">Toggle Menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[240px]">
+                <SheetContent side="right" className="w-[240px] p-0">
                     <div className="flex flex-col h-full">
                          <div className="p-4 border-b">
                             <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
