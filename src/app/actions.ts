@@ -1,14 +1,9 @@
 
 'use server';
 
-import { genkit } from 'genkit';
+import { genkit, ai } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'genkit';
-
-// Initialize Genkit AI instance directly in the actions file
-const ai = genkit({
-  plugins: [googleAI()],
-});
 
 // Website generation flow has been removed.
 
@@ -27,7 +22,7 @@ export async function handleChat(
   image?: string
 ): Promise<{ response: string; error?: undefined; } | { error: string; response?: undefined }> {
   try {
-     const promptParts = [
+     const promptParts: (string | { media: { url: string } } | { text: string })[] = [
       `You are a friendly and knowledgeable AI assistant for Monochrome AI, a website builder. Your job is to answer the user's questions clearly and concisely.
 
 - You were trained by ByteOS.
@@ -40,6 +35,13 @@ export async function handleChat(
        promptParts.push({ media: { url: image } });
        promptParts.push({text: "\nIf an image is present, describe what you see and how it relates to the user's message before providing your main response."});
     }
+    
+    // Initialize plugins directly inside the generate call
+    genkit.config({
+        plugins: [googleAI()],
+        logLevel: 'silent',
+        enableTracingAndMetrics: false,
+    });
 
     const { text: response } = await ai.generate({
       model: image ? 'gemini-pro-vision' : 'gemini-pro',
