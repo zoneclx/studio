@@ -145,7 +145,7 @@ function MobileNav() {
                          <div className="p-4 border-b">
                             <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
                                 <Sparkles className="h-6 w-6 text-primary" />
-                                <span className="font-bold">Monochrome AI</span>
+                                <span className="font-bold">Byte AI</span>
                             </Link>
                         </div>
                         <nav className="flex flex-col gap-4 p-4 text-lg font-medium">
@@ -194,7 +194,7 @@ export default function Header() {
         <div className="container flex h-14 items-center">
             <Link href="/" className="mr-6 flex items-center space-x-2">
                 <Sparkles className="h-6 w-6 text-primary" />
-                <span className="font-bold">Monochrome AI</span>
+                <span className="font-bold">Byte AI</span>
             </Link>
             <MainNav />
             <div className="flex flex-1 items-center justify-end space-x-2">

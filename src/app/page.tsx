@@ -75,7 +75,7 @@ export default function Home() {
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
                     />
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Monochrome Ai is a powerful, AI-powered website builder.
+                        Byte AI is a powerful, AI-powered website builder.
                         Describe your vision, and watch as our AI brings it to life in seconds.
                         The future of creation is here.
                     </p>
@@ -179,7 +179,7 @@ export default function Home() {
                     <Badge variant="outline" className="text-sm">Powered by Google AI</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Design</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        Monochrome AI leverages state-of-the-art generative artificial intelligence to turn your ideas into reality. Our partnership with Google AI allows us to provide a robust, scalable, and powerful platform for instant website creation.
+                        Byte AI leverages state-of-the-art generative artificial intelligence to turn your ideas into reality. Our partnership with Google AI allows us to provide a robust, scalable, and powerful platform for instant website creation.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
@@ -187,12 +187,12 @@ export default function Home() {
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-display">About Monochrome AI</h3>
+                                <h3 className="text-2xl font-display">About Byte AI</h3>
                             </div>
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">
-                                Monochrome AI is more than just a tool; it's your creative partner. Our mission is to democratize web design, making it accessible for everyone—from solo entrepreneurs to established businesses—to bring their digital visions to life without writing a single line of code. We believe in the power of ideas, and our platform is built to get you from concept to a live website in minutes.
+                                Byte AI is more than just a tool; it's your creative partner. Our mission is to democratize web design, making it accessible for everyone—from solo entrepreneurs to established businesses—to bring their digital visions to life without writing a single line of code. We believe in the power of ideas, and our platform is built to get you from concept to a live website in minutes.
                             </p>
                         </CardContent>
                     </Card>

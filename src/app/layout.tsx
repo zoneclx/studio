@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Monochrome Ai</title>
+        <title>Byte AI</title>
         <meta name="description" content="Generate websites with a single prompt." />
       </head>
       <body

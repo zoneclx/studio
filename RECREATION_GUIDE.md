@@ -1,6 +1,6 @@
 # Prompt to Recreate the Monochrome AI Website Builder
 
-Hello! I'd like you to build a complete web application called 'Monochrome AI'. It's a Next.js application that allows users to generate websites from a single text prompt.
+Hello! I'd like you to build a complete web application called 'Byte AI'. It's a Next.js application that allows users to generate websites from a single text prompt.
 
 **1. Technology Stack:**
 *   **Framework:** Next.js with the App Router.
@@ -23,7 +23,7 @@ Hello! I'd like you to build a complete web application called 'Monochrome AI'. 
 **4. Pages & Features:**
 
 *   **Homepage (`/`):**
-    *   **Header:** Shows the app title "Monochrome AI," the `ThemeToggle` button, and a user profile icon that acts as a dropdown menu for logged-in users (or a "Sign Up" button for guests).
+    *   **Header:** Shows the app title "Byte AI," the `ThemeToggle` button, and a user profile icon that acts as a dropdown menu for logged-in users (or a "Sign Up" button for guests).
     *   **Main Content:** A large heading with a `TypewriterEffect` that animates the text: "Build a website with a single prompt." Below this, include a descriptive paragraph. The background should be transparent to show the animated gradient.
     *   **Buttons:** Two prominent buttons: "Start Creating" (links to `/create`) and "Try for Free" (links to `/try`).
     *   **Footer:** A simple footer with copyright text.
