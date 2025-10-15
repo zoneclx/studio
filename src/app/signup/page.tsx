@@ -49,15 +49,6 @@ export default function SignupPage() {
     }
   };
 
-  const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg role="img" viewBox="0 0 24 24" {...props}>
-      <path
-        fill="currentColor"
-        d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.36 1.95-4.25 1.95-3.52 0-6.33-2.88-6.33-6.42s2.81-6.42 6.33-6.42c1.93 0 3.3.74 4.18 1.59l2.48-2.38C18.09.91 15.68 0 12.48 0 5.88 0 .81 5.16.81 11.83s5.07 11.83 11.67 11.83c3.41 0 6.13-1.16 8.14-3.21 2.11-2.11 2.8-5.32 2.8-7.98 0-.7-.07-1.3-.2-1.95h-10.7z"
-      ></path>
-    </svg>
-  );
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <div className="w-full max-w-sm mb-4">
@@ -116,8 +107,7 @@ export default function SignupPage() {
                 </div>
             </div>
             <Button variant="outline" className="w-full" type="button" disabled={loading}>
-              <GoogleIcon className="mr-2 h-4 w-4" />
-              Sign up with Google
+              Sign up with MonoAi
             </Button>
           </CardContent>
           <CardFooter className="flex-col items-center">

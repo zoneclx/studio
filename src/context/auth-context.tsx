@@ -34,8 +34,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const getStoredUsers = (): StoredUser[] => {
   try {
     if (typeof window !== 'undefined') {
-        const users = localStorage.getItem(AUTH_STORAGE_KEY);
-        return users ? JSON.parse(users) : [];
+        let usersStr = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (!usersStr) {
+          // If no users, seed the specific user
+          const initialUser: StoredUser = {
+            uid: 'local-user-' + new Date().getTime(),
+            email: 'enzogimena.shaw@gmail.com',
+            pass: 'password123', // You might want a more secure default or process
+            name: 'Enzo Gimena',
+            avatar: ''
+          };
+          const initialUsers = [initialUser];
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(initialUsers));
+          usersStr = JSON.stringify(initialUsers);
+        }
+        return JSON.parse(usersStr) as StoredUser[];
     }
   } catch (error) {
     console.error("Failed to parse users from localStorage", error);
