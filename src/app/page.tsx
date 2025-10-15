@@ -54,7 +54,7 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "flex flex-col min-h-screen w-full bg-background text-foreground"
+        "flex flex-col flex-1 w-full bg-background text-foreground"
       )}
     >
       <main className="flex-1">
@@ -177,12 +177,6 @@ export default function Home() {
             </div>
         </section>
       </main>
-
-      <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground bg-background")}>
-        <p>
-          © 2025 Byte AI, All rights reserved.
-        </p>
-      </footer>
     </div>
   );
 }

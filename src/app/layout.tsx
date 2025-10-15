@@ -11,6 +11,7 @@ import { ThemeProvider } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
 import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -35,7 +36,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen font-sans antialiased bg-background',
+          'min-h-screen font-sans antialiased bg-background flex flex-col',
           fontSans.variable,
           fontDisplay.variable
         )}
@@ -49,9 +50,10 @@ export default function RootLayout({
             <AuthProvider>
                 <AnimatedGradient />
                 <Header />
-                <main className="relative z-10">
+                <main className="relative z-10 flex-1 flex flex-col">
                   {children}
                 </main>
+                <Footer />
                 <Toaster />
                 <CookieConsent />
             </AuthProvider>

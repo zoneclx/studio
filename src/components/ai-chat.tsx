@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, User, Paperclip, Send, X, Bot } from 'lucide-react';
+import { Sparkles, User, Paperclip, Send, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -113,7 +113,7 @@ const AiChatPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+    <div className="flex flex-col h-full bg-background">
       <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
         {messages.length === 0 && !isLoading ? (
           <div className="flex h-full items-center justify-center p-4">
