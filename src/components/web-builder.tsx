@@ -14,6 +14,7 @@ import { useAuth } from '@/context/auth-context';
 import { Skeleton } from './ui/skeleton';
 import { useSound } from '@/hooks/use-sound';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 type WebBuilderProps = {
   mode: 'pro' | 'trial';
@@ -60,6 +61,7 @@ export default function WebBuilder({ mode }: WebBuilderProps) {
       setPrompt(decodeURIComponent(initialPrompt));
       handleGenerate(decodeURIComponent(initialPrompt));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
@@ -339,3 +341,5 @@ export default function WebBuilder({ mode }: WebBuilderProps) {
     </>
   );
 }
+
+    
