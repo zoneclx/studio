@@ -3,7 +3,6 @@
 
 import { ai } from '@/ai/genkit';
 import { CreateWebsiteInputSchema, CreateWebsiteOutputSchema, type CreateWebsiteOutput } from '@/ai/schemas';
-import { googleAI } from '@genkit-ai/google-genai';
 
 export async function handleGeneration(prompt: string): Promise<{ success: boolean; data?: CreateWebsiteOutput; error?: string; }> {
     try {
@@ -25,7 +24,7 @@ const websiteGenerationPrompt = ai.definePrompt({
   name: 'websiteGenerationPrompt',
   input: { schema: CreateWebsiteInputSchema },
   output: { schema: CreateWebsiteOutputSchema },
-  model: googleAI('gemini-pro'),
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `
     You are a professional web developer. A user will provide a prompt describing a website they want to create.
     Your task is to generate the HTML, CSS, and JavaScript for a complete, visually appealing, and functional single-page website based on the user's prompt.
