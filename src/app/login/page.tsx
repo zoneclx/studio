@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 import { Sparkles, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -42,16 +43,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto grid w-full max-w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold font-display">Welcome Back</h1>
-            <p className="text-balance text-muted-foreground">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <div className="w-full max-w-sm mb-4">
+            <Link
+                href="/"
+                className="inline-flex items-center text-muted-foreground hover:text-foreground"
+            >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+            </Link>
+        </div>
+      <Card className="w-full max-w-sm border-border/50 bg-card">
+        <form onSubmit={handleSignIn}>
+          <CardHeader>
+            <CardTitle className="text-2xl font-display flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                Welcome Back
+              </Link>
+            </CardTitle>
+            <CardDescription>
               Enter your credentials to access your account.
-            </p>
-          </div>
-          <form onSubmit={handleSignIn} className="grid gap-4">
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -61,52 +76,55 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="bg-background"
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
+                 <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <Link
+                    href="/forgot-password"
+                    className="ml-auto inline-block text-sm underline"
+                    >
+                    Forgot your password?
+                    </Link>
+                </div>
               <Input
                 id="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="bg-background"
                 disabled={loading}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
-            <Link href="/mono-login" className="w-full">
+            <div className="relative my-2">
+                <Separator />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 bg-card">
+                    <span className="text-xs text-muted-foreground">OR</span>
+                </div>
+            </div>
+            <Link href="/mono-login" className='w-full'>
                 <Button variant="outline" className="w-full" type="button">
-                    Login with MonoAi
+                    Sign in with MonoAi
                 </Button>
             </Link>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="underline">
-              Sign up
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="hidden lg:flex items-center justify-center bg-muted animated-gradient-background flex-col text-center p-8">
-        <Link href="/" className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-10 h-10 text-white" />
-            <span className="text-4xl font-bold font-display text-white">Byte AI</span>
-        </Link>
-        <p className="text-white/80 text-lg max-w-sm">The future of chat is here. Your vision, understood by AI.</p>
-      </div>
+          </CardContent>
+          <CardFooter className="flex-col items-center">
+            <div className="text-center text-sm">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="underline text-primary">
+                Sign Up
+              </Link>
+            </div>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }
