@@ -207,7 +207,7 @@ export default function AiChat({
                     <Image src={message.image} alt="User attachment" layout="fill" objectFit="cover" />
                   </div>
                 )}
-                <p className="text-sm">{message.content}</p>
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
               </Card>
               {message.role === 'user' && (
                 <Avatar className="w-8 h-8 border">
@@ -255,7 +255,7 @@ export default function AiChat({
             type="text"
             placeholder={
               placeholder ||
-              (disabled ? "You have reached your edit limit" : (image ? 'Describe the image...' : 'Type your message...'))
+              (disabled ? "Interaction disabled" : (image ? 'Describe the image...' : 'Type your message...'))
             }
             value={input}
             onChange={(e) => setInput(e.target.value)}
