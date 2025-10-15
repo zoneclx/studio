@@ -89,7 +89,7 @@ export default function Home() {
             <div className="absolute inset-0 -z-20 animated-gradient-background opacity-20 dark:opacity-30"></div>
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="flex flex-col items-start text-left z-10">
+                <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     <TypewriterEffect
                         texts={animatedTitles}
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
@@ -115,7 +115,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="z-10 block">
+                <div className="z-10 block animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                   <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
                       <CardContent className="p-2">
                           <div className="bg-muted/30 p-4 rounded-lg">
@@ -148,7 +148,7 @@ export default function Home() {
 
         <section className="py-16 md:py-24 bg-muted/50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
+                <div className="text-center mb-12 animate-fade-in-up">
                     <h2 className="text-3xl sm:text-4xl font-bold font-display">A New Way to Build Websites</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                         We combine a powerful AI model with an intuitive interface to make web development accessible to everyone.
@@ -156,7 +156,7 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
-                        <Card key={index} className="bg-card hover:shadow-lg transition-shadow">
+                        <Card key={index} className="bg-card hover:shadow-lg transition-shadow animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.3}s` }}>
                             <CardHeader>
                                 {feature.icon}
                                  <CardTitle className="mt-4 text-xl flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function Home() {
 
         <section className="py-16 md:py-24 bg-background">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
+                <div className="text-center mb-12 animate-fade-in-up">
                     <Badge variant="outline" className="text-sm">Powered by Google AI</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Design</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -182,7 +182,7 @@ export default function Home() {
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-                    <Card className="bg-card/50">
+                    <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-8 h-8 text-primary" />
@@ -195,7 +195,7 @@ export default function Home() {
                             </p>
                         </CardContent>
                     </Card>
-                    <Card className="bg-card/50">
+                    <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <GoogleAiLogo />
@@ -221,7 +221,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
