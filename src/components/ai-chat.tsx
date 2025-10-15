@@ -89,7 +89,6 @@ const AiChatPage = () => {
         description: result.error || 'Something went wrong.',
         variant: 'destructive',
       });
-      // Revert adding the user's message if AI fails
       setMessages((prev) => prev.filter(msg => msg.id !== userMessage.id));
       setInput(userMessage.text);
       setImage(userMessage.image || null);
@@ -99,7 +98,6 @@ const AiChatPage = () => {
   
   const handleExamplePrompt = (prompt: string) => {
     setInput(prompt);
-    // Automatically send message for example prompts
     setTimeout(() => {
         handleSendMessage(prompt);
     }, 100);
@@ -113,7 +111,7 @@ const AiChatPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
         <div className="p-4 md:p-6">
             {messages.length === 0 && !isLoading ? (

@@ -12,6 +12,7 @@ import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import { usePathname } from 'next/navigation';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -28,6 +29,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isChatPage = pathname.startsWith('/create');
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -38,7 +42,8 @@ export default function RootLayout({
         className={cn(
           'min-h-screen font-sans antialiased bg-background flex flex-col',
           fontSans.variable,
-          fontDisplay.variable
+          fontDisplay.variable,
+          isChatPage && 'overflow-hidden'
         )}
       >
         <ThemeProvider

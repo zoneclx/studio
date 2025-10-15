@@ -35,7 +35,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="flex-1">
         <AiChatPage />
     </div>
   );
