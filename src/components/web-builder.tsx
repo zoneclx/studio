@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wand2, Code, Eye, AlertTriangle, RefreshCw, Save, Share2, Info } from 'lucide-react';
 import { handleGeneration } from '@/app/actions';
@@ -341,5 +341,7 @@ export default function WebBuilder({ mode }: WebBuilderProps) {
     </>
   );
 }
+
+    
 
     
