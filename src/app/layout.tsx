@@ -11,6 +11,9 @@ import { ThemeProvider } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
 import { FirebaseProvider } from '@/firebase/provider';
+import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
+import AppNav from '@/components/app-nav';
+import Header from '@/components/header';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -35,21 +38,29 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen font-sans antialiased bg-background',
+          'min-h-screen font-sans antialiased bg-muted/30',
           fontSans.variable,
           fontDisplay.variable
         )}
       >
         <FirebaseProvider>
           <ThemeProvider defaultTheme='ultra'>
-            <AnimatedGradient />
-            <div className="relative z-10">
               <AuthProvider>
-                {children}
-                <Toaster />
-                <CookieConsent />
+                <SidebarProvider>
+                  <div className="flex min-h-screen">
+                    <AppNav />
+                    <SidebarInset className="flex-1 flex flex-col">
+                       <AnimatedGradient />
+                       <Header />
+                       <main className="flex-1 relative z-10">
+                         {children}
+                       </main>
+                       <Toaster />
+                       <CookieConsent />
+                    </SidebarInset>
+                  </div>
+                </SidebarProvider>
               </AuthProvider>
-            </div>
           </ThemeProvider>
         </FirebaseProvider>
       </body>

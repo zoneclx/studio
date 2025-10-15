@@ -3,10 +3,9 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Code, Component, MousePointer, Paintbrush, FileCode2, Sparkles, Eye, Download, Wand2, MessageSquare } from 'lucide-react';
+import { ArrowRight, Eye, Wand2, MessageSquare, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
-import Header from '@/components/header';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -55,8 +54,6 @@ export default function Home() {
         "flex flex-col min-h-screen w-full bg-background text-foreground"
       )}
     >
-      <Header />
-
       <main className="flex-1">
         <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden">
             <Image
@@ -161,7 +158,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground")}>
+      <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground bg-background")}>
         <p>
           © 2025 Enzo Gimena's Ai, All rights reserved.
         </p>

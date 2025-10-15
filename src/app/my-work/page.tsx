@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Edit, Trash2, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import Header from '@/components/header';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -111,8 +110,7 @@ export default function MyWorkPage() {
 
   if (loading || (!user && !isLoading)) {
     return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
+      <div className="flex flex-col min-h-screen p-4">
         <div className="container mx-auto max-w-4xl py-8 px-4 flex-1">
           <Skeleton className="h-10 w-1/4 mb-4" />
           <Skeleton className="h-8 w-1/2 mb-8" />
@@ -145,8 +143,7 @@ export default function MyWorkPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <Header />
+      <div className="flex flex-col min-h-screen p-4">
         <main className="container mx-auto max-w-4xl py-8 px-4 flex-1">
           <header className="mb-8">
             <h1 className="text-4xl font-bold font-display">My Archive</h1>

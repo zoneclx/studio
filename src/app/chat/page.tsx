@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from 'react';
 import AiChat from '@/components/ai-chat';
-import Header from '@/components/header';
 import { handleChat } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
@@ -81,10 +80,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <Header />
+    <div className="flex flex-col h-full bg-background text-foreground">
       <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <Card className="w-full max-w-2xl h-full max-h-[80vh] flex flex-col">
+        <Card className="w-full max-w-2xl h-full max-h-[85vh] flex flex-col">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold font-display">AI Chat</CardTitle>
                 <CardDescription>Our AI Chat is free forever. Ask me anything, or type 'clear' to start over.</CardDescription>

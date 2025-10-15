@@ -11,13 +11,11 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import Header from '@/components/header';
 
 export default function TryPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Header />
       <main className="container mx-auto max-w-4xl flex-1 px-4 py-8 flex items-center justify-center">
         <Card className="w-full max-w-md text-center">
           <CardHeader>

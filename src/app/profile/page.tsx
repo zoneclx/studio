@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Edit, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
@@ -103,8 +102,7 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
+      <div className="flex flex-col min-h-screen p-4">
         <main className="container mx-auto max-w-2xl py-8 px-4 flex-1">
           <Skeleton className="h-10 w-1/2 mb-8" />
           <Card>
@@ -127,8 +125,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <div className="flex flex-col min-h-screen p-4">
       <main className="container mx-auto max-w-2xl py-8 px-4 flex-1">
         <header className="mb-8">
           <h1 className="text-4xl font-bold font-display">Your Profile</h1>

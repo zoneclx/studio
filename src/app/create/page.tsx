@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Bot } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -13,15 +13,12 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
 import { handleChat } from '@/app/actions';
 import AiChat from '@/components/ai-chat';
-import Header from '@/components/header';
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -35,8 +32,7 @@ export default function CreatePage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
+      <div className="flex flex-col min-h-screen p-4">
         <main className="container mx-auto max-w-4xl py-8 px-4 flex-1">
           <Skeleton className="h-10 w-1/2 mb-4" />
           <Skeleton className="h-8 w-3/4 mb-8" />
@@ -55,7 +51,6 @@ export default function CreatePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Header />
       <main className="container mx-auto max-w-4xl flex-1 px-4 py-8 flex items-center justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
             <Card className="lg:col-span-1 flex flex-col items-center justify-center text-center p-8">
