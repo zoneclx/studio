@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -33,5 +34,9 @@ export default function CreatePage() {
     );
   }
 
-  return <AiChatPage />;
+  return (
+    <div className="overflow-hidden">
+        <AiChatPage />
+    </div>
+  );
 }
