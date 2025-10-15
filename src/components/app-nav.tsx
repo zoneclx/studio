@@ -63,7 +63,7 @@ export default function AppNav() {
                 <Link href={link.href} passHref legacyBehavior>
                   <SidebarMenuButton
                     as="a"
-                    isActive={pathname === link.href}
+                    isActive={pathname.startsWith(link.href)}
                     tooltip={{ children: link.label, side: 'left' }}
                     onClick={handleLinkClick}
                   >
@@ -123,6 +123,7 @@ export default function AppNav() {
             </DropdownMenu>
          ) : (
             <div className="flex flex-col gap-2 group-data-[collapsible=icon]:hidden">
+                 <Link href="/try" passHref legacyBehavior><Button as="a" className="w-full">Try for Free</Button></Link>
                 <Link href="/login" passHref legacyBehavior><Button as="a" variant="outline" className="w-full">Login</Button></Link>
                 <Link href="/signup" passHref legacyBehavior><Button as="a" className="w-full">Sign Up</Button></Link>
             </div>
