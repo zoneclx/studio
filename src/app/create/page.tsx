@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import WebBuilder from '@/components/web-builder';
+import AiChatPage from '@/components/ai-chat';
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
@@ -19,22 +19,20 @@ export default function CreatePage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-col min-h-screen p-4">
-        <main className="container mx-auto max-w-7xl py-8 px-4 flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <Skeleton className="h-10 w-1/2 mb-4" />
-                    <Skeleton className="h-64 w-full" />
-                </div>
-                 <div>
-                    <Skeleton className="h-10 w-1/4 mb-4" />
-                    <Skeleton className="h-64 w-full" />
-                </div>
+      <div className="flex flex-col flex-1 h-full p-4">
+        <main className="container mx-auto max-w-3xl py-8 px-4 flex-1">
+            <div className="space-y-4">
+                <Skeleton className="h-16 w-3/4" />
+                <Skeleton className="h-16 w-1/2 ml-auto" />
+                <Skeleton className="h-24 w-3/4" />
+            </div>
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4">
+                <Skeleton className="h-12 w-full" />
             </div>
         </main>
       </div>
     );
   }
 
-  return <WebBuilder mode="pro" />;
+  return <AiChatPage />;
 }
