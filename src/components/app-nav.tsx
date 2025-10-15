@@ -123,9 +123,9 @@ export default function AppNav() {
             </DropdownMenu>
          ) : (
             <div className="flex flex-col gap-2 group-data-[collapsible=icon]:hidden">
-                 <Link href="/try" passHref legacyBehavior><Button asChild><a>Try for Free</a></Button></Link>
-                <Link href="/login" passHref legacyBehavior><Button asChild variant="outline"><a>Login</a></Button></Link>
-                <Link href="/signup" passHref legacyBehavior><Button asChild><a>Sign Up</a></Button></Link>
+                 <Link href="/try"><Button className="w-full">Try for Free</Button></Link>
+                <Link href="/login"><Button variant="outline" className="w-full">Login</Button></Link>
+                <Link href="/signup"><Button className="w-full">Sign Up</Button></Link>
             </div>
          )}
       </SidebarFooter>

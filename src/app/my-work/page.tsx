@@ -165,12 +165,10 @@ export default function MyWorkPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Link href={`/create?prompt=${encodeURIComponent(work.prompt)}`} passHref legacyBehavior>
-                      <Button asChild>
-                        <a>
+                  <Link href={`/create?prompt=${encodeURIComponent(work.prompt)}`}>
+                      <Button>
                           <Edit className="mr-2 h-4 w-4" />
                           Continue Editing
-                        </a>
                       </Button>
                   </Link>
                   <Button variant="destructive" onClick={() => setDialogOpen(true)}>
