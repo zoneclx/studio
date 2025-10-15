@@ -26,10 +26,10 @@ interface AuthContextType {
   changePassword: (currentPass: string, newPass: string) => Promise<void>;
 }
 
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 const AUTH_STORAGE_KEY = 'monochrome-auth-users';
 const SESSION_STORAGE_KEY = 'monochrome-session-user';
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const getStoredUsers = (): StoredUser[] => {
   try {
@@ -39,9 +39,9 @@ const getStoredUsers = (): StoredUser[] => {
           // If no users, seed the specific user
           const initialUser: StoredUser = {
             uid: 'local-user-' + new Date().getTime(),
-            email: 'enzogimena.shaw@gmail.com',
-            pass: 'password123', // You might want a more secure default or process
-            name: 'Enzo Gimena',
+            email: 'enzogimena.shawn@gmail.com',
+            pass: 'ourLady$4',
+            name: 'Enzo Shawn',
             avatar: ''
           };
           const initialUsers = [initialUser];
