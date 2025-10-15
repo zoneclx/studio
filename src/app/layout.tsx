@@ -10,8 +10,6 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
-import AppNav from '@/components/app-nav';
 import Header from '@/components/header';
 
 const fontSans = Inter({
@@ -37,27 +35,20 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen font-sans antialiased bg-muted/30',
+          'min-h-screen font-sans antialiased bg-background',
           fontSans.variable,
           fontDisplay.variable
         )}
       >
         <ThemeProvider defaultTheme='dark'>
             <AuthProvider>
-              <SidebarProvider>
-                <div className="flex min-h-screen">
-                  <SidebarInset className="flex-1 flex flex-col">
-                      <AnimatedGradient />
-                      <Header />
-                      <main className="flex-1 relative z-10">
-                        {children}
-                      </main>
-                      <Toaster />
-                      <CookieConsent />
-                  </SidebarInset>
-                  <AppNav />
-                </div>
-              </SidebarProvider>
+                <AnimatedGradient />
+                <Header />
+                <main className="relative z-10">
+                  {children}
+                </main>
+                <Toaster />
+                <CookieConsent />
             </AuthProvider>
         </ThemeProvider>
       </body>

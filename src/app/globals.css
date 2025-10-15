@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,17 +26,9 @@
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
 
-    --gradient-start: 220 20% 80%;
-    --gradient-end: 240 20% 95%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 212.7 26.8% 83.9%;
+    --gradient-start: 220 20% 95%;
+    --gradient-mid: 240 20% 98%;
+    --gradient-end: 220 20% 92%;
   }
 
   .dark {
@@ -60,16 +53,8 @@
     --ring: 212.7 26.8% 83.9%;
 
     --gradient-start: 220 20% 10%;
-    --gradient-end: 240 20% 5%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 212.7 26.8% 83.9%;
+    --gradient-mid: 240 20% 5%;
+    --gradient-end: 220 20% 12%;
   }
 
   .rose {
@@ -78,7 +63,8 @@
     --primary: 350 80% 60%;
     --primary-foreground: 350 100% 98%;
     --gradient-start: 350 100% 90%;
-    --gradient-end: 350 100% 95%;
+    --gradient-mid: 350 100% 95%;
+    --gradient-end: 350 100% 88%;
   }
 
   .dark.rose {
@@ -87,7 +73,8 @@
       --primary: 350 80% 70%;
       --primary-foreground: 350 80% 5%;
       --gradient-start: 350 20% 10%;
-      --gradient-end: 350 20% 5%;
+      --gradient-mid: 350 20% 5%;
+      --gradient-end: 350 20% 12%;
   }
 
   .violet {
@@ -96,7 +83,8 @@
       --primary: 260 80% 65%;
       --primary-foreground: 260 100% 98%;
       --gradient-start: 260 100% 90%;
-      --gradient-end: 260 100% 95%;
+      --gradient-mid: 260 100% 95%;
+      --gradient-end: 260 100% 88%;
   }
   
   .dark.violet {
@@ -105,7 +93,8 @@
       --primary: 260 80% 70%;
       --primary-foreground: 260 80% 5%;
       --gradient-start: 260 20% 10%;
-      --gradient-end: 260 20% 5%;
+      --gradient-mid: 260 20% 5%;
+      --gradient-end: 260 20% 12%;
   }
 
   .macchiato {
@@ -114,7 +103,8 @@
     --primary: 32 65% 55%;
     --primary-foreground: 32 65% 95%;
     --gradient-start: 32 65% 90%;
-    --gradient-end: 32 65% 95%;
+    --gradient-mid: 32 65% 95%;
+    --gradient-end: 32 65% 88%;
   }
 
   .dark.macchiato {
@@ -123,7 +113,8 @@
       --primary: 32 65% 60%;
       --primary-foreground: 32 45% 15%;
       --gradient-start: 32 20% 8%;
-      --gradient-end: 32 20% 4%;
+      --gradient-mid: 32 20% 4%;
+      --gradient-end: 32 20% 10%;
   }
 
   .glass {
@@ -133,8 +124,9 @@
       --primary: 220 50% 50%;
       --primary-foreground: 220 15% 98%;
       --border: 220 15% 90% / 0.8;
-      --gradient-start: 220 20% 10%;
-      --gradient-end: 240 20% 5%;
+      --gradient-start: 220 20% 80%;
+      --gradient-mid: 240 20% 90%;
+      --gradient-end: 220 20% 75%;
   }
 
   .dark.glass {
@@ -145,7 +137,8 @@
       --primary-foreground: 220 15% 10%;
       --border: 220 15% 20% / 0.8;
       --gradient-start: 220 20% 10%;
-      --gradient-end: 240 20% 5%;
+      --gradient-mid: 240 20% 5%;
+      --gradient-end: 220 20% 12%;
   }
 
   .redhat {
@@ -157,7 +150,8 @@
     --ring: 0 63% 40%;
     --border: 0 0% 20%;
     --gradient-start: 0 20% 8%;
-    --gradient-end: 0 20% 4%;
+    --gradient-mid: 0 20% 4%;
+    --gradient-end: 0 20% 10%;
   }
 
   .dark.redhat {
@@ -169,7 +163,8 @@
       --ring: 0 63% 40%;
       --border: 0 0% 20%;
       --gradient-start: 0 20% 8%;
-      --gradient-end: 0 20% 4%;
+      --gradient-mid: 0 20% 4%;
+      --gradient-end: 0 20% 10%;
   }
 
   .ultra {
@@ -178,7 +173,8 @@
       --primary: 310 100% 70%;
       --primary-foreground: 310 100% 10%;
       --gradient-start: 260 100% 5%;
-      --gradient-end: 310 100% 15%;
+      --gradient-mid: 310 100% 15%;
+      --gradient-end: 260 100% 8%;
   }
   
   .dark.ultra {
@@ -187,7 +183,8 @@
       --primary: 310 100% 70%;
       --primary-foreground: 310 100% 10%;
       --gradient-start: 260 100% 5%;
-      --gradient-end: 310 100% 15%;
+      --gradient-mid: 310 100% 15%;
+      --gradient-end: 260 100% 8%;
   }
 
   .material {
@@ -197,7 +194,8 @@
       --primary: 220 60% 50%;
       --primary-foreground: 220 15% 98%;
       --gradient-start: 220 15% 98%;
-      --gradient-end: 220 15% 90%;
+      --gradient-mid: 220 15% 90%;
+      --gradient-end: 220 15% 95%;
   }
   
   .dark.material {
@@ -207,7 +205,8 @@
       --primary: 220 60% 60%;
       --primary-foreground: 220 15% 10%;
       --gradient-start: 220 15% 10%;
-      --gradient-end: 220 15% 5%;
+      --gradient-mid: 220 15% 5%;
+      --gradient-end: 220 15% 12%;
   }
 
 }
@@ -218,6 +217,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
   }
 }
 
@@ -228,7 +228,7 @@
     100% { background-position: 0% 50%; }
   }
   .animated-gradient-background {
-      background: linear-gradient(-45deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)), hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+      background: linear-gradient(-45deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)));
       background-size: 400% 400%;
       animation: gradient-animation 15s ease infinite;
   }
@@ -268,5 +268,3 @@
   }
 
 }
-
-    

@@ -13,23 +13,19 @@ export default function AnimatedGradient() {
         setIsMounted(true);
     }, []);
 
+    // This component will now always render the gradient background.
+    // The theme variables in globals.css will handle the color changes.
     if (!isMounted) {
-        return null;
+        return <div className="fixed inset-0 -z-10 w-full h-full bg-background" />;
     }
-
-    // Only apply the gradient to premium/special themes, not the default light/dark.
-    const hasAnimatedBackground = !['light', 'dark', 'system'].includes(theme);
 
     return (
         <div
             className={cn(
                 "fixed inset-0 -z-10 w-full h-full",
-                "opacity-30 dark:opacity-50",
+                "opacity-100", // Control opacity directly here if needed
                 "transition-opacity duration-1000",
-                {
-                    "animated-gradient-background": hasAnimatedBackground,
-                    "opacity-0": !hasAnimatedBackground
-                }
+                "animated-gradient-background" // This class is now always present
             )}
         />
     );
