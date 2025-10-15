@@ -86,9 +86,11 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
-            <Button variant="outline" className="w-full" type="button" disabled={loading}>
-              Login with MonoAi
-            </Button>
+            <Link href="/mono-login" className="w-full">
+                <Button variant="outline" className="w-full" type="button">
+                    Login with MonoAi
+                </Button>
+            </Link>
           </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{' '}

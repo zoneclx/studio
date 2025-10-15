@@ -106,9 +106,11 @@ export default function SignupPage() {
                     <span className="text-xs text-muted-foreground">OR</span>
                 </div>
             </div>
-            <Button variant="outline" className="w-full" type="button" disabled={loading}>
-              Sign up with MonoAi
-            </Button>
+            <Link href="/mono-login" className='w-full'>
+                <Button variant="outline" className="w-full" type="button">
+                    Sign in with MonoAi
+                </Button>
+            </Link>
           </CardContent>
           <CardFooter className="flex-col items-center">
             <div className="text-center text-sm">
