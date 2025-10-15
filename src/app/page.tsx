@@ -13,35 +13,36 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 
 const animatedTitles = [
-    "Build a website with a single prompt.",
-    "Generate code in seconds.",
+    "Chat with a creative AI.",
     "Your vision, brought to life.",
-    "Create a portfolio for a photographer.",
-    "Design a landing page for a new app.",
-    "Launch a blog for a travel writer.",
+    "Get feedback on your ideas.",
+    "Ask me anything.",
+    "Analyze images with me.",
+    "Free for everyone, forever."
 ];
 
 const features = [
     {
-        icon: <Sparkles className="w-8 h-8 text-primary" />,
-        title: "AI-Powered Generation",
-        description: "Just describe your ideal website. Our AI will understand your vision and generate the complete HTML and Tailwind CSS code for you in seconds.",
-    },
-    {
-        icon: <Eye className="w-8 h-8 text-primary" />,
-        title: "Live Preview",
-        description: "Watch your website come to life in real-time. The preview panel instantly renders the code as it's generated, giving you immediate feedback.",
-    },
-     {
         icon: <MessageSquare className="w-8 h-8 text-primary" />,
         title: "Free AI Chat",
-        description: "Our knowledgeable AI assistant is free forever. Ask questions, get ideas, or request changes to your generated website.",
+        description: "Our knowledgeable AI assistant is free forever. Ask questions, get ideas, or brainstorm your next big project without any cost.",
         badge: "Free"
     },
     {
-        icon: <Download className="w-8 h-8 text-primary" />,
-        title: "Full Code Export",
-        description: "You have complete ownership. Download the generated HTML file with a single click and host it on any platform you choose, no strings attached.",
+        icon: <Eye className="w-8 h-8 text-primary" />,
+        title: "Image Analysis",
+        description: "Upload an image and ask questions about it. The AI can analyze, describe, and discuss visual content, making it a powerful creative partner.",
+    },
+     {
+        icon: <Wand2 className="w-8 h-8 text-primary" />,
+        title: "Creative Partner",
+        description: "From drafting emails to debugging code and brainstorming brand names, Monochrome AI is your versatile partner for any creative or technical task.",
+    },
+    {
+        icon: <Sparkles className="w-8 h-8 text-primary" />,
+        title: "Builder Coming Soon",
+        description: "Our AI-powered website builder is under active development. Soon, you'll be able to generate full websites from a single prompt!",
+        badge: "Soon"
     },
 ];
 
@@ -75,20 +76,20 @@ export default function Home() {
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
                     />
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Monochrome Ai is a powerful tool that allows you to generate
-                        beautiful, production-ready websites using simple text prompts.
-                        Describe your vision, and watch as our AI brings it to life.
+                        Monochrome Ai is a powerful, free-to-use AI assistant. 
+                        Chat about your ideas, analyze images, and get help with creative tasks.
+                        Your smart and friendly creative partner is here to help.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/create">
+                        <Link href="/chat">
                         <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
-                            Start Creating <ArrowRight className="ml-2 h-5 w-5" />
+                            Chat for Free <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         </Link>
                         {!user && (
-                        <Link href="/try">
+                        <Link href="/signup">
                             <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
-                            Demo for Free
+                            Sign Up
                             </Button>
                         </Link>
                         )}
@@ -107,12 +108,22 @@ export default function Home() {
                                           <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                                       </div>
                                       <div className="text-sm text-muted-foreground font-mono bg-background px-4 py-0.5 rounded-md border">
-                                        your-website.com
+                                        ai-assistant
                                       </div>
                                   </div>
-                                  <div className="p-6 text-center animate-pulse">
-                                      <FileCode2 className="w-24 h-24 mx-auto text-muted-foreground/20" />
-                                      <p className="mt-4 text-muted-foreground">AI is generating your preview...</p>
+                                  <div className="p-6 text-left space-y-4">
+                                      <div className="flex items-start gap-2">
+                                          <div className="w-6 h-6 rounded-full bg-primary flex-shrink-0"></div>
+                                          <div className="w-3/4 h-5 bg-muted rounded-md animate-pulse"></div>
+                                      </div>
+                                       <div className="flex items-start gap-2 justify-end">
+                                          <div className="w-2/3 h-5 bg-primary/20 rounded-md animate-pulse"></div>
+                                          <div className="w-6 h-6 rounded-full bg-muted flex-shrink-0"></div>
+                                      </div>
+                                       <div className="flex items-start gap-2">
+                                          <div className="w-6 h-6 rounded-full bg-primary flex-shrink-0"></div>
+                                          <div className="w-1/2 h-5 bg-muted rounded-md animate-pulse"></div>
+                                      </div>
                                   </div>
                               </div>
                           </div>
@@ -127,7 +138,7 @@ export default function Home() {
                 <div className="text-center mb-12">
                     <h2 className="text-3xl sm:text-4xl font-bold font-display">Why Choose Monochrome AI?</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                        We combine cutting-edge AI with a user-friendly interface to make web development accessible to everyone.
+                        We combine a powerful AI model with a user-friendly interface to make creativity accessible to everyone.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -137,7 +148,7 @@ export default function Home() {
                                 {feature.icon}
                                  <CardTitle className="mt-4 text-xl flex items-center gap-2">
                                     {feature.title}
-                                    {feature.badge && <Badge variant="destructive">{feature.badge}</Badge>}
+                                    {feature.badge && <Badge variant={feature.badge === 'Free' ? 'destructive' : 'default'}>{feature.badge}</Badge>}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
