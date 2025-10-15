@@ -39,10 +39,10 @@ const AiChatPage = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
+    if (scrollAreaRef.current && !isLoading) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -89,7 +89,8 @@ const AiChatPage = () => {
         description: result.error || 'Something went wrong.',
         variant: 'destructive',
       });
-      setMessages((prev) => prev.slice(0, -1));
+      // Revert adding the user's message if AI fails
+      setMessages((prev) => prev.filter(msg => msg.id !== userMessage.id));
       setInput(userMessage.text);
       setImage(userMessage.image || null);
       playSound('error');
@@ -98,7 +99,10 @@ const AiChatPage = () => {
   
   const handleExamplePrompt = (prompt: string) => {
     setInput(prompt);
-    handleSendMessage(prompt);
+    // Automatically send message for example prompts
+    setTimeout(() => {
+        handleSendMessage(prompt);
+    }, 100);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -117,14 +121,14 @@ const AiChatPage = () => {
                     <Sparkles className="w-10 h-10 text-primary" />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Byte AI</h1>
-                <p className="text-muted-foreground mb-8">How can I help you today?</p>
+                <p className="text-muted-foreground mb-8 max-w-md">How can I help you today? Feel free to ask me anything or upload an image.</p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
                     {examplePrompts.map((prompt) => (
                         <button
                             key={prompt}
                             onClick={() => handleExamplePrompt(prompt)}
-                            className="text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm"
+                            className="text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm disabled:opacity-50"
                             disabled={isLoading}
                         >
                             {prompt}
