@@ -83,7 +83,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="hidden md:block z-10">
+                <div className="z-10 md:block">
                   <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
                       <CardContent className="p-2">
                           <div className="bg-muted/30 p-4 rounded-lg">
