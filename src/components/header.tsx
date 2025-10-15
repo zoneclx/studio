@@ -25,8 +25,7 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
 const navLinks = [
-  { href: '/create', label: 'Builder', icon: Bot, auth: true },
-  { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
+  { href: '/create', label: 'AI Chat', icon: Bot, auth: true },
 ];
 
 function ThemeToggle() {
@@ -92,9 +91,6 @@ function UserNav() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                    <Link href="/my-work">My Archive</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
