@@ -2,12 +2,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Bot, User, Paperclip, Send, CornerDownLeft, FileImage, X } from 'lucide-react';
+import { Sparkles, User, Paperclip, Send, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { handleChat } from '@/app/actions';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/use-sound';
 import Image from 'next/image';
@@ -87,9 +87,9 @@ const AiChatPage = () => {
         variant: 'destructive',
       });
       // Restore user input on error
+      setMessages((prev) => prev.slice(0, -1)); // Remove the optimistic user message
       setInput(userMessage.text);
       setImage(userMessage.image || null);
-      setMessages((prev) => prev.slice(0, -1)); // Remove the optimistic user message
       playSound('error');
     }
   };
@@ -115,11 +115,11 @@ const AiChatPage = () => {
                     </Avatar>
                 )}
                 <div className={cn(
-                    'max-w-[75%] space-y-2',
+                    'max-w-[85%] sm:max-w-[75%] space-y-2',
                     message.role === 'user' ? 'text-right' : 'text-left'
                 )}>
                     <div className={cn(
-                        'p-4 rounded-2xl inline-block',
+                        'p-3 sm:p-4 rounded-2xl inline-block',
                         message.role === 'assistant' ? 'bg-muted' : 'bg-primary text-primary-foreground'
                     )}>
                         {message.image && (
@@ -131,7 +131,7 @@ const AiChatPage = () => {
                                 className="rounded-lg mb-2 border"
                             />
                         )}
-                        <p className="whitespace-pre-wrap">{message.text}</p>
+                        <p className="whitespace-pre-wrap text-sm sm:text-base">{message.text}</p>
                     </div>
                 </div>
                 {message.role === 'user' && (
@@ -183,10 +183,10 @@ const AiChatPage = () => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Ask me anything..."
-                        className="w-full resize-none pr-24 min-h-[52px]"
+                        className="w-full resize-none pr-28 sm:pr-24 min-h-[52px]"
                         disabled={isLoading}
                     />
-                    <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center gap-2">
+                    <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center gap-1 sm:gap-2">
                         <Button
                             variant="ghost"
                             size="icon"
@@ -203,14 +203,14 @@ const AiChatPage = () => {
                             accept="image/*"
                             onChange={handleFileChange}
                         />
-                        <Button onClick={handleSendMessage} disabled={isLoading || (!input.trim() && !image)}>
+                        <Button onClick={handleSendMessage} disabled={isLoading || (!input.trim() && !image)} size="icon">
                             <Send className="w-5 h-5" />
                              <span className="sr-only">Send</span>
                         </Button>
                     </div>
                 </div>
-                 <p className="text-xs text-muted-foreground mt-2 text-center">
-                    <CornerDownLeft className="inline w-3 h-3 mr-1" /> Shift+Enter for new line. Byte AI can make mistakes.
+                 <p className="text-xs text-muted-foreground mt-2 text-center hidden sm:block">
+                    Shift+Enter for new line. Byte AI can make mistakes.
                 </p>
             </div>
         </div>
@@ -219,5 +219,3 @@ const AiChatPage = () => {
 };
 
 export default AiChatPage;
-
-    
