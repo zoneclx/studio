@@ -113,74 +113,72 @@ const AiChatPage = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
-        <div className="p-4 md:p-6">
-            {messages.length === 0 && !isLoading ? (
-              <div className="flex h-full items-center justify-center p-4">
-                  <div className="text-center max-w-lg mx-auto">
-                      <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
-                          <Sparkles className="w-10 h-10 text-primary" />
-                      </div>
-                      <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Byte AI</h1>
-                      <p className="text-muted-foreground mb-8">How can I help you today? Feel free to ask me anything or upload an image.</p>
+        {messages.length === 0 && !isLoading ? (
+          <div className="flex h-full items-center justify-center p-4">
+              <div className="text-center max-w-lg mx-auto">
+                  <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
+                      <Sparkles className="w-10 h-10 text-primary" />
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Byte AI</h1>
+                  <p className="text-muted-foreground mb-8">How can I help you today? Feel free to ask me anything or upload an image.</p>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {examplePrompts.map((prompt) => (
-                              <button
-                                  key={prompt}
-                                  onClick={() => handleExamplePrompt(prompt)}
-                                  className="text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm disabled:opacity-50"
-                                  disabled={isLoading}
-                              >
-                                  {prompt}
-                              </button>
-                          ))}
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {examplePrompts.map((prompt) => (
+                          <button
+                              key={prompt}
+                              onClick={() => handleExamplePrompt(prompt)}
+                              className="text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm disabled:opacity-50"
+                              disabled={isLoading}
+                          >
+                              {prompt}
+                          </button>
+                      ))}
                   </div>
               </div>
-            ) : (
-                <div className="max-w-3xl mx-auto space-y-8">
-                {messages.map((message) => (
-                    <div key={message.id} className={cn('flex items-start gap-3 sm:gap-4', message.role === 'user' && 'justify-end')}>
-                    {message.role === 'assistant' && (
-                        <Avatar className="w-8 h-8 border">
-                        <AvatarFallback>
-                            <Sparkles className="w-5 h-5 text-primary" />
-                        </AvatarFallback>
-                        </Avatar>
-                    )}
-                    <div className={cn('max-w-[85%] sm:max-w-[75%] space-y-2', message.role === 'user' ? 'text-right' : 'text-left')}>
-                        <div className={cn('p-3 sm:p-4 rounded-2xl inline-block', message.role === 'assistant' ? 'bg-muted' : 'bg-primary text-primary-foreground')}>
-                        {message.image && (
-                            <Image src={message.image} alt="User upload" width={300} height={200} className="rounded-lg mb-2 border" />
-                        )}
-                        <p className="whitespace-pre-wrap text-sm sm:text-base">{message.text}</p>
-                        </div>
-                    </div>
-                    {message.role === 'user' && (
-                        <Avatar className="w-8 h-8 border">
-                            <AvatarImage src={user?.avatar} alt={user?.name} />
-                            <AvatarFallback><User className="w-5 h-5 text-muted-foreground" /></AvatarFallback>
-                        </Avatar>
-                    )}
-                    </div>
-                ))}
-                {isLoading && (
-                    <div className="flex items-start gap-3 sm:gap-4">
+          </div>
+        ) : (
+            <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-8">
+            {messages.map((message) => (
+                <div key={message.id} className={cn('flex items-start gap-3 sm:gap-4', message.role === 'user' && 'justify-end')}>
+                {message.role === 'assistant' && (
                     <Avatar className="w-8 h-8 border">
-                        <AvatarFallback><Sparkles className="w-5 h-5 text-primary animate-pulse" /></AvatarFallback>
+                    <AvatarFallback>
+                        <Sparkles className="w-5 h-5 text-primary" />
+                    </AvatarFallback>
                     </Avatar>
-                    <div className="p-4 rounded-2xl bg-muted">
-                        <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-0"></span>
-                        <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-150"></span>
-                        <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-300"></span>
-                        </div>
+                )}
+                <div className={cn('max-w-[85%] sm:max-w-[75%] space-y-2', message.role === 'user' ? 'text-right' : 'text-left')}>
+                    <div className={cn('p-3 sm:p-4 rounded-2xl inline-block', message.role === 'assistant' ? 'bg-muted' : 'bg-primary text-primary-foreground')}>
+                    {message.image && (
+                        <Image src={message.image} alt="User upload" width={300} height={200} className="rounded-lg mb-2 border" />
+                    )}
+                    <p className="whitespace-pre-wrap text-sm sm:text-base">{message.text}</p>
                     </div>
-                    </div>
+                </div>
+                {message.role === 'user' && (
+                    <Avatar className="w-8 h-8 border">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback><User className="w-5 h-5 text-muted-foreground" /></AvatarFallback>
+                    </Avatar>
                 )}
                 </div>
+            ))}
+            {isLoading && (
+                <div className="flex items-start gap-3 sm:gap-4">
+                <Avatar className="w-8 h-8 border">
+                    <AvatarFallback><Sparkles className="w-5 h-5 text-primary animate-pulse" /></AvatarFallback>
+                </Avatar>
+                <div className="p-4 rounded-2xl bg-muted">
+                    <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-0"></span>
+                    <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-150"></span>
+                    <span className="h-2 w-2 bg-primary rounded-full animate-pulse delay-300"></span>
+                    </div>
+                </div>
+                </div>
             )}
-        </div>
+            </div>
+        )}
       </div>
 
       <div className="p-4 border-t bg-background/80 backdrop-blur-lg">
