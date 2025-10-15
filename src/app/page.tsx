@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Eye, Wand2, Sparkles, LayoutTemplate, Code } from 'lucide-react';
+import { ArrowRight, Eye, Wand2, Sparkles, LayoutTemplate, Code, Bot } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,38 @@ const features = [
         description: "Experiment and build your first website for free on our trial page. Sign up to save your work.",
     },
 ];
+
+const GoogleAiLogo = () => (
+    <svg width="24" height="24" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22 33C20.1533 33 18.3933 32.4933 16.88 31.5733C16.92 31.4333 16.96 31.2867 17 31.14C17.4467 29.8333 18.6667 28.6667 20.5 28.14C21.0333 27.96 21.5 27.8333 22 27.75C22.5 27.8333 22.9667 27.96 23.5 28.14C25.3333 28.6667 26.5533 29.8333 27 31.14C27.04 31.2867 27.08 31.4333 27.12 31.5733C25.6067 32.4933 23.8467 33 22 33Z" fill="url(#paint0_linear_312_1752)"/>
+        <path d="M33 22C33 23.8467 32.4933 25.6067 31.5733 27.12C31.4333 27.08 31.2867 27.04 31.14 27C29.8333 26.5533 28.6667 25.3333 28.14 23.5C27.96 22.9667 27.8333 22.5 27.75 22C27.8333 21.5 27.96 21.0333 28.14 20.5C28.6667 18.6667 29.8333 17.4467 31.14 17C31.2867 16.96 31.4333 16.92 31.5733 16.88C32.4933 18.3933 33 20.1533 33 22Z" fill="url(#paint1_linear_312_1752)"/>
+        <path d="M11 22C11 20.1533 11.5067 18.3933 12.4267 16.88C12.5667 16.92 12.7133 16.96 12.86 17C14.1667 17.4467 15.3333 18.6667 15.86 20.5C16.04 21.0333 16.1667 21.5 16.25 22C16.1667 22.5 16.04 22.9667 15.86 23.5C15.3333 25.3333 14.1667 26.5533 12.86 27C12.7133 27.04 12.5667 27.08 12.4267 27.12C11.5067 25.6067 11 23.8467 11 22Z" fill="url(#paint2_linear_312_1752)"/>
+        <path d="M22 11C23.8467 11 25.6067 11.5067 27.12 12.4267C27.08 12.5667 27.04 12.7133 27 12.86C26.5533 14.1667 25.3333 15.3333 23.5 15.86C22.9667 16.04 22.5 16.1667 22 16.25C21.5 16.1667 21.0333 16.04 20.5 15.86C18.6667 15.3333 17.4467 14.1667 17 12.86C16.96 12.7133 16.92 12.5667 16.88 12.4267C18.3933 11.5067 20.1533 11 22 11Z" fill="url(#paint3_linear_312_1752)"/>
+        <path d="M22 27.5C19.5147 27.5 17.5 25.4853 17.5 23H15.64C16.08 25.6333 17.3867 27.3867 19 28.52V30.5H25V28.52C26.6133 27.3867 27.92 25.6333 28.36 23H26.5C26.5 25.4853 24.4853 27.5 22 27.5Z" fill="#A8C3FF"/>
+        <path d="M27.5 22C27.5 24.4853 25.4853 26.5 23 26.5V28.36C25.6333 27.92 27.3867 26.6133 28.52 25H30.5V19H28.52C27.3867 17.3867 25.6333 16.08 23 15.64V17.5C25.4853 17.5 27.5 19.5147 27.5 22Z" fill="#A8C3FF"/>
+        <path d="M16.5 22C16.5 19.5147 18.5147 17.5 21 17.5V15.64C18.3667 16.08 16.6133 17.3867 15.48 19H13.5V25H15.48C16.6133 26.6133 18.3667 27.92 21 28.36V26.5C18.5147 26.5 16.5 24.4853 16.5 22Z" fill="#A8C3FF"/>
+        <path d="M22 16.5C24.4853 16.5 26.5 18.5147 26.5 21H28.36C27.92 18.3667 26.6133 16.6133 25 15.48V13.5H19V15.48C17.3867 16.6133 16.08 18.3667 15.64 21H17.5C17.5 18.5147 19.5147 16.5 22 16.5Z" fill="#A8C3FF"/>
+        <defs>
+            <linearGradient id="paint0_linear_312_1752" x1="22" y1="27.75" x2="22" y2="33" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A8C3FF"/>
+                <stop offset="1" stop-color="#83A6F6"/>
+            </linearGradient>
+            <linearGradient id="paint1_linear_312_1752" x1="27.75" y1="22" x2="33" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A8C3FF"/>
+                <stop offset="1" stop-color="#83A6F6"/>
+            </linearGradient>
+            <linearGradient id="paint2_linear_312_1752" x1="16.25" y1="22" x2="11" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A8C3FF"/>
+                <stop offset="1" stop-color="#83A6F6"/>
+            </linearGradient>
+            <linearGradient id="paint3_linear_312_1752" x1="22" y1="16.25" x2="22" y2="11" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A8C3FF"/>
+                <stop offset="1" stop-color="#83A6F6"/>
+            </linearGradient>
+        </defs>
+    </svg>
+);
+
 
 export default function Home() {
   const { user } = useAuth();
@@ -83,7 +115,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="z-10 md:block">
+                <div className="z-10 block">
                   <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
                       <CardContent className="p-2">
                           <div className="bg-muted/30 p-4 rounded-lg">
@@ -139,6 +171,46 @@ export default function Home() {
                 </div>
             </div>
         </section>
+
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <Badge variant="outline" className="text-sm">Powered by Google AI</Badge>
+                    <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Design</h2>
+                    <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+                        Monochrome AI leverages state-of-the-art generative artificial intelligence to turn your ideas into reality. Our partnership with Google AI allows us to provide a robust, scalable, and powerful platform for instant website creation.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                    <Card className="bg-card/50">
+                        <CardHeader>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="w-8 h-8 text-primary" />
+                                <h3 className="text-2xl font-display">About Monochrome AI</h3>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">
+                                Monochrome AI is more than just a tool; it's your creative partner. Our mission is to democratize web design, making it accessible for everyone—from solo entrepreneurs to established businesses—to bring their digital visions to life without writing a single line of code. We believe in the power of ideas, and our platform is built to get you from concept to a live website in minutes.
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-card/50">
+                        <CardHeader>
+                            <div className="flex items-center gap-2 mb-2">
+                                <GoogleAiLogo />
+                                <h3 className="text-2xl font-display">Partnership with Google AI</h3>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">
+                                By harnessing the power of Google's advanced generative models, we can interpret complex creative prompts and translate them into beautiful, functional, and responsive websites. This collaboration ensures that our users benefit from cutting-edge AI technology, resulting in higher quality designs, more reliable code generation, and a seamless creative process.
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </section>
       </main>
 
       <footer className={cn("py-6 text-center text-sm z-10 text-muted-foreground bg-background")}>
@@ -149,3 +221,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
+
+    
