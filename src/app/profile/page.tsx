@@ -102,7 +102,7 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <div className="flex flex-col min-h-screen p-4">
+      <div className="flex flex-col min-h-screen p-4 pt-24">
         <main className="container mx-auto max-w-2xl py-8 px-4 flex-1">
           <Skeleton className="h-10 w-1/2 mb-8" />
           <Card>
@@ -125,7 +125,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-4">
+    <div className="flex flex-col min-h-screen p-4 pt-24">
       <main className="container mx-auto max-w-2xl py-8 px-4 flex-1">
         <header className="mb-8">
           <h1 className="text-4xl font-bold font-display">Your Profile</h1>
@@ -212,8 +212,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input
+                  <Label htmlFor="new-password">New Password</Label>                  <Input
                     id="new-password"
                     type="password"
                     value={newPassword}
@@ -249,5 +248,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    

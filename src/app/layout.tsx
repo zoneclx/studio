@@ -7,9 +7,10 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from '@/context/theme-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
+import Header from '@/components/header';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -47,6 +48,7 @@ export default function RootLayout({
         >
             <AuthProvider>
                 <AnimatedGradient />
+                <Header />
                 <main className="relative z-10">
                   {children}
                 </main>

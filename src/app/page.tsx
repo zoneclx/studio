@@ -58,7 +58,7 @@ export default function Home() {
       )}
     >
       <main className="flex-1">
-        <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden">
+        <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden pt-32">
             <div className="absolute inset-0 -z-20 animated-gradient-background opacity-20 dark:opacity-30"></div>
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -78,17 +78,10 @@ export default function Home() {
                             Start Chatting <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         </Link>
-                        {!user && (
-                        <Link href="/login">
-                            <Button size="lg" variant="outline" className={cn("font-bold text-lg w-full sm:w-auto")}>
-                            Sign In
-                            </Button>
-                        </Link>
-                        )}
                     </div>
                 </div>
 
-                <div className="z-10 block animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                   <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
                       <CardContent className="p-2">
                           <div className="bg-muted/30 p-4 rounded-lg">
@@ -193,5 +186,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
