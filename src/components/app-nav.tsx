@@ -60,7 +60,7 @@ export default function AppNav() {
             .filter((link) => user || !link.auth)
             .map((link) => (
               <SidebarMenuItem key={link.href}>
-                <Link href={link.href} passHref legacyBehavior>
+                <Link href={link.href} passHref>
                   <SidebarMenuButton
                     as="a"
                     isActive={pathname.startsWith(link.href)}
@@ -123,9 +123,15 @@ export default function AppNav() {
             </DropdownMenu>
          ) : (
             <div className="flex flex-col gap-2 group-data-[collapsible=icon]:hidden">
-                 <Link href="/try"><Button className="w-full">Try for Free</Button></Link>
-                <Link href="/login"><Button variant="outline" className="w-full">Login</Button></Link>
-                <Link href="/signup"><Button className="w-full">Sign Up</Button></Link>
+                <Link href="/try">
+                  <Button className="w-full">Try for Free</Button>
+                </Link>
+                <Link href="/login">
+                  <Button variant="outline" className="w-full">Login</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="w-full">Sign Up</Button>
+                </Link>
             </div>
          )}
       </SidebarFooter>

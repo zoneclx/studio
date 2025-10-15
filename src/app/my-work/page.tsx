@@ -84,9 +84,25 @@ export default function MyWorkPage() {
   
   const getFullHtml = (savedWork: SavedWork | null) => {
     if (!savedWork) return '';
-    return savedWork.html
-      .replace('<link rel="stylesheet" href="style.css">', `<style>${savedWork.css}</style>`)
-      .replace('<script src="script.js" defer></script>', `<script>${savedWork.javascript}</script>`);
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: sans-serif; }
+          ${savedWork.css}
+        </style>
+      </head>
+      <body>
+        ${savedWork.html}
+        <script>
+          ${savedWork.javascript}
+        </script>
+      </body>
+      </html>
+    `;
   }
 
   if (loading || (!user && !isLoading)) {
