@@ -48,7 +48,6 @@ export default function RootLayout({
               <AuthProvider>
                 <SidebarProvider>
                   <div className="flex min-h-screen">
-                    <AppNav />
                     <SidebarInset className="flex-1 flex flex-col">
                        <AnimatedGradient />
                        <Header />
@@ -58,6 +57,7 @@ export default function RootLayout({
                        <Toaster />
                        <CookieConsent />
                     </SidebarInset>
+                    <AppNav />
                   </div>
                 </SidebarProvider>
               </AuthProvider>

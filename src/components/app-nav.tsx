@@ -45,7 +45,7 @@ export default function AppNav() {
   };
   
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" side="right">
       <SidebarHeader className="p-2 flex items-center justify-between">
          <h1 className="text-xl font-bold font-display flex items-center gap-2 group-data-[collapsible=icon]:hidden">
             <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
@@ -66,7 +66,7 @@ export default function AppNav() {
                   <SidebarMenuButton
                     as="a"
                     isActive={pathname === link.href}
-                    tooltip={link.label}
+                    tooltip={{ children: link.label, side: 'left' }}
                     onClick={handleLinkClick}
                   >
                     <link.icon className="h-5 w-5" />
@@ -99,7 +99,7 @@ export default function AppNav() {
                     </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 mb-2" side="right" align="start" forceMount>
+              <DropdownMenuContent className="w-56 mb-2" side="left" align="start" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
