@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, User as UserIcon, LayoutGrid, LogOut } from 'lucide-react';
+import { Sparkles, User as UserIcon, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -22,14 +22,14 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
             <span className="text-xl font-bold font-display">Byte AI</span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
           {loading ? (
             <div className="w-8 h-8 bg-muted rounded-full animate-pulse" />
@@ -70,7 +70,7 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <Link href="/signup">
-              <Button>Sign Up</Button>
+              <Button size="sm">Sign Up</Button>
             </Link>
           )}
         </div>

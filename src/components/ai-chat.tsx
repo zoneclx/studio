@@ -117,14 +117,14 @@ const AiChatPage = () => {
       <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
         {messages.length === 0 && !isLoading ? (
           <div className="flex h-full items-center justify-center p-4">
-              <div className="text-center">
+              <div className="text-center max-w-lg mx-auto">
                    <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
                       <Sparkles className="w-10 h-10 text-primary" />
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Byte AI</h1>
-                  <p className="text-muted-foreground mb-8 max-w-md">How can I help you today? Feel free to ask me anything or upload an image.</p>
+                  <p className="text-muted-foreground mb-8">How can I help you today? Feel free to ask me anything or upload an image.</p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {examplePrompts.map((prompt) => (
                           <button
                               key={prompt}
@@ -142,7 +142,7 @@ const AiChatPage = () => {
           <div className="p-4 md:p-6">
             <div className="max-w-3xl mx-auto space-y-8">
               {messages.map((message) => (
-                <div key={message.id} className={cn('flex items-start gap-4', message.role === 'user' && 'justify-end')}>
+                <div key={message.id} className={cn('flex items-start gap-3 sm:gap-4', message.role === 'user' && 'justify-end')}>
                   {message.role === 'assistant' && (
                     <Avatar className="w-8 h-8 border">
                       <AvatarFallback>
@@ -167,7 +167,7 @@ const AiChatPage = () => {
                 </div>
               ))}
               {isLoading && (
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3 sm:gap-4">
                   <Avatar className="w-8 h-8 border">
                     <AvatarFallback><Sparkles className="w-5 h-5 text-primary animate-pulse" /></AvatarFallback>
                   </Avatar>
@@ -185,7 +185,7 @@ const AiChatPage = () => {
         )}
       </div>
 
-      <div className="p-4 md:p-6 border-t bg-background/80 backdrop-blur-lg">
+      <div className="p-4 border-t bg-background/80 backdrop-blur-lg">
         <div className="max-w-3xl mx-auto">
           <div className="relative">
             {image && (
