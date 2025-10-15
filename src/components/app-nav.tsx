@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, FileArchive, User, Settings, LogOut, Sparkles } from 'lucide-react';
+import { Bot, FileArchive, User, Settings, LogOut, Sparkles, Moon, Sun, Palette } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/context/auth-context';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from '@/context/theme-context';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -25,6 +25,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { useSidebar } from '@/components/ui/sidebar';
 
@@ -32,6 +36,46 @@ const navLinks = [
   { href: '/create', label: 'Builder', icon: Bot, auth: true },
   { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
 ];
+
+const themes = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'System', value: 'system' },
+    { name: 'Rose', value: 'rose' },
+    { name: 'Violet', value: 'violet' },
+    { name: 'Macchiato', value: 'macchiato' },
+    { name: 'Glass', value: 'glass' },
+    { name: 'Red Hat', value: 'redhat' },
+    { name: 'Ultra', value: 'ultra' },
+    { name: 'Material', value: 'material' },
+];
+
+export function ThemeToggle() {
+  const { setTheme } = useTheme();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="w-full group-data-[collapsible=icon]:w-10">
+            <div className="flex items-center gap-2">
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="group-data-[collapsible=icon]:hidden">Themes</span>
+                <span className="sr-only">Toggle theme</span>
+            </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="left" align="end" className="w-40">
+        {themes.map(theme => (
+            <DropdownMenuItem key={theme.value} onClick={() => setTheme(theme.value as any)}>
+                {theme.name}
+            </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 
 export default function AppNav() {
   const { user, signOut } = useAuth();
@@ -138,3 +182,5 @@ export default function AppNav() {
     </Sidebar>
   );
 }
+
+    
