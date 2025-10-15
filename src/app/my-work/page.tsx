@@ -215,7 +215,7 @@ export default function MyWorkPage() {
         </main>
         <footer className="py-6 text-center text-sm text-muted-foreground">
           <p>
-            © 2025 Enzo Gimena's Ai, All rights reserved.
+            © 2025 Byte AI, All rights reserved.
           </p>
         </footer>
       </div>
@@ -240,3 +240,5 @@ export default function MyWorkPage() {
     </>
   );
 }
+
+    
