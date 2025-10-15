@@ -24,7 +24,7 @@ const websiteGenerationPrompt = ai.definePrompt({
   name: 'websiteGenerationPrompt',
   input: { schema: CreateWebsiteInputSchema },
   output: { schema: CreateWebsiteOutputSchema },
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-pro',
   prompt: `
     You are a professional web developer. A user will provide a prompt describing a website they want to create.
     Your task is to generate the HTML, CSS, and JavaScript for a complete, visually appealing, and functional single-page website based on the user's prompt.
