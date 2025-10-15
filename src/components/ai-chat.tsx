@@ -115,7 +115,7 @@ const AiChatPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
       <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
-        {messages.length === 0 ? (
+        {messages.length === 0 && !isLoading ? (
           <div className="flex h-full items-center justify-center p-4">
               <div className="text-center">
                    <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
