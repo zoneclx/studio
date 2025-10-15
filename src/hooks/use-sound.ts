@@ -29,15 +29,11 @@ const zzfx = (
   const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
   const G = 44100;
   const K = 2 * Math.PI;
-  const L = u *= 500 * K / G / G;
-  const C = b *= (1 + 2 * k * Math.random() - k) * K / G;
-  const g = 0;
-  const d = 0;
+  u *= 500 * K / G / G;
+  let C = b *= (1 + 2 * k * Math.random() - k) * K / G;
   let a = 0;
-  let M = 0;
   let x = 0;
   let N = 0;
-  let O = 0;
   const P = [];
   r = G * r + e * G;
   A *= G;
@@ -50,7 +46,6 @@ const zzfx = (
   l = G * l | 0;
   for (let H = e * G | 0; a < r; ++a) {
     N = a / G;
-    M = a / G * D | 0;
     x = (N % (1 / D) * D) ** u * 2 - 1;
     x = (Math.abs(x) < t ? x / t : Math.sign(x) * (1 + (Math.abs(x) - 1) * q));
     x = Math.max(-1, Math.min(1, x));
