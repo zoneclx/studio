@@ -8,7 +8,7 @@ import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Edit, Trash2, MessageSquare } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
   AlertDialog,
@@ -21,8 +21,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Bot } from 'lucide-react';
 
 type SavedWork = {
   html: string;
@@ -32,24 +30,13 @@ type SavedWork = {
   date: string;
 };
 
-type SavedMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
-
-type SavedChat = {
-  messages: SavedMessage[];
-  date: string;
-}
-
 export default function MyWorkPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [work, setWork] = useState<SavedWork | null>(null);
-  const [chat, setChat] = useState<SavedChat | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState<{ web: boolean; chat: boolean }>({ web: false, chat: false });
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -64,10 +51,6 @@ export default function MyWorkPage() {
         if (savedWork) {
           setWork(JSON.parse(savedWork));
         }
-        const savedChat = localStorage.getItem(`monochrome-chat-archive-${user.uid}`);
-        if (savedChat) {
-          setChat(JSON.parse(savedChat));
-        }
       } catch (e) {
         console.error("Failed to load work from localStorage", e);
       } finally {
@@ -76,28 +59,26 @@ export default function MyWorkPage() {
     }
   }, [user]);
 
-  const handleDelete = (type: 'web' | 'chat') => {
+  const handleDelete = () => {
     if (!user) return;
-    const key = type === 'web' ? `monochrome-work-${user.uid}` : `monochrome-chat-archive-${user.uid}`;
-    const title = type === 'web' ? 'Website Archive Deleted' : 'Chat Archive Deleted';
+    const key = `monochrome-work-${user.uid}`;
     
     try {
       localStorage.removeItem(key);
-      if (type === 'web') setWork(null);
-      if (type === 'chat') setChat(null);
+      setWork(null);
       toast({
-        title: title,
+        title: 'Website Archive Deleted',
         description: 'Your saved work has been removed.',
       });
     } catch (e) {
-      console.error(`Failed to delete ${type} from localStorage`, e);
+      console.error('Failed to delete work from localStorage', e);
       toast({
         title: 'Error',
-        description: `Could not delete your saved ${type}.`,
+        description: `Could not delete your saved work.`,
         variant: 'destructive',
       });
     } finally {
-        setDialogOpen({ web: false, chat: false });
+        setDialogOpen(false);
     }
   };
   
@@ -124,22 +105,13 @@ export default function MyWorkPage() {
                 <Skeleton className="h-64 w-full" />
               </CardContent>
             </Card>
-             <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-40 w-full" />
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
     );
   }
 
-  const noContent = !work && !chat;
+  const noContent = !work;
 
   return (
     <>
@@ -161,15 +133,6 @@ export default function MyWorkPage() {
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-64 w-full" />
-                  </CardContent>
-                </Card>
-                 <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-40 w-full" />
                   </CardContent>
                 </Card>
               </div>
@@ -208,7 +171,7 @@ export default function MyWorkPage() {
                           Continue Editing
                       </Button>
                   </Link>
-                  <Button variant="destructive" onClick={() => setDialogOpen(prev => ({...prev, web: true}))}>
+                  <Button variant="destructive" onClick={() => setDialogOpen(true)}>
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
                   </Button>
@@ -216,72 +179,12 @@ export default function MyWorkPage() {
               </Card>
             )}
 
-            {chat && (
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Last Chat Conversation</CardTitle>
-                        <CardDescription>
-                            Saved {formatDistanceToNow(new Date(chat.date), { addSuffix: true })}.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 max-h-[400px] overflow-y-auto p-4">
-                        {chat.messages.map((message, index) => (
-                           <div
-                              key={index}
-                              className={`flex items-start gap-3 ${
-                                message.role === 'user' ? 'justify-end' : ''
-                              }`}
-                            >
-                              {message.role === 'assistant' && (
-                                <Avatar className="w-8 h-8 border">
-                                   <AvatarFallback className="bg-primary text-primary-foreground">
-                                    <Bot />
-                                  </AvatarFallback>
-                                </Avatar>
-                              )}
-                              <div
-                                className={`rounded-lg px-3 py-2 max-w-md break-words ${
-                                  message.role === 'user'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted'
-                                }`}
-                              >
-                                <p className="text-sm">{message.content}</p>
-                              </div>
-                              {message.role === 'user' && (
-                                <Avatar className="w-8 h-8 border">
-                                   {user?.avatar ? (
-                                        <AvatarImage src={user.avatar} alt={user.name || ''} />
-                                    ) : null}
-                                  <AvatarFallback>
-                                    <User />
-                                  </AvatarFallback>
-                                </Avatar>
-                              )}
-                            </div>
-                        ))}
-                    </CardContent>
-                     <CardFooter className="flex justify-between">
-                        <Link href="/chat" passHref>
-                            <Button>
-                                <MessageSquare className="mr-2 h-4 w-4" />
-                                Continue Conversation
-                            </Button>
-                        </Link>
-                        <Button variant="destructive" onClick={() => setDialogOpen(prev => ({...prev, chat: true}))}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
-                    </CardFooter>
-                 </Card>
-            )}
-
             {!isLoading && noContent && (
               <Card className="text-center p-8">
                 <CardHeader>
                   <CardTitle>No Saved Work Found</CardTitle>
                   <CardDescription>
-                    You haven't created a website or had a conversation yet.
+                    You haven't created a website yet.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -301,7 +204,7 @@ export default function MyWorkPage() {
         </footer>
       </div>
       
-      <AlertDialog open={dialogOpen.web} onOpenChange={(open) => setDialogOpen(p => ({...p, web: open}))}>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -312,25 +215,7 @@ export default function MyWorkPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDelete('web')} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={dialogOpen.chat} onOpenChange={(open) => setDialogOpen(p => ({...p, chat: open}))}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              saved chat history from your browser's storage.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDelete('chat')} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

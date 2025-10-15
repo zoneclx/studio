@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Eye, Wand2, MessageSquare, Sparkles } from 'lucide-react';
+import { ArrowRight, Eye, Wand2, Sparkles, LayoutTemplate } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
@@ -12,36 +12,37 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 
 const animatedTitles = [
-    "Chat with a creative AI.",
+    "Build a website with a single prompt.",
     "Your vision, brought to life.",
-    "Get feedback on your ideas.",
-    "Ask me anything.",
-    "Analyze images with me.",
-    "Free for everyone, forever."
+    "From idea to website in seconds.",
+    "AI-powered website generation.",
+    "Create, customize, and deploy.",
+    "The future of web design is here."
 ];
 
 const features = [
     {
-        icon: <MessageSquare className="w-8 h-8 text-primary" />,
-        title: "Free AI Chat",
-        description: "Our knowledgeable AI assistant is free forever. Ask questions, get ideas, or brainstorm your next big project without any cost.",
-        badge: "Free"
+        icon: <Wand2 className="w-8 h-8 text-primary" />,
+        title: "AI-Powered Generation",
+        description: "Describe your ideal website, and our AI will generate the initial design and code, giving you a running start.",
+        badge: "Soon"
     },
     {
-        icon: <Eye className="w-8 h-8 text-primary" />,
-        title: "Image Analysis",
-        description: "Upload an image and ask questions about it. The AI can analyze, describe, and discuss visual content, making it a powerful creative partner.",
+        icon: <LayoutTemplate className="w-8 h-8 text-primary" />,
+        title: "Full Customization",
+        description: "Tweak the generated code, adjust styles, and make the website truly your own with a powerful built-in editor.",
+         badge: "Soon"
     },
      {
-        icon: <Wand2 className="w-8 h-8 text-primary" />,
-        title: "Creative Partner",
-        description: "From drafting emails to debugging code and brainstorming brand names, Monochrome AI is your versatile partner for any creative or technical task.",
+        icon: <Eye className="w-8 h-8 text-primary" />,
+        title: "Live Preview",
+        description: "Instantly see your changes reflected in a live preview. Iterate quickly and design with confidence.",
+         badge: "Soon"
     },
     {
         icon: <Sparkles className="w-8 h-8 text-primary" />,
-        title: "Builder Coming Soon",
-        description: "Our AI-powered website builder is under active development. Soon, you'll be able to generate full websites from a single prompt!",
-        badge: "Soon"
+        title: "Free to Start",
+        description: "Experiment and build your first website for free. Sign up to save your work and unlock more features.",
     },
 ];
 
@@ -73,14 +74,14 @@ export default function Home() {
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
                     />
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Monochrome Ai is a powerful, free-to-use AI assistant. 
-                        Chat about your ideas, analyze images, and get help with creative tasks.
-                        Your smart and friendly creative partner is here to help.
+                        Monochrome Ai is a powerful, AI-powered website builder.
+                        Describe your vision, and watch as our AI brings it to life in seconds.
+                        The future of creation is here.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/chat">
+                        <Link href="/create">
                         <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
-                            Chat for Free <ArrowRight className="ml-2 h-5 w-5" />
+                            Start Creating <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         </Link>
                         {!user && (
@@ -105,7 +106,7 @@ export default function Home() {
                                           <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                                       </div>
                                       <div className="text-sm text-muted-foreground font-mono bg-background px-4 py-0.5 rounded-md border">
-                                        ai-assistant
+                                        website-builder
                                       </div>
                                   </div>
                                   <div className="p-6 text-left space-y-4">
@@ -133,9 +134,9 @@ export default function Home() {
         <section className="py-16 md:py-24 bg-muted/50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl sm:text-4xl font-bold font-display">Why Choose Monochrome AI?</h2>
+                    <h2 className="text-3xl sm:text-4xl font-bold font-display">The Future of Building Websites</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                        We combine a powerful AI model with a user-friendly interface to make creativity accessible to everyone.
+                        We combine a powerful AI model with a user-friendly interface to make web development accessible to everyone.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -145,7 +146,7 @@ export default function Home() {
                                 {feature.icon}
                                  <CardTitle className="mt-4 text-xl flex items-center gap-2">
                                     {feature.title}
-                                    {feature.badge && <Badge variant={feature.badge === 'Free' ? 'destructive' : 'default'}>{feature.badge}</Badge>}
+                                    {feature.badge && <Badge variant={feature.badge === 'Soon' ? 'default' : 'destructive'}>{feature.badge}</Badge>}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>

@@ -13,8 +13,6 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { handleChat } from '@/app/actions';
-import AiChat from '@/components/ai-chat';
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
@@ -25,10 +23,6 @@ export default function CreatePage() {
       router.push('/signup');
     }
   }, [user, loading, router]);
-
-  const handleAiChatMessage = async (text: string, image?: string) => {
-    return handleChat(text, image);
-  };
 
   if (loading || !user) {
     return (
@@ -52,35 +46,19 @@ export default function CreatePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="container mx-auto max-w-4xl flex-1 px-4 py-8 flex items-center justify-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
-            <Card className="lg:col-span-1 flex flex-col items-center justify-center text-center p-8">
-              <CardHeader>
-                <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
-                    <Bot className="w-12 h-12 text-primary" />
-                </div>
-                <CardTitle className="text-3xl font-bold font-display">
-                  Builder Coming Soon!
-                </CardTitle>
-                <CardDescription className="text-lg text-muted-foreground mt-2">
-                  Our AI website builder is currently under development. While you wait, feel free to chat with our AI assistant to discuss your ideas!
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <div className="lg:col-span-1 animate-in fade-in duration-500">
-                <Card className="h-[70vh]">
-                     <CardHeader>
-                        <CardTitle>AI Assistant</CardTitle>
-                         <CardDescription>Ask me anything or share an idea.</CardDescription>
-                     </CardHeader>
-                     <CardContent className="p-0 h-full">
-                        <AiChat 
-                            onSendMessage={handleAiChatMessage}
-                        />
-                     </CardContent>
-                </Card>
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
+              <Bot className="w-16 h-16 text-primary" />
             </div>
-        </div>
+            <CardTitle className="text-3xl font-bold font-display">
+              Builder Coming Soon!
+            </CardTitle>
+            <CardDescription className="text-lg text-muted-foreground mt-2">
+              Our AI website builder is currently under development and will be available soon.
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </main>
     </div>
   );

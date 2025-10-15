@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, FileArchive, MessageSquare, User, Settings, LogOut, Home, Sparkles } from 'lucide-react';
+import { Bot, FileArchive, User, Settings, LogOut, Sparkles } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -26,12 +26,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from './ui/badge';
 import { useSidebar } from '@/components/ui/sidebar';
 
 const navLinks = [
   { href: '/create', label: 'Builder', icon: Bot, auth: true },
-  { href: '/chat', label: 'AI Chat', icon: MessageSquare, auth: false, badge: 'Free' },
   { href: '/my-work', label: 'My Archive', icon: FileArchive, auth: true },
 ];
 
@@ -72,7 +70,6 @@ export default function AppNav() {
                     <link.icon className="h-5 w-5" />
                     <span className="flex items-center justify-between w-full">
                       {link.label}
-                      {link.badge && <Badge variant="destructive">{link.badge}</Badge>}
                     </span>
                   </SidebarMenuButton>
                 </Link>
