@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, FileArchive, User, Settings, LogOut, Sparkles, Moon, Sun, Palette } from 'lucide-react';
+import { Bot, FileArchive, User, Settings, LogOut, Sparkles, Moon, Sun } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -25,10 +25,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { useSidebar } from '@/components/ui/sidebar';
 
@@ -104,9 +100,8 @@ export default function AppNav() {
             .filter((link) => user || !link.auth)
             .map((link) => (
               <SidebarMenuItem key={link.href}>
-                <Link href={link.href} passHref>
+                <Link href={link.href}>
                   <SidebarMenuButton
-                    as="a"
                     isActive={pathname.startsWith(link.href)}
                     tooltip={{ children: link.label, side: 'left' }}
                     onClick={handleLinkClick}
@@ -182,5 +177,3 @@ export default function AppNav() {
     </Sidebar>
   );
 }
-
-    
