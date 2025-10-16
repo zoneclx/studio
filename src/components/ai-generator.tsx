@@ -40,7 +40,12 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { generateCode } from '@/app/actions';
-import { TooltipProvider } from './ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 import Link from 'next/link';
 
 const initialFiles = [

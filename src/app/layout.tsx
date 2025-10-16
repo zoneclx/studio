@@ -8,6 +8,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/context/theme-context';
+import { PluginProvider } from '@/context/plugin-context';
 import CookieConsent from '@/components/cookie-consent';
 import AnimatedGradient from '@/components/animated-gradient';
 import Header from '@/components/header';
@@ -53,12 +54,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <PluginProvider>
               <AnimatedGradient />
               <Header />
               <main className="relative z-10 flex-1 flex flex-col">
                 {children}
               </main>
               {!isEditorPage && <Footer />}
+            </PluginProvider>
           </AuthProvider>
         </ThemeProvider>
         <Toaster />
