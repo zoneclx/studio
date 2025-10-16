@@ -17,6 +17,7 @@ import {
   Palette,
   Braces,
   Eye,
+  PlusCircle,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -33,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -98,6 +100,9 @@ export default function WebEditor() {
   const [activeFile, setActiveFile] = useState(initialFiles[0].name);
   const [previewContent, setPreviewContent] = useState('');
   const [isShareOpen, setShareOpen] = useState(false);
+  const [isNewFileOpen, setNewFileOpen] = useState(false);
+  const [newFileName, setNewFileName] = useState('');
+
   const playSound = useSound();
 
   const handleFileChange = (fileName: string, newContent: string) => {
@@ -177,6 +182,32 @@ export default function WebEditor() {
     setShareOpen(false);
   }
 
+  const handleCreateFile = () => {
+    if (!newFileName || !newFileName.includes('.')) {
+        toast({ title: 'Invalid Filename', description: 'Please enter a valid filename with an extension (e.g., "new.js").', variant: 'destructive' });
+        return;
+    }
+    if (files.some(f => f.name === newFileName)) {
+        toast({ title: 'File Exists', description: 'A file with this name already exists.', variant: 'destructive' });
+        return;
+    }
+
+    const extension = newFileName.split('.').pop() || '';
+    const language = ['html', 'css', 'js'].includes(extension) ? extension : 'plaintext';
+    
+    let content = '';
+    if (language === 'html') content = '<!DOCTYPE html>\n<html>\n<head>\n  <title>New Page</title>\n</head>\n<body>\n\n</body>\n</html>';
+    if (language === 'css') content = '/* New CSS File */';
+    if (language === 'js') content = '// New JavaScript File';
+    
+    const newFile = { name: newFileName, language, content };
+    setFiles([...files, newFile]);
+    setActiveFile(newFileName);
+    setNewFileName('');
+    setNewFileOpen(false);
+    toast({ title: 'File Created', description: `Successfully created ${newFileName}.` });
+  };
+
   const currentFile = useMemo(
     () => files.find((f) => f.name === activeFile),
     [files, activeFile]
@@ -235,10 +266,35 @@ export default function WebEditor() {
         <ResizablePanel
           defaultSize={15}
           minSize={10}
-          className="min-w-[150px]"
+          className="min-w-[150px] flex flex-col"
         >
-          <div className="p-2 h-full bg-background/50">
-            <h2 className="text-sm font-semibold mb-2 px-2">Explorer</h2>
+          <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
+            <div className="flex justify-between items-center mb-2 px-2">
+                 <h2 className="text-sm font-semibold">Explorer</h2>
+                 <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <PlusCircle className="w-4 h-4" />
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Create New File</DialogTitle>
+                            <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="filename" className="text-right">Filename</Label>
+                                <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                            <Button onClick={handleCreateFile}>Create File</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                 </Dialog>
+            </div>
             <ScrollArea className="h-full">
               {files.map((file) => (
                 <button
