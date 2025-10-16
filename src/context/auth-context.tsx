@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       uid: 'local-user-' + new Date().getTime(), 
       email: email, 
       pass: pass,
-      name: email.split('@')[0],
+      name: email.split('@')[0] || 'New User',
       avatar: ''
     };
     const updatedUsers = [...storedUsers, newUser];
