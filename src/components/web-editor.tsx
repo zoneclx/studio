@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -19,7 +20,6 @@ import {
   Eye,
   PlusCircle,
   Terminal,
-  Code,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -42,7 +42,7 @@ import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
 import { MobileEditorNav } from './mobile-editor-nav';
 
-const initialFiles = [
+const defaultFiles = [
   {
     name: 'index.html',
     language: 'html',
@@ -97,15 +97,30 @@ const FileIcon = ({ filename }: { filename: string }) => {
   return fileIcons[extension] || fileIcons.default;
 };
 
+interface Project {
+  id: string;
+  name: string;
+  files: { name: string; language: string; content: string }[];
+  timestamp: string;
+}
+
 export default function WebEditor() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [files, setFiles] = useState(initialFiles);
-  const [activeFile, setActiveFile] = useState(initialFiles[0].name);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState('Untitled Project');
+  const [files, setFiles] = useState(defaultFiles);
+  const [activeFile, setActiveFile] = useState(defaultFiles[0].name);
   const [previewContent, setPreviewContent] = useState('');
+  
   const [isShareOpen, setShareOpen] = useState(false);
+  const [isSaveOpen, setSaveOpen] = useState(false);
   const [isNewFileOpen, setNewFileOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
+  
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
@@ -118,6 +133,30 @@ export default function WebEditor() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    const editingId = searchParams.get('edit');
+    if (editingId) {
+      try {
+        const storedProjectsStr = localStorage.getItem(`monostudio-archive-${user.uid}`);
+        if (storedProjectsStr) {
+          const storedProjects: Project[] = JSON.parse(storedProjectsStr);
+          const projectToEdit = storedProjects.find(p => p.id === editingId);
+          if (projectToEdit) {
+            setFiles(projectToEdit.files);
+            setProjectId(projectToEdit.id);
+            setProjectName(projectToEdit.name);
+            setActiveFile(projectToEdit.files[0]?.name || '');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load project for editing:', error);
+        toast({ title: "Load Error", description: "Could not load the project.", variant: 'destructive'});
+        router.push('/create');
+      }
+    }
+  }, [searchParams, user, router, toast]);
+
   const handleFileChange = (fileName: string, newContent: string) => {
     setFiles(
       files.map((file) =>
@@ -126,7 +165,6 @@ export default function WebEditor() {
     );
   };
   
-  // Capture console logs from iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.source !== (document.querySelector('iframe')?.contentWindow)) {
@@ -186,7 +224,6 @@ export default function WebEditor() {
 
   useEffect(() => {
     runPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 
   const saveWork = () => {
@@ -198,16 +235,41 @@ export default function WebEditor() {
       });
       return;
     }
+    if (!projectName.trim()) {
+        toast({ title: 'Project Name Required', description: 'Please enter a name for your project.', variant: 'destructive'});
+        return;
+    }
+
     try {
-      const savedWork = {
-        files,
-        timestamp: new Date().toISOString(),
-      };
-      localStorage.setItem(`monostudio-archive-${user.uid}`, JSON.stringify(savedWork));
+      const storageKey = `monostudio-archive-${user.uid}`;
+      const storedProjectsStr = localStorage.getItem(storageKey);
+      const projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
+      
+      const newTimestamp = new Date().toISOString();
+
+      if (projectId) { // Updating existing project
+        const projectIndex = projects.findIndex(p => p.id === projectId);
+        if (projectIndex !== -1) {
+          projects[projectIndex] = { ...projects[projectIndex], name: projectName, files, timestamp: newTimestamp };
+        }
+      } else { // Saving new project
+        const newProjectId = `proj-${Date.now()}`;
+        const newProject: Project = {
+          id: newProjectId,
+          name: projectName,
+          files,
+          timestamp: newTimestamp
+        };
+        projects.push(newProject);
+        setProjectId(newProjectId);
+      }
+
+      localStorage.setItem(storageKey, JSON.stringify(projects));
       toast({
-        title: 'Work Saved!',
-        description: 'Your files have been saved to your archive.',
+        title: 'Project Saved!',
+        description: `${projectName} has been saved.`,
       });
+      setSaveOpen(false);
     } catch (error) {
       toast({
         title: 'Save Failed',
@@ -259,7 +321,6 @@ export default function WebEditor() {
       if (command.toLowerCase() === 'clear') {
         setTerminalOutput(['> Terminal cleared.']);
       } else if (command) {
-        // Here you could add more command handling
         newOutput.push(`-bash: command not found: ${command}`);
         setTerminalOutput(newOutput);
       } else {
@@ -275,7 +336,15 @@ export default function WebEditor() {
     [files, activeFile]
   );
   
-  const editorActions = { runPreview, saveWork, handleShare: () => setShareOpen(true) };
+  const handleSaveClick = () => {
+    if (!user) {
+       toast({ title: 'Login Required', description: 'Please log in to save your project.', variant: 'destructive' });
+       return;
+    }
+    setSaveOpen(true);
+  }
+  
+  const editorActions = { runPreview, saveWork: handleSaveClick, handleShare: () => setShareOpen(true) };
   
   const handleSelectFileMobile = (fileName: string) => {
     setActiveFile(fileName);
@@ -463,9 +532,32 @@ export default function WebEditor() {
                                 <Button variant="ghost" size="sm" onClick={runPreview}>
                                     <Play className="w-4 h-4 mr-2" /> Run
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={saveWork}>
-                                    <Save className="w-4 h-4 mr-2" /> Save
-                                </Button>
+                                 <Dialog open={isSaveOpen} onOpenChange={setSaveOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="sm" onClick={handleSaveClick}>
+                                            <Save className="w-4 h-4 mr-2" /> Save
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>Save Project</DialogTitle>
+                                            <DialogDescription>
+                                                Give your project a name. This will create a new project or update the existing one.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="project-name" className="text-right">
+                                                Project Name
+                                                </Label>
+                                                <Input id="project-name" value={projectName} onChange={e => setProjectName(e.target.value)} className="col-span-3" />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit" onClick={saveWork}>Save Project</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                                 <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" size="sm">

@@ -10,20 +10,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, File, FileType2, Palette, Braces } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
+import { FileCode, PlusCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface SavedFile {
   name: string;
@@ -32,37 +26,17 @@ interface SavedFile {
 }
 
 interface SavedWork {
+  id: string;
+  name: string;
   files: SavedFile[];
   timestamp: string;
 }
 
-const fileIcons: { [key: string]: React.ReactNode } = {
-  html: <FileType2 className="w-4 h-4" />,
-  css: <Palette className="w-4 h-4" />,
-  js: <Braces className="w-4 h-4" />,
-  default: <File className="w-4 h-4" />,
-};
-
-const FileIcon = ({ filename }: { filename: string }) => {
-  const extension = filename.split('.').pop() || '';
-  return fileIcons[extension] || fileIcons.default;
-};
-
 export default function MyArchivePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [savedWork, setSavedWork] = useState<SavedWork | null>(null);
+  const [savedWork, setSavedWork] = useState<SavedWork[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFile, setActiveFile] = useState<SavedFile | null>(null);
-  const [previewContent, setPreviewContent] = useState('');
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -72,11 +46,10 @@ export default function MyArchivePage() {
       try {
         const data = localStorage.getItem(`monostudio-archive-${user.uid}`);
         if (data) {
-          const parsedData = JSON.parse(data);
+          const parsedData: SavedWork[] = JSON.parse(data);
+          // Sort by timestamp descending
+          parsedData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
           setSavedWork(parsedData);
-          if(parsedData.files.length > 0) {
-              setActiveFile(parsedData.files[0]);
-          }
         }
       } catch (error) {
         console.error('Failed to load saved work from localStorage', error);
@@ -86,31 +59,6 @@ export default function MyArchivePage() {
     }
   }, [user, loading, router]);
 
-   useEffect(() => {
-    if (savedWork) {
-      const htmlFile = savedWork.files.find((f) => f.name.endsWith('.html'));
-      const cssFile = savedWork.files.find((f) => f.name.endsWith('.css'));
-      const jsFile = savedWork.files.find((f) => f.name.endsWith('.js'));
-
-      if (!htmlFile) {
-        setPreviewContent('<html><body>No index.html file found.</body></html>');
-        return;
-      }
-      
-      let processedHtml = htmlFile.content;
-
-      if (cssFile) {
-          processedHtml = processedHtml.replace('</head>', `<style>${cssFile.content}</style></head>`);
-      }
-      if (jsFile) {
-          processedHtml = processedHtml.replace('</body>', `<script>${jsFile.content}<\/script></body>`);
-      }
-      
-      setPreviewContent(processedHtml);
-    }
-  }, [savedWork]);
-
-
   if (loading || isLoading) {
     return (
       <div className="container mx-auto max-w-6xl py-8 px-4 flex-1 pt-24">
@@ -118,96 +66,71 @@ export default function MyArchivePage() {
             <Skeleton className="h-10 w-2/3 md:w-1/3 mb-2" />
             <Skeleton className="h-6 w-1/2 md:w-1/2" />
         </header>
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-6 w-1/4" />
-                <Skeleton className="h-4 w-1/5" />
-            </CardHeader>
-            <CardContent>
-                <Skeleton className="h-64 w-full" />
-            </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-48 w-full" />
+        </div>
       </div>
     );
   }
   
-  if (!savedWork) {
-    return (
-        <div className="container mx-auto max-w-2xl py-8 px-4 flex-1 pt-24 text-center">
-            <Card className="p-8">
-                <CardTitle>No Saved Projects Found</CardTitle>
-                <CardDescription className="mt-2">
-                    You haven't saved any projects yet. Go to the editor to start creating!
-                </CardDescription>
-                <Link href="/create" className='mt-6 inline-block'>
-                    <Button>
-                        Start Coding
-                    </Button>
-                </Link>
-            </Card>
-        </div>
-    );
-  }
-
   return (
     <div className="container mx-auto max-w-6xl py-8 px-4 flex-1 pt-24">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold font-display">Your Projects</h1>
-        <p className="text-muted-foreground mt-2 text-lg">
-          Your last saved project. Last saved{' '}
-          {formatDistanceToNow(new Date(savedWork.timestamp), { addSuffix: true })}.
-        </p>
+      <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+            <h1 className="text-4xl font-bold font-display">Your Projects</h1>
+            <p className="text-muted-foreground mt-2 text-lg">
+            Manage your saved projects or start a new one.
+            </p>
+        </div>
+        <Link href="/create" className='mt-4 md:mt-0'>
+            <Button>
+                <PlusCircle className="w-5 h-5 mr-2" />
+                New Project
+            </Button>
+        </Link>
       </header>
-      <Card className="overflow-hidden">
-        <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="min-h-[600px]">
-          <ResizablePanel defaultSize={20} minSize={15}>
-            <div className="p-2 h-full bg-background/50">
-              <h2 className="text-sm font-semibold mb-2 px-2">Files</h2>
-              <ScrollArea className="h-full">
-                {savedWork.files.map((file) => (
-                  <button
-                    key={file.name}
-                    onClick={() => setActiveFile(file)}
-                    className={cn(
-                      'w-full text-left text-sm px-2 py-1.5 rounded-md flex items-center gap-2',
-                      activeFile?.name === file.name
-                        ? 'bg-muted'
-                        : 'hover:bg-muted/50'
-                    )}
-                  >
-                    <FileIcon filename={file.name} />
-                    {file.name}
-                  </button>
-                ))}
-              </ScrollArea>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={80}>
-            <Tabs defaultValue="preview" className="h-full flex flex-col">
-              <TabsList className="m-2">
-                <TabsTrigger value="preview"><Eye className="w-4 h-4 mr-2" />Preview</TabsTrigger>
-                <TabsTrigger value="code">Code</TabsTrigger>
-              </TabsList>
-              <TabsContent value="preview" className="flex-1 bg-white m-2 mt-0 rounded-md border">
-                <iframe
-                    srcDoc={previewContent}
-                    title="Preview"
-                    sandbox="allow-scripts"
-                    className="w-full h-full"
-                />
-              </TabsContent>
-              <TabsContent value="code" className="flex-1 m-2 mt-0 rounded-md border relative">
-                  <ScrollArea className='h-full'>
-                    <pre className="p-4 text-sm whitespace-pre-wrap">
-                        <code>{activeFile?.content || "Select a file to view its code"}</code>
-                    </pre>
-                  </ScrollArea>
-              </TabsContent>
-            </Tabs>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </Card>
+      
+      {savedWork.length === 0 ? (
+        <Card className="p-8 py-16 text-center animate-fade-in-up">
+            <CardTitle className="text-2xl">No Projects Found</CardTitle>
+            <CardDescription className="mt-2">
+                You haven't saved any projects yet. Go to the editor to start creating!
+            </CardDescription>
+            <Link href="/create" className='mt-6 inline-block'>
+                <Button>
+                    Start Coding
+                </Button>
+            </Link>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {savedWork.map((project, index) => (
+                <div key={project.id} className="animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <Card className="flex flex-col h-full hover:border-primary/50 transition-colors">
+                        <CardHeader>
+                            <div className="flex items-start justify-between">
+                                <FileCode className="w-8 h-8 text-primary" />
+                            </div>
+                            <CardTitle className="mt-4">{project.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="text-sm text-muted-foreground flex items-center gap-2">
+                                <Clock className="w-4 h-4" />
+                                <span>Updated {formatDistanceToNow(new Date(project.timestamp), { addSuffix: true })}</span>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Link href={`/create?edit=${project.id}`} className="w-full">
+                                <Button variant="outline" className="w-full">Open in Editor</Button>
+                            </Link>
+                        </CardFooter>
+                    </Card>
+                </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
