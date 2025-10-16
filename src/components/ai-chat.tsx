@@ -9,7 +9,6 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { useSound } from '@/hooks/use-sound';
 
 const initialFiles = [
     { name: 'index.html', language: 'html', content: `<!DOCTYPE html>
@@ -34,14 +33,12 @@ export default function WebEditor() {
     const [files, setFiles] = useState(initialFiles);
     const [activeFile, setActiveFile] = useState(initialFiles[0].name);
     const [previewContent, setPreviewContent] = useState('');
-    const playSound = useSound();
 
     const handleFileChange = (fileName: string, newContent: string) => {
         setFiles(files.map(file => file.name === fileName ? { ...file, content: newContent } : file));
     };
 
     const runPreview = () => {
-        playSound('success');
         const htmlFile = files.find(f => f.name.endsWith('.html'));
         const cssFile = files.find(f => f.name.endsWith('.css'));
         const jsFile = files.find(f => f.name.endsWith('.js'));

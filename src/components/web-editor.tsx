@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -24,7 +25,6 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { useSound } from '@/hooks/use-sound';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -118,8 +118,6 @@ export default function WebEditor() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const playSound = useSound();
-
   const handleFileChange = (fileName: string, newContent: string) => {
     setFiles(
       files.map((file) =>
@@ -147,7 +145,6 @@ export default function WebEditor() {
   }, []);
 
   const runPreview = () => {
-    playSound('success');
     const htmlFile = files.find((f) => f.name.endsWith('.html'));
     const cssFile = files.find((f) => f.name.endsWith('.css'));
     const jsFile = files.find((f) => f.name.endsWith('.js'));
@@ -193,7 +190,6 @@ export default function WebEditor() {
   }, [files]);
 
   const saveWork = () => {
-    playSound('save');
     if (!user) {
       toast({
         title: 'Please log in',
