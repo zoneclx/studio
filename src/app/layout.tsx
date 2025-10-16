@@ -43,7 +43,7 @@ export default function RootLayout({
           'min-h-screen font-sans antialiased bg-background flex flex-col',
           fontSans.variable,
           fontDisplay.variable,
-          isChatPage && 'overflow-hidden'
+          isChatPage && 'h-screen overflow-hidden'
         )}
       >
         <ThemeProvider
@@ -58,7 +58,7 @@ export default function RootLayout({
                 <main className="relative z-10 flex-1 flex flex-col">
                   {children}
                 </main>
-                <Footer />
+                {!isChatPage && <Footer />}
                 <Toaster />
                 <CookieConsent />
             </AuthProvider>
