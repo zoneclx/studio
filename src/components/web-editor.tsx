@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -40,6 +39,7 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
+import { MobileEditorNav } from './mobile-editor-nav';
 
 const initialFiles = [
   {
@@ -105,6 +105,7 @@ export default function WebEditor() {
   const [isNewFileOpen, setNewFileOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileView, setMobileView] = useState<'editor' | 'preview' | 'terminal'>('editor');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
@@ -228,16 +229,12 @@ export default function WebEditor() {
   );
   
   const editorActions = { runPreview, saveWork, handleShare: () => setShareOpen(true) };
-
-  return (
-    <div className="flex h-full flex-col pt-16">
-      <div className='flex-1 flex flex-col min-h-0'>
-      <ResizablePanelGroup direction="vertical" className="flex-1">
-        <ResizablePanel defaultSize={70}>
-            <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="flex-1">
+  
+  const renderEditorView = () => (
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
             <ResizablePanel
-              defaultSize={isMobile ? 30 : 20}
-              minSize={isMobile ? 20 : 15}
+              defaultSize={30}
+              minSize={20}
               className="min-w-[200px] flex flex-col"
             >
               <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
@@ -287,9 +284,156 @@ export default function WebEditor() {
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={isMobile ? 70 : 80}>
-                <ResizablePanelGroup direction="vertical">
-                    <ResizablePanel defaultSize={65}>
+            <ResizablePanel defaultSize={70}>
+                <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
+                    <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
+                        <TabsList className="h-8">
+                        {files.map((file) => (
+                            <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
+                            <FileIcon filename={file.name} /> 
+                            <span className="hidden sm:inline">{file.name}</span>
+                            </TabsTrigger>
+                        ))}
+                        </TabsList>
+                        <div className="flex items-center gap-2">
+                            <div className="lg:hidden">
+                            <MobileNav actions={editorActions} />
+                            </div>
+                            <div className="hidden lg:flex items-center gap-2">
+                            <Button variant="ghost" size="sm" onClick={runPreview}>
+                                <Play className="w-4 h-4 mr-2" /> Run
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={saveWork}>
+                                <Save className="w-4 h-4 mr-2" /> Save
+                            </Button>
+                            <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        <Share2 className="w-4 h-4 mr-2" /> Share
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Share Project</DialogTitle>
+                                        <DialogDescription>
+                                            Enter the email of the person you want to share this project with.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="email" className="text-right">
+                                            Email
+                                            </Label>
+                                            <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button type="submit" onClick={handleShare}>Share</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                            </div>
+                        </div>
+                    </header>
+                    <TabsContent value={activeFile} className="flex-1 p-0 m-0">
+                        <Textarea
+                            value={currentFile?.content || ''}
+                            onChange={(e) => handleFileChange(activeFile, e.target.value)}
+                            placeholder="Start coding..."
+                            className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
+                        />
+                    </TabsContent>
+                </Tabs>
+            </ResizablePanel>
+        </ResizablePanelGroup>
+  );
+
+  const renderPreviewView = () => (
+      <iframe
+        srcDoc={previewContent}
+        title="Preview"
+        sandbox="allow-scripts allow-same-origin"
+        className="w-full h-full bg-white border-none"
+      />
+  );
+  
+  const renderTerminalView = () => (
+     <div className="h-full flex-1 bg-black text-white font-mono text-sm p-4 rounded-md">
+        <p>> Welcome to Mono Studio Terminal (simulation)...</p>
+        <p>> All systems operational.</p>
+        <div className="flex items-center gap-2 mt-2">
+            <span>></span>
+            <span className="w-2 h-4 bg-white animate-pulse"></span>
+        </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-full flex-col pt-16">
+      <div className='flex-1 flex flex-col min-h-0'>
+        {isMobile ? (
+          <div className="flex-1 pb-14">
+            {mobileView === 'editor' && renderEditorView()}
+            {mobileView === 'preview' && renderPreviewView()}
+            {mobileView === 'terminal' && renderTerminalView()}
+          </div>
+        ) : (
+          <ResizablePanelGroup direction="vertical" className="flex-1">
+            <ResizablePanel defaultSize={70}>
+                <ResizablePanelGroup direction="horizontal" className="flex-1">
+                    <ResizablePanel
+                    defaultSize={20}
+                    minSize={15}
+                    className="min-w-[200px] flex flex-col"
+                    >
+                    <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
+                        <div className="flex justify-between items-center mb-2 px-2">
+                            <h2 className="text-sm font-semibold">Project Files</h2>
+                            <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                        <PlusCircle className="w-4 h-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Create New File</DialogTitle>
+                                        <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="filename" className="text-right">Filename</Label>
+                                            <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                                        <Button onClick={handleCreateFile}>Create File</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                        <ScrollArea className="flex-1">
+                        {files.map((file) => (
+                            <button
+                            key={file.name}
+                            onClick={() => setActiveFile(file.name)}
+                            className={cn(
+                                'w-full text-left text-sm px-2 py-1.5 rounded-md flex items-center gap-2',
+                                activeFile === file.name
+                                ? 'bg-muted'
+                                : 'hover:bg-muted/50'
+                            )}
+                            >
+                            <FileIcon filename={file.name} />
+                            {file.name}
+                            </button>
+                        ))}
+                        </ScrollArea>
+                    </div>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel defaultSize={45}>
                         <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
                             <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
                                 <TabsList className="h-8">
@@ -300,44 +444,42 @@ export default function WebEditor() {
                                     </TabsTrigger>
                                 ))}
                                 </TabsList>
-                                <div className="flex items-center gap-2">
-                                    <div className="lg:hidden">
-                                    <MobileNav actions={editorActions} />
-                                    </div>
-                                    <div className="hidden lg:flex items-center gap-2">
-                                    <Button variant="ghost" size="sm" onClick={runPreview}>
-                                        <Play className="w-4 h-4 mr-2" /> Run
-                                    </Button>
-                                    <Button variant="ghost" size="sm" onClick={saveWork}>
-                                        <Save className="w-4 h-4 mr-2" /> Save
-                                    </Button>
-                                    <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="sm">
-                                                <Share2 className="w-4 h-4 mr-2" /> Share
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[425px]">
-                                            <DialogHeader>
-                                                <DialogTitle>Share Project</DialogTitle>
-                                                <DialogDescription>
-                                                    Enter the email of the person you want to share this project with.
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            <div className="grid gap-4 py-4">
-                                                <div className="grid grid-cols-4 items-center gap-4">
-                                                    <Label htmlFor="email" className="text-right">
-                                                    Email
-                                                    </Label>
-                                                    <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
-                                                </div>
+                                <div className="hidden lg:flex items-center gap-2">
+                                <Button variant="ghost" size="sm" onClick={runPreview}>
+                                    <Play className="w-4 h-4 mr-2" /> Run
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={saveWork}>
+                                    <Save className="w-4 h-4 mr-2" /> Save
+                                </Button>
+                                <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm">
+                                            <Share2 className="w-4 h-4 mr-2" /> Share
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>Share Project</DialogTitle>
+                                            <DialogDescription>
+                                                Enter the email of the person you want to share this project with.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="email" className="text-right">
+                                                Email
+                                                </Label>
+                                                <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
                                             </div>
-                                            <DialogFooter>
-                                                <Button type="submit" onClick={handleShare}>Share</Button>
-                                            </DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>
-                                    </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit" onClick={handleShare}>Share</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                                </div>
+                                 <div className="lg:hidden">
+                                    <MobileNav actions={editorActions} />
                                 </div>
                             </header>
                             <TabsContent value={activeFile} className="flex-1 p-0 m-0">
@@ -352,54 +494,18 @@ export default function WebEditor() {
                     </ResizablePanel>
                     <ResizableHandle withHandle />
                     <ResizablePanel defaultSize={35}>
-                        <Tabs defaultValue="preview" className="h-full flex flex-col">
-                            <TabsList className="m-2">
-                            <TabsTrigger value="preview">
-                                <Eye className="w-4 h-4 mr-2" />
-                                Preview
-                            </TabsTrigger>
-                            </TabsList>
-                            <TabsContent
-                            value="preview"
-                            className="flex-1 bg-white m-2 rounded-md border"
-                            >
-                            <iframe
-                                srcDoc={previewContent}
-                                title="Preview"
-                                sandbox="allow-scripts allow-same-origin"
-                                className="w-full h-full"
-                            />
-                            </TabsContent>
-                        </Tabs>
+                        {renderPreviewView()}
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </ResizablePanel>
-            </ResizablePanelGroup>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={30}>
-            <Tabs defaultValue="terminal" className="h-full flex flex-col">
-                <TabsList className="m-2">
-                <TabsTrigger value="terminal">
-                    <Terminal className="w-4 h-4 mr-2" />
-                    Terminal
-                </TabsTrigger>
-                </TabsList>
-                <TabsContent
-                value="terminal"
-                className="flex-1 bg-black text-white font-mono text-sm p-4 m-2 mt-0 rounded-md border"
-                >
-                <p>> Welcome to Mono Studio Terminal (simulation)...</p>
-                <p>> All systems operational.</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span>></span>
-                  <span className="w-2 h-4 bg-white animate-pulse"></span>
-                </div>
-                </TabsContent>
-            </Tabs>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={30}>
+                {renderTerminalView()}
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        )}
       </div>
+      {isMobile && <MobileEditorNav activeView={mobileView} setView={setMobileView} />}
     </div>
   );
 }
