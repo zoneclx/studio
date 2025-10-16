@@ -2,16 +2,19 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Code, Eye, Terminal } from 'lucide-react';
+import { Code, Eye, Terminal, File } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type MobileView = 'files' | 'editor' | 'preview' | 'terminal';
+
 interface MobileEditorNavProps {
-  activeView: 'editor' | 'preview' | 'terminal';
-  setView: (view: 'editor' | 'preview' | 'terminal') => void;
+  activeView: MobileView;
+  setView: (view: MobileView) => void;
 }
 
 export function MobileEditorNav({ activeView, setView }: MobileEditorNavProps) {
   const navItems = [
+    { view: 'files' as const, icon: <File className="w-5 h-5" />, label: 'Files' },
     { view: 'editor' as const, icon: <Code className="w-5 h-5" />, label: 'Code' },
     { view: 'preview' as const, icon: <Eye className="w-5 h-5" />, label: 'Preview' },
     { view: 'terminal' as const, icon: <Terminal className="w-5 h-5" />, label: 'Terminal' },
