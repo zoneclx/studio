@@ -10,14 +10,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   File,
-  Code,
-  Eye,
   Play,
   Save,
   Share2,
   FileType2,
   Palette,
   Braces,
+  Eye,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -26,6 +25,17 @@ import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/use-sound';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 const initialFiles = [
   {
@@ -87,6 +97,7 @@ export default function WebEditor() {
   const [files, setFiles] = useState(initialFiles);
   const [activeFile, setActiveFile] = useState(initialFiles[0].name);
   const [previewContent, setPreviewContent] = useState('');
+  const [isShareOpen, setShareOpen] = useState(false);
   const playSound = useSound();
 
   const handleFileChange = (fileName: string, newContent: string) => {
@@ -157,6 +168,15 @@ export default function WebEditor() {
     }
   };
 
+  const handleShare = () => {
+     // Simulation: In a real app, this would generate a unique link or send an invite
+    toast({
+        title: "Project Shared!",
+        description: "Your project has been shared successfully (simulation)."
+    });
+    setShareOpen(false);
+  }
+
   const currentFile = useMemo(
     () => files.find((f) => f.name === activeFile),
     [files, activeFile]
@@ -183,9 +203,32 @@ export default function WebEditor() {
           <Button variant="ghost" size="sm" onClick={saveWork}>
             <Save className="w-4 h-4 mr-2" /> Save
           </Button>
-          <Button variant="outline" size="sm">
-            <Share2 className="w-4 h-4 mr-2" /> Share
-          </Button>
+          <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                    <Share2 className="w-4 h-4 mr-2" /> Share
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Share Project</DialogTitle>
+                    <DialogDescription>
+                        Enter the email of the person you want to share this project with.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="email" className="text-right">
+                        Email
+                        </Label>
+                        <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button type="submit" onClick={handleShare}>Share</Button>
+                </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </header>
       <ResizablePanelGroup direction="horizontal" className="flex-1">

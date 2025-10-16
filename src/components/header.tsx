@@ -8,6 +8,7 @@ import {
   LogOut,
   Archive,
   Plug,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
@@ -76,6 +77,12 @@ export default function Header() {
                   <Link href="/my-archive">
                     <Archive className="mr-2 h-4 w-4" />
                     <span>My Archive</span>
+                  </Link>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <Link href="/shared">
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Shared With Me</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
