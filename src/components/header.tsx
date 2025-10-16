@@ -76,7 +76,7 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/my-archive">
                     <Archive className="mr-2 h-4 w-4" />
-                    <span>My Archive</span>
+                    <span>Your Projects</span>
                   </Link>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>

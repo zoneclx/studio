@@ -135,7 +135,7 @@ export default function MyArchivePage() {
     return (
         <div className="container mx-auto max-w-2xl py-8 px-4 flex-1 pt-24 text-center">
             <Card className="p-8">
-                <CardTitle>No Saved Work Found</CardTitle>
+                <CardTitle>No Saved Projects Found</CardTitle>
                 <CardDescription className="mt-2">
                     You haven't saved any projects yet. Go to the editor to start creating!
                 </CardDescription>
@@ -152,7 +152,7 @@ export default function MyArchivePage() {
   return (
     <div className="container mx-auto max-w-6xl py-8 px-4 flex-1 pt-24">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold font-display">My Archive</h1>
+        <h1 className="text-4xl font-bold font-display">Your Projects</h1>
         <p className="text-muted-foreground mt-2 text-lg">
           Your last saved project. Last saved{' '}
           {formatDistanceToNow(new Date(savedWork.timestamp), { addSuffix: true })}.
