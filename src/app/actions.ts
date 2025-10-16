@@ -1,11 +1,13 @@
 
 'use server';
 
-import { ai } from '@genkit-ai/ai';
+import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
-ai.registerPlugin(googleAI());
+const ai = genkit({
+  plugins: [googleAI()],
+});
 
 const CodeGenerationSchema = z.object({
   html: z.string().describe('The generated HTML code.'),
@@ -43,6 +45,6 @@ export const generateCode = ai.defineFlow(
       }
     });
 
-    return llmResponse.output()!;
+    return llmResponse.output!;
   }
 );
