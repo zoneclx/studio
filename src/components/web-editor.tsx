@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { MobileNav } from './mobile-nav';
 
 const initialFiles = [
   {
@@ -105,7 +106,7 @@ export default function WebEditor() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -224,6 +225,8 @@ export default function WebEditor() {
     () => files.find((f) => f.name === activeFile),
     [files, activeFile]
   );
+  
+  const editorActions = { runPreview, saveWork, handleShare: () => setShareOpen(true) };
 
   return (
     <div className="flex h-full flex-col pt-16">
@@ -295,38 +298,43 @@ export default function WebEditor() {
                             ))}
                             </TabsList>
                              <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" onClick={runPreview}>
-                                    <Play className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Run</span>
-                                </Button>
-                                <Button variant="ghost" size="sm" onClick={saveWork}>
-                                    <Save className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Save</span>
-                                </Button>
-                                <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm">
-                                            <Share2 className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Share</span>
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Share Project</DialogTitle>
-                                            <DialogDescription>
-                                                Enter the email of the person you want to share this project with.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="email" className="text-right">
-                                                Email
-                                                </Label>
-                                                <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button type="submit" onClick={handleShare}>Share</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
+                                <div className="lg:hidden">
+                                  <MobileNav actions={editorActions} />
+                                </div>
+                                <div className="hidden lg:flex items-center gap-2">
+                                  <Button variant="ghost" size="sm" onClick={runPreview}>
+                                      <Play className="w-4 h-4 mr-2" /> Run
+                                  </Button>
+                                  <Button variant="ghost" size="sm" onClick={saveWork}>
+                                      <Save className="w-4 h-4 mr-2" /> Save
+                                  </Button>
+                                  <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+                                      <DialogTrigger asChild>
+                                          <Button variant="outline" size="sm">
+                                              <Share2 className="w-4 h-4 mr-2" /> Share
+                                          </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="sm:max-w-[425px]">
+                                          <DialogHeader>
+                                              <DialogTitle>Share Project</DialogTitle>
+                                              <DialogDescription>
+                                                  Enter the email of the person you want to share this project with.
+                                              </DialogDescription>
+                                          </DialogHeader>
+                                          <div className="grid gap-4 py-4">
+                                              <div className="grid grid-cols-4 items-center gap-4">
+                                                  <Label htmlFor="email" className="text-right">
+                                                  Email
+                                                  </Label>
+                                                  <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                                              </div>
+                                          </div>
+                                          <DialogFooter>
+                                              <Button type="submit" onClick={handleShare}>Share</Button>
+                                          </DialogFooter>
+                                      </DialogContent>
+                                  </Dialog>
+                                </div>
                             </div>
                         </header>
                         <TabsContent value={activeFile} className="flex-1 p-0 m-0">
@@ -368,5 +376,3 @@ export default function WebEditor() {
     </div>
   );
 }
-
-    
