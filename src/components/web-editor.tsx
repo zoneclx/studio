@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -102,6 +102,14 @@ export default function WebEditor() {
   const [isShareOpen, setShareOpen] = useState(false);
   const [isNewFileOpen, setNewFileOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const playSound = useSound();
 
@@ -215,13 +223,14 @@ export default function WebEditor() {
 
   return (
     <div className="flex h-full flex-col pt-16">
-      <header className="h-12 border-b flex items-center justify-between px-4 shrink-0">
-        <div className="flex items-center gap-2">
+      <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
+        <div className="flex items-center gap-2 overflow-x-auto">
           <Tabs value={activeFile} onValueChange={setActiveFile}>
             <TabsList className="h-8">
               {files.map((file) => (
-                <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5">
-                   <FileIcon filename={file.name} /> {file.name}
+                <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
+                   <FileIcon filename={file.name} /> 
+                   <span className="hidden sm:inline">{file.name}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -229,15 +238,15 @@ export default function WebEditor() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={runPreview}>
-            <Play className="w-4 h-4 mr-2" /> Run
+            <Play className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Run</span>
           </Button>
           <Button variant="ghost" size="sm" onClick={saveWork}>
-            <Save className="w-4 h-4 mr-2" /> Save
+            <Save className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Save</span>
           </Button>
           <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4 mr-2" /> Share
+                    <Share2 className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Share</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -262,10 +271,10 @@ export default function WebEditor() {
           </Dialog>
         </div>
       </header>
-      <ResizablePanelGroup direction="horizontal" className="flex-1">
+      <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="flex-1">
         <ResizablePanel
-          defaultSize={15}
-          minSize={10}
+          defaultSize={isMobile ? 30 : 15}
+          minSize={isMobile ? 20 : 10}
           className="min-w-[150px] flex flex-col"
         >
           <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
@@ -315,7 +324,7 @@ export default function WebEditor() {
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={55}>
+        <ResizablePanel defaultSize={isMobile ? 70 : 55}>
           <Tabs value="editor" className="h-full flex flex-col">
             <TabsContent value="editor" className="flex-1 p-0 m-0">
               <Textarea
@@ -328,7 +337,7 @@ export default function WebEditor() {
           </Tabs>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={30}>
+        <ResizablePanel defaultSize={isMobile ? 50 : 30}>
           <Tabs defaultValue="preview" className="h-full flex flex-col">
             <TabsList className="m-2">
               <TabsTrigger value="preview">

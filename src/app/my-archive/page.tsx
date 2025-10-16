@@ -55,6 +55,14 @@ export default function MyArchivePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFile, setActiveFile] = useState<SavedFile | null>(null);
   const [previewContent, setPreviewContent] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -107,8 +115,8 @@ export default function MyArchivePage() {
     return (
       <div className="container mx-auto max-w-6xl py-8 px-4 flex-1 pt-24">
         <header className="mb-8">
-            <Skeleton className="h-10 w-1/3 mb-2" />
-            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-10 w-2/3 md:w-1/3 mb-2" />
+            <Skeleton className="h-6 w-1/2 md:w-1/2" />
         </header>
         <Card>
             <CardHeader>
@@ -151,7 +159,7 @@ export default function MyArchivePage() {
         </p>
       </header>
       <Card className="overflow-hidden">
-        <ResizablePanelGroup direction="horizontal" className="min-h-[600px]">
+        <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="min-h-[600px]">
           <ResizablePanel defaultSize={20} minSize={15}>
             <div className="p-2 h-full bg-background/50">
               <h2 className="text-sm font-semibold mb-2 px-2">Files</h2>

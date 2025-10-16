@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, User, Clock, Code } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -80,17 +80,17 @@ export default function SharedPage() {
         {mockSharedProjects.length === 0 ? (
              <Card className="p-8 text-center">
                 <CardTitle>Nothing Shared Yet</CardTitle>
-                <CardDescription className="mt-2">
+                <p className="mt-2 text-muted-foreground">
                     When someone shares a project with you, it will appear here.
-                </CardDescription>
+                </p>
             </Card>
         ) : (
             <div className="space-y-4">
                 {mockSharedProjects.map((project) => (
-                    <Card key={project.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4">
-                        <div className="flex-1 mb-4 sm:mb-0">
+                    <Card key={project.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
+                        <div className="flex-1">
                            <CardTitle className="text-xl mb-1">{project.name}</CardTitle>
-                           <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1">
+                           <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1 mt-2">
                                 <div className="flex items-center gap-2">
                                     <Avatar className="h-5 w-5">
                                         <AvatarImage src={project.sharedBy.avatar} alt={project.sharedBy.name} />
@@ -105,7 +105,7 @@ export default function SharedPage() {
                            </div>
                         </div>
                         <Link href="/create">
-                            <Button>
+                            <Button className="w-full sm:w-auto">
                                 <Code className="w-4 h-4 mr-2" />
                                 Open in Editor
                             </Button>

@@ -32,12 +32,12 @@ export default function PluginsPage() {
         </p>
       </header>
 
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
         <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input placeholder="Search plugins..." className="pl-10" />
         </div>
-        <Button variant="outline">
+        <Button variant="outline" className="w-full sm:w-auto">
             <Upload className="w-4 h-4 mr-2" />
             Upload Plugin
         </Button>
