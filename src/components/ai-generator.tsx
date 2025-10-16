@@ -19,7 +19,6 @@ import {
   Eye,
   PlusCircle,
   Sparkles,
-  Plug,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -41,8 +40,7 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { generateCode } from '@/app/actions';
-import { usePlugins } from '@/context/plugin-context';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { TooltipProvider } from './ui/tooltip';
 import Link from 'next/link';
 
 const initialFiles = [
@@ -78,7 +76,6 @@ const FileIcon = ({ filename }: { filename: string }) => {
 export default function AiGenerator() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { plugins } = usePlugins();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [files, setFiles] = useState(initialFiles);
@@ -88,8 +85,6 @@ export default function AiGenerator() {
   const [isNewFileOpen, setNewFileOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-
-  const aiPlugin = useMemo(() => plugins.find(p => p.id === 'ai-code-assistant'), [plugins]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -146,10 +141,6 @@ export default function AiGenerator() {
 
 
   const handleGenerate = async () => {
-    if (!aiPlugin || !aiPlugin.connected) {
-        toast({ title: 'Plugin Required', description: 'Please connect the AI Code Assistant plugin to generate code.', variant: 'destructive' });
-        return;
-    }
     if (!prompt) {
       toast({ title: 'Prompt is empty', description: 'Please enter a prompt to generate code.', variant: 'destructive' });
       return;
@@ -240,8 +231,6 @@ export default function AiGenerator() {
     [files, activeFile]
   );
 
-  const isGenerateDisabled = isGenerating || !aiPlugin?.connected;
-
   return (
     <div className="flex h-full flex-col pt-16">
       <div className='flex-1 flex flex-col min-h-0'>
@@ -304,23 +293,12 @@ export default function AiGenerator() {
                 onChange={(e) => setPrompt(e.target.value)}
               />
               <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className='w-full'>
-                      <Button onClick={handleGenerate} disabled={isGenerateDisabled} className="w-full mt-2">
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {isGenerating ? 'Generating...' : 'Generate'}
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  {isGenerateDisabled && !isGenerating && (
-                    <TooltipContent>
-                      <p className='flex items-center gap-2'>
-                        <Plug className='w-4 h-4' /> Please connect the <Link href="/plugins" className='underline'>AI Code Assistant</Link> plugin.
-                      </p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
+                  <div className='w-full'>
+                    <Button onClick={handleGenerate} disabled={isGenerating} className="w-full mt-2">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      {isGenerating ? 'Generating...' : 'Generate'}
+                    </Button>
+                  </div>
               </TooltipProvider>
             </div>
           </div>

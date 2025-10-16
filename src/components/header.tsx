@@ -85,12 +85,6 @@ export default function Header() {
                     <span>Shared With Me</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/plugins">
-                    <Plug className="mr-2 h-4 w-4" />
-                    <span>Plugins</span>
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
