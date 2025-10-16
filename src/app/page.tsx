@@ -92,7 +92,7 @@ export default function Home() {
                                   </div>
                                   <div className="p-6 text-left space-y-2 font-mono text-xs text-muted-foreground">
                                       <p><span className="text-blue-400">import</span> React <span className="text-blue-400">from</span> <span className="text-yellow-300">'react'</span>;</p>
-                                      <p><span className="text-purple-400">const</span> <span className="text-green-300">App</span> = () =&gt; (</p>
+                                      <p><span className="text-purple-400">const</span> <span className="text-green-300">App</span> = () => (</p>
                                       <div className="w-full h-4 bg-muted rounded-full animate-pulse my-2 ml-4"></div>
                                       <p>);</p>
                                       <p><span className="text-blue-400">export default</span> App;</p>
@@ -174,3 +174,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
