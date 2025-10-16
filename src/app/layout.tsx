@@ -13,6 +13,7 @@ import AnimatedGradient from '@/components/animated-gradient';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { usePathname } from 'next/navigation';
+import { PluginProvider } from '@/context/plugin-context';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -52,14 +53,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-            <AuthProvider>
-                <AnimatedGradient />
-                <Header />
-                <main className="relative z-10 flex-1 flex flex-col">
-                  {children}
-                </main>
-                {!isEditorPage && <Footer />}
-            </AuthProvider>
+          <AuthProvider>
+            <PluginProvider>
+              <AnimatedGradient />
+              <Header />
+              <main className="relative z-10 flex-1 flex flex-col">
+                {children}
+              </main>
+              {!isEditorPage && <Footer />}
+            </PluginProvider>
+          </AuthProvider>
         </ThemeProvider>
         <Toaster />
         <CookieConsent />

@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -11,36 +10,31 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plug, Search, CheckCircle, KeyRound } from 'lucide-react';
+import { Plug, Search, CheckCircle, KeyRound, PowerOff, Power } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '../ui/label';
-
-const initialPlugins = [
-  { id: 'ai-code-assistant', name: 'AI Code Assistant', description: 'Get AI-powered code suggestions and completions.', version: '1.2.0', apiKey: '', connected: false },
-  { id: 'live-db-connector', name: 'Live Database Connector', description: 'Connect to a live database for dynamic content.', version: '0.8.5', apiKey: '', connected: false },
-  { id: 'theme-pack', name: 'Theme Pack', description: 'A collection of additional themes for your editor.', version: '2.0.1', apiKey: null, connected: true }, // No API key needed
-  { id: 'deployment-helper', name: 'Deployment Helper', description: 'Easily deploy your project to various platforms.', version: '1.5.0', apiKey: '', connected: false },
-];
+import { usePlugins } from '@/context/plugin-context';
 
 export default function PluginsPage() {
-  const [plugins, setPlugins] = useState(initialPlugins);
+  const { plugins, updatePluginApiKey, connectPlugin, disconnectPlugin } = usePlugins();
   const { toast } = useToast();
-
-  const handleApiKeyChange = (id: string, value: string) => {
-    setPlugins(plugins.map(p => p.id === id ? { ...p, apiKey: value } : p));
-  };
 
   const handleSave = (id: string) => {
     const plugin = plugins.find(p => p.id === id);
-    if (plugin && plugin.apiKey === '') {
+    if (plugin && plugin.apiKeyRequired && !plugin.apiKey) {
         toast({ title: "API Key Required", description: "Please enter an API key to connect the plugin.", variant: "destructive" });
         return;
     }
-    setPlugins(plugins.map(p => p.id === id ? { ...p, connected: true } : p));
+    connectPlugin(id);
     toast({ title: "Plugin Connected", description: `${plugin?.name} has been successfully connected.` });
   };
 
+  const handleDisconnect = (id: string) => {
+    const plugin = plugins.find(p => p.id === id);
+    disconnectPlugin(id);
+    toast({ title: "Plugin Disconnected", description: `${plugin?.name} has been disconnected.`, variant: 'destructive'});
+  }
 
   return (
     <div className="container mx-auto max-w-6xl py-8 px-4 flex-1 pt-24">
@@ -69,7 +63,7 @@ export default function PluginsPage() {
               <CardDescription>{plugin.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 space-y-4">
-               {plugin.apiKey !== null && !plugin.connected && (
+               {plugin.apiKeyRequired && !plugin.connected && (
                  <div className="space-y-2">
                     <Label htmlFor={`api-key-${plugin.id}`} className="flex items-center gap-2 text-xs text-muted-foreground"><KeyRound className="w-3 h-3" /> API Key</Label>
                     <Input 
@@ -77,21 +71,28 @@ export default function PluginsPage() {
                         type="password"
                         placeholder="Enter your API key"
                         value={plugin.apiKey}
-                        onChange={(e) => handleApiKeyChange(plugin.id, e.target.value)}
+                        onChange={(e) => updatePluginApiKey(plugin.id, e.target.value)}
                     />
                  </div>
                )}
                {plugin.connected && (
-                  <div className="flex items-center gap-2 text-green-500 bg-green-500/10 p-2 rounded-md">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="text-sm font-medium">Connected</span>
+                  <div className="flex items-center justify-between gap-2 text-green-500 bg-green-500/10 p-2 rounded-md">
+                    <div className='flex items-center gap-2'>
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="text-sm font-medium">Connected</span>
+                    </div>
+                    {plugin.apiKeyRequired && (
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500 hover:text-red-500" onClick={() => handleDisconnect(plugin.id)}>
+                            <PowerOff className="w-4 h-4" />
+                        </Button>
+                    )}
                   </div>
                )}
             </CardContent>
             <CardFooter className='flex justify-between items-center'>
                 <span className='text-xs text-muted-foreground'>v{plugin.version}</span>
-                {plugin.apiKey !== null && !plugin.connected && (
-                     <Button onClick={() => handleSave(plugin.id)}>Save & Connect</Button>
+                {!plugin.connected && (
+                     <Button onClick={() => handleSave(plugin.id)}><Power className="w-4 h-4 mr-2" />Connect</Button>
                 )}
             </CardFooter>
           </Card>
