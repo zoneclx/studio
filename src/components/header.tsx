@@ -25,7 +25,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
-            <span className="text-xl font-bold font-display">Byte AI</span>
+            <span className="text-xl font-bold font-display">Mono Ai</span>
           </Link>
         </div>
 

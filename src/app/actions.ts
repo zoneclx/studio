@@ -29,7 +29,7 @@ const chatPrompt = ai.definePrompt({
     output: { schema: ChatOutputSchema },
     model: 'gemini-pro-vision',
     prompt: `
-        You are Byte AI, a friendly and helpful AI assistant.
+        You are Mono Ai, a friendly and helpful AI assistant.
         Your goal is to provide helpful, conversational, and accurate responses to user queries.
         If the user provides an image, analyze it and incorporate your observations into the response.
 

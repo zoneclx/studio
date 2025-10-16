@@ -35,8 +35,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Byte AI</title>
-        <meta name="description" content="Generate websites with a single prompt." />
+        <title>Mono Ai</title>
+        <meta name="description" content="Your AI assistant." />
       </head>
       <body
         className={cn(
@@ -59,10 +59,10 @@ export default function RootLayout({
                   {children}
                 </main>
                 {!isChatPage && <Footer />}
-                <Toaster />
-                <CookieConsent />
             </AuthProvider>
         </ThemeProvider>
+        <Toaster />
+        <CookieConsent />
       </body>
     </html>
   );

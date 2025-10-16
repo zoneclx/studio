@@ -119,7 +119,7 @@ const AiChatPage = () => {
                   <div className="inline-block p-4 bg-primary/10 rounded-full mb-4">
                       <Sparkles className="w-10 h-10 text-primary" />
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Byte AI</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold font-display mb-2">Hello, I'm Mono Ai</h1>
                   <p className="text-muted-foreground mb-8">How can I help you today? Feel free to ask me anything or upload an image.</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -219,7 +219,7 @@ const AiChatPage = () => {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center hidden sm:block">
-            Shift+Enter for new line. Byte AI can make mistakes.
+            Shift+Enter for new line. Mono Ai can make mistakes.
           </p>
         </div>
       </div>

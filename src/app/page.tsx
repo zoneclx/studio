@@ -29,7 +29,7 @@ const features = [
     {
         icon: <ImageIcon className="w-8 h-8 text-primary" />,
         title: "Image Understanding",
-        description: "Upload an image and ask questions about it. Byte AI can analyze visual information to provide context-aware answers.",
+        description: "Upload an image and ask questions about it. Mono Ai can analyze visual information to provide context-aware answers.",
     },
      {
         icon: <Wand2 className="w-8 h-8 text-primary" />,
@@ -68,7 +68,7 @@ export default function Home() {
                         className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
                     />
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Byte AI is a powerful, AI-powered chat assistant.
+                        Mono Ai is a powerful, AI-powered chat assistant.
                         Describe your vision, upload an image, and watch as our AI brings it to life.
                         The future of creation is here.
                     </p>
@@ -98,7 +98,7 @@ export default function Home() {
                                   </div>
                                   <div className="p-6 text-left space-y-2 font-mono text-xs text-muted-foreground">
                                       <p><span className="text-purple-400">const</span> <span className="text-green-300">User</span>: <span className="text-yellow-300">"What do you see?"</span></p>
-                                      <p><span className="text-purple-400">const</span> <span className="text-green-300">ByteAI</span>: <span className="text-yellow-300">"I see..."</span></p>
+                                      <p><span className="text-purple-400">const</span> <span className="text-green-300">MonoAI</span>: <span className="text-yellow-300">"I see..."</span></p>
                                       <div className="w-full h-4 bg-muted rounded-full animate-pulse my-2"></div>
                                       <div className="w-3/4 h-4 bg-muted rounded-full animate-pulse"></div>
                                       <p>&lt;/<span className="text-blue-400">div</span>&gt;</p>
@@ -143,7 +143,7 @@ export default function Home() {
                     <Badge variant="outline" className="text-sm">Powered by Google AI</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of AI Interaction</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        Byte AI leverages state-of-the-art generative artificial intelligence to turn your ideas into reality. Our partnership with Google AI allows us to provide a robust, scalable, and powerful platform for instant answers.
+                        Mono Ai leverages state-of-the-art generative artificial intelligence to turn your ideas into reality. Our partnership with Google AI allows us to provide a robust, scalable, and powerful platform for instant answers.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
@@ -151,12 +151,12 @@ export default function Home() {
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-display">About Byte AI</h3>
+                                <h3 className="text-2xl font-display">About Mono Ai</h3>
                             </div>
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">
-                                Byte AI is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful AI, making it easy for anyone to get answers, analyze images, and bring ideas to life without needing to be an expert. We believe in the power of curiosity, and our platform is built to get you from question to insight in minutes.
+                                Mono Ai is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful AI, making it easy for anyone to get answers, analyze images, and bring ideas to life without needing to be an expert. We believe in the power of curiosity, and our platform is built to get you from question to insight in minutes.
                             </p>
                         </CardContent>
                     </Card>
