@@ -64,20 +64,20 @@ const zzfx = (
 };
 
 const sounds = {
-    // Windows 11-style UI click
-    click: () => zzfx(.6,.02,230,.01,.03,.01,1,.3,18,0,0,0,0,0,0,0,.01,.9,0,0),
-    // Windows 11-style start sound
-    start: () => zzfx(.8,.05,300,.1,.25,.25,1,1.5,.1,0,0,0,.1,.05,0,.1,0,.8,0,.15),
-    // Windows 11-style success/notification sound
-    success: () => zzfx(.7,.05,900,.05,.18,.2,1,1.9,4.5,0,.2,0,0,.2,0,.2,.01,1,.05,.1),
-    // Windows 11-style error sound
-    error: () => zzfx(.8,.05,200,.2,.5,.8,3,1.5,0,0,0,.02,.8,.8,.1,.1,.4,.8,.1,.2),
+    // A sharp, mechanical keyboard-style click
+    click: () => zzfx(0.8, .05, 1500, .01, .02, .03, 4, 1.2, 0, 0, 0, 0, 0, 0, 0, .1, 0, .8, 0, 0),
+    // A futuristic power-up sound
+    start: () => zzfx(1, .1, 261.63, .2, .5, .1, 2, 2, 0, 0, .1, 0, .1, .1, 0, .1, 0, .9, 0, .1),
+    // A classic, positive "blip" for success
+    success: () => zzfx(1, .05, 1046.5, .05, .1, .1, 1, 1.5, 0, 0, 0, 0, 0, .1, 0, 0, 0, 1, 0, .05),
+    // A lower-pitched, slightly dissonant buzz for errors
+    error: () => zzfx(1, .1, 123.47, .2, .4, .7, 3, .8, 0, .3, 0, 0, 0, .5, 0, .2, 0, .8, 0, .1),
     // A swoosh sound for sending a message
     send: () => zzfx(0.7, .1, 880, .05, .2, .1, 1, .8, 0, 0, 0, .05, 0, .3, 0, 0, 0, 1, .1, 0),
     // A gentle pop for receiving a message
     receive: () => zzfx(0.7, .1, 660, .05, .2, .1, 1, .8, 0, 0, 0, 0, 0, .3, .1, 0, 0, 1, .1, 0),
-    // Windows 11-style save/complete sound
-    save: () => zzfx(.7,.05,1050,.05,.2,.25,1,1.5,4,0,0,.01,0,.3,.1,.1,0,.8,.05,.15),
+    // A satisfying, high-pitched chime to confirm a save
+    save: () => zzfx(0.8, .05, 1396.91, .05, .15, .1, 1, 1.2, 0, 0, 0, 0, 0, .1, 0, .1, 0, .9, 0, .08),
 };
 
 type SoundType = keyof typeof sounds;
