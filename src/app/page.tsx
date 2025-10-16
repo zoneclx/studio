@@ -5,9 +5,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Code, Terminal, Share2, Sparkles, Server, GitBranch } from 'lucide-react';
 import HackerEffect from '@/components/hacker-effect';
+import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 const animatedTitles = [
     "Your Development Environment in the Cloud.",
@@ -45,6 +48,33 @@ const EditorIcon = () => (
 );
 
 export default function Home() {
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const renderTextEffect = () => {
+        if (!mounted) {
+            return <div className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]" />;
+        }
+        if (theme === 'redhat') {
+            return (
+                <HackerEffect
+                    texts={animatedTitles}
+                    className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
+                />
+            );
+        }
+        return (
+            <TypewriterEffect
+                texts={animatedTitles}
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
+            />
+        );
+    }
+
   return (
     <div
       className={cn(
@@ -57,10 +87,7 @@ export default function Home() {
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                    <HackerEffect
-                        texts={animatedTitles}
-                        className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
-                    />
+                    {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
                         Mono Studio is a powerful, browser-based development environment.
                         Code, build, and deploy your next great idea without ever leaving your browser.
