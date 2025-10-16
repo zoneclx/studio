@@ -30,20 +30,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isChatPage = pathname.startsWith('/create');
+  const isEditorPage = pathname.startsWith('/create');
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Mono Ai</title>
-        <meta name="description" content="Your AI assistant." />
+        <title>Mono Studio</title>
+        <meta name="description" content="Your Development Environment in the Cloud." />
       </head>
       <body
         className={cn(
           'min-h-screen font-sans antialiased bg-background flex flex-col',
           fontSans.variable,
           fontDisplay.variable,
-          isChatPage && 'h-screen overflow-hidden'
+          isEditorPage && 'h-screen overflow-hidden'
         )}
       >
         <ThemeProvider
@@ -58,7 +58,7 @@ export default function RootLayout({
                 <main className="relative z-10 flex-1 flex flex-col">
                   {children}
                 </main>
-                {!isChatPage && <Footer />}
+                {!isEditorPage && <Footer />}
             </AuthProvider>
         </ThemeProvider>
         <Toaster />

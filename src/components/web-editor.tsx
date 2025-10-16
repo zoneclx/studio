@@ -50,19 +50,17 @@ export default function WebEditor() {
             setPreviewContent('<html><body>No index.html file found.</body></html>');
             return;
         }
+        
+        let processedHtml = htmlFile.content;
 
-        const combinedHtml = `
-            <html>
-                <head>
-                    <style>${cssFile?.content || ''}</style>
-                </head>
-                <body>
-                    ${htmlFile.content}
-                    <script>${jsFile?.content || ''}<\/script>
-                </body>
-            </html>
-        `;
-        setPreviewContent(combinedHtml);
+        if (cssFile) {
+            processedHtml = processedHtml.replace('</head>', `<style>${cssFile.content}</style></head>`);
+        }
+        if (jsFile) {
+            processedHtml = processedHtml.replace('</body>', `<script>${jsFile.content}<\/script></body>`);
+        }
+        
+        setPreviewContent(processedHtml);
     };
 
     const currentFile = files.find(f => f.name === activeFile);
@@ -109,7 +107,7 @@ export default function WebEditor() {
                                 value={currentFile?.content || ''}
                                 onChange={(e) => handleFileChange(activeFile, e.target.value)}
                                 placeholder="Start coding..."
-                                className="w-full h-full resize-none border-0 rounded-none font-mono text-sm"
+                                className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
                             />
                         </TabsContent>
                     </Tabs>
@@ -119,7 +117,6 @@ export default function WebEditor() {
                     <Tabs defaultValue="preview" className="h-full flex flex-col">
                         <TabsList className="m-2">
                             <TabsTrigger value="preview"><Eye className="w-4 h-4 mr-2" />Preview</TabsTrigger>
-                            <TabsTrigger value="code" disabled><Code className="w-4 h-4 mr-2" />Generated Code</TabsTrigger>
                         </TabsList>
                         <TabsContent value="preview" className="flex-1 bg-white m-2 rounded-md border">
                             <iframe
