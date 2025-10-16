@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
-import WebEditor from '@/components/web-editor';
+import AiGenerator from '@/components/ai-generator';
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
@@ -36,7 +36,7 @@ export default function CreatePage() {
 
   return (
     <div className="flex-1">
-        <WebEditor />
+        <AiGenerator />
     </div>
   );
 }

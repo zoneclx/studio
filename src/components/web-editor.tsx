@@ -18,6 +18,7 @@ import {
   Braces,
   Eye,
   PlusCircle,
+  Sparkles,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -38,46 +39,23 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { generateCode } from '@/app/actions';
 
 const initialFiles = [
   {
     name: 'index.html',
     language: 'html',
-    content: `<!DOCTYPE html>
-<html>
-<head>
-    <title>My Awesome Site</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Hello, World!</h1>
-    <p>Welcome to your new site, coded in Mono Studio.</p>
-    <script src="script.js"></script>
-</body>
-</html>`,
+    content: ``,
   },
   {
     name: 'style.css',
     language: 'css',
-    content: `body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
-h1 {
-    color: #007aff;
-    font-size: 3rem;
-}`,
+    content: ``,
   },
   {
     name: 'script.js',
     language: 'javascript',
-    content: `console.log('Hello from Mono Studio!');`,
+    content: ``,
   },
 ];
 
@@ -93,9 +71,11 @@ const FileIcon = ({ filename }: { filename: string }) => {
   return fileIcons[extension] || fileIcons.default;
 };
 
-export default function WebEditor() {
+export default function AiGenerator() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [prompt, setPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [files, setFiles] = useState(initialFiles);
   const [activeFile, setActiveFile] = useState(initialFiles[0].name);
   const [previewContent, setPreviewContent] = useState('');
@@ -127,9 +107,9 @@ export default function WebEditor() {
     const cssFile = files.find((f) => f.name.endsWith('.css'));
     const jsFile = files.find((f) => f.name.endsWith('.js'));
 
-    if (!htmlFile) {
+    if (!htmlFile || !htmlFile.content) {
       setPreviewContent(
-        '<html><body>No index.html file found.</body></html>'
+        '<html><body>Click Generate to create a website with AI.</body></html>'
       );
       return;
     }
@@ -151,6 +131,35 @@ export default function WebEditor() {
 
     setPreviewContent(processedHtml);
   };
+
+  useEffect(() => {
+    runPreview();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files]);
+
+
+  const handleGenerate = async () => {
+    if (!prompt) {
+      toast({ title: 'Prompt is empty', description: 'Please enter a prompt to generate code.', variant: 'destructive' });
+      return;
+    }
+    setIsGenerating(true);
+    playSound('send');
+    try {
+      const result = await generateCode({ prompt });
+      setFiles([
+        { name: 'index.html', language: 'html', content: result.html },
+        { name: 'style.css', language: 'css', content: result.css },
+        { name: 'script.js', language: 'javascript', content: result.js },
+      ]);
+      toast({ title: 'Code Generated!', description: 'The AI has generated your website files.' });
+    } catch (error) {
+      console.error(error);
+      toast({ title: 'Generation Failed', description: 'The AI failed to generate code. Please try again.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  }
 
   const saveWork = () => {
     playSound('save');
@@ -182,7 +191,6 @@ export default function WebEditor() {
   };
 
   const handleShare = () => {
-     // Simulation: In a real app, this would generate a unique link or send an invite
     toast({
         title: "Project Shared!",
         description: "Your project has been shared successfully (simulation)."
@@ -223,63 +231,16 @@ export default function WebEditor() {
 
   return (
     <div className="flex h-full flex-col pt-16">
-      <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
-        <div className="flex items-center gap-2 overflow-x-auto">
-          <Tabs value={activeFile} onValueChange={setActiveFile}>
-            <TabsList className="h-8">
-              {files.map((file) => (
-                <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
-                   <FileIcon filename={file.name} /> 
-                   <span className="hidden sm:inline">{file.name}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={runPreview}>
-            <Play className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Run</span>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={saveWork}>
-            <Save className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Save</span>
-          </Button>
-          <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Share</span>
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Share Project</DialogTitle>
-                    <DialogDescription>
-                        Enter the email of the person you want to share this project with.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="email" className="text-right">
-                        Email
-                        </Label>
-                        <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button type="submit" onClick={handleShare}>Share</Button>
-                </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </header>
+      <div className='flex-1 flex flex-col min-h-0'>
       <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} className="flex-1">
         <ResizablePanel
-          defaultSize={isMobile ? 30 : 15}
-          minSize={isMobile ? 20 : 10}
-          className="min-w-[150px] flex flex-col"
+          defaultSize={isMobile ? 30 : 25}
+          minSize={isMobile ? 20 : 15}
+          className="min-w-[200px] flex flex-col"
         >
           <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
             <div className="flex justify-between items-center mb-2 px-2">
-                 <h2 className="text-sm font-semibold">Explorer</h2>
+                 <h2 className="text-sm font-semibold">Project Files</h2>
                  <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
                     <DialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-6 w-6">
@@ -304,7 +265,7 @@ export default function WebEditor() {
                     </DialogContent>
                  </Dialog>
             </div>
-            <ScrollArea className="h-full">
+            <ScrollArea className="flex-1">
               {files.map((file) => (
                 <button
                   key={file.name}
@@ -321,44 +282,107 @@ export default function WebEditor() {
                 </button>
               ))}
             </ScrollArea>
+
+            <div className="p-2 border-t mt-2">
+              <Textarea 
+                placeholder="Describe the website you want to create..."
+                className="h-24 resize-none"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+              <Button onClick={handleGenerate} disabled={isGenerating} className="w-full mt-2">
+                <Sparkles className="w-4 h-4 mr-2" />
+                {isGenerating ? 'Generating...' : 'Generate'}
+              </Button>
+            </div>
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={isMobile ? 70 : 55}>
-          <Tabs value="editor" className="h-full flex flex-col">
-            <TabsContent value="editor" className="flex-1 p-0 m-0">
-              <Textarea
-                value={currentFile?.content || ''}
-                onChange={(e) => handleFileChange(activeFile, e.target.value)}
-                placeholder="Start coding..."
-                className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
-              />
-            </TabsContent>
-          </Tabs>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={isMobile ? 50 : 30}>
-          <Tabs defaultValue="preview" className="h-full flex flex-col">
-            <TabsList className="m-2">
-              <TabsTrigger value="preview">
-                <Eye className="w-4 h-4 mr-2" />
-                Preview
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent
-              value="preview"
-              className="flex-1 bg-white m-2 rounded-md border"
-            >
-              <iframe
-                srcDoc={previewContent}
-                title="Preview"
-                sandbox="allow-scripts"
-                className="w-full h-full"
-              />
-            </TabsContent>
-          </Tabs>
+        <ResizablePanel defaultSize={isMobile ? 70 : 75}>
+            <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={65}>
+                    <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
+                        <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
+                            <TabsList className="h-8">
+                            {files.map((file) => (
+                                <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
+                                <FileIcon filename={file.name} /> 
+                                <span className="hidden sm:inline">{file.name}</span>
+                                </TabsTrigger>
+                            ))}
+                            </TabsList>
+                             <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="sm" onClick={runPreview}>
+                                    <Play className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Run</span>
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={saveWork}>
+                                    <Save className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Save</span>
+                                </Button>
+                                <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm">
+                                            <Share2 className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Share</span>
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>Share Project</DialogTitle>
+                                            <DialogDescription>
+                                                Enter the email of the person you want to share this project with.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="email" className="text-right">
+                                                Email
+                                                </Label>
+                                                <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit" onClick={handleShare}>Share</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </header>
+                        <TabsContent value={activeFile} className="flex-1 p-0 m-0">
+                            <Textarea
+                                value={currentFile?.content || ''}
+                                onChange={(e) => handleFileChange(activeFile, e.target.value)}
+                                placeholder="Code will be generated here..."
+                                className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
+                                readOnly={isGenerating}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={35}>
+                    <Tabs defaultValue="preview" className="h-full flex flex-col">
+                        <TabsList className="m-2">
+                        <TabsTrigger value="preview">
+                            <Eye className="w-4 h-4 mr-2" />
+                            Preview
+                        </TabsTrigger>
+                        </TabsList>
+                        <TabsContent
+                        value="preview"
+                        className="flex-1 bg-white m-2 rounded-md border"
+                        >
+                        <iframe
+                            srcDoc={previewContent}
+                            title="Preview"
+                            sandbox="allow-scripts allow-same-origin"
+                            className="w-full h-full"
+                        />
+                        </TabsContent>
+                    </Tabs>
+                </ResizablePanel>
+            </ResizablePanelGroup>
         </ResizablePanel>
       </ResizablePanelGroup>
+      </div>
     </div>
   );
 }
