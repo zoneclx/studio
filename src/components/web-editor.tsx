@@ -80,7 +80,8 @@ h1 {
   {
     name: 'script.js',
     language: 'javascript',
-    content: `console.log('Hello from script.js!');`,
+    content: `console.log('Hello from script.js!');
+console.log('You can see this in the terminal.');`,
   },
 ];
 
@@ -107,6 +108,8 @@ export default function WebEditor() {
   const [newFileName, setNewFileName] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
+  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
+  const [terminalInput, setTerminalInput] = useState('');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
@@ -124,6 +127,24 @@ export default function WebEditor() {
       )
     );
   };
+  
+  // Capture console logs from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.source !== (document.querySelector('iframe')?.contentWindow)) {
+          return;
+      }
+      const { type, message } = event.data;
+      if (type === 'console') {
+        setTerminalOutput(prev => [...prev, message]);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   const runPreview = () => {
     playSound('success');
@@ -138,7 +159,17 @@ export default function WebEditor() {
       return;
     }
 
-    let processedHtml = htmlFile.content;
+    const consoleInterceptor = `
+      <script>
+        const originalLog = console.log;
+        console.log = (...args) => {
+          originalLog(...args);
+          window.parent.postMessage({ type: 'console', message: args.map(arg => JSON.stringify(arg)).join(' ') }, '*');
+        };
+      </script>
+    `;
+
+    let processedHtml = htmlFile.content.replace('</head>', `${consoleInterceptor}</head>`);
 
     if (cssFile) {
       processedHtml = processedHtml.replace(
@@ -222,6 +253,25 @@ export default function WebEditor() {
     setNewFileName('');
     setNewFileOpen(false);
     toast({ title: 'File Created', description: `Successfully created ${newFileName}.` });
+  };
+
+  const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const command = terminalInput.trim();
+      const newOutput = [...terminalOutput, `> ${command}`];
+      
+      if (command.toLowerCase() === 'clear') {
+        setTerminalOutput(['> Terminal cleared.']);
+      } else if (command) {
+        // Here you could add more command handling
+        newOutput.push(`-bash: command not found: ${command}`);
+        setTerminalOutput(newOutput);
+      } else {
+        setTerminalOutput(newOutput);
+      }
+      
+      setTerminalInput('');
+    }
   };
 
   const currentFile = useMemo(
@@ -316,12 +366,22 @@ export default function WebEditor() {
   );
   
   const renderTerminalView = () => (
-     <div className="h-full flex-1 bg-black text-white font-mono text-sm p-4">
-        <p>> Welcome to Mono Studio Terminal (simulation)...</p>
-        <p>> All systems operational.</p>
-        <div className="flex items-center gap-2 mt-2">
+     <div className="h-full flex-1 flex flex-col bg-black text-white font-mono text-sm">
+        <ScrollArea className="flex-1 p-4">
+            {terminalOutput.map((line, index) => (
+                <p key={index} className="whitespace-pre-wrap">{line}</p>
+            ))}
+        </ScrollArea>
+        <div className="flex items-center gap-2 p-2 border-t border-gray-700">
             <span>></span>
-            <span className="w-2 h-4 bg-white animate-pulse"></span>
+            <Input 
+                type="text"
+                value={terminalInput}
+                onChange={(e) => setTerminalInput(e.target.value)}
+                onKeyDown={handleTerminalCommand}
+                className="bg-transparent border-none text-white w-full p-0 h-auto focus-visible:ring-0"
+                placeholder="Type a command..."
+            />
         </div>
     </div>
   );
