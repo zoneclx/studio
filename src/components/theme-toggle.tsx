@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,9 @@ export function ThemeToggle() {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('redhat')}>
+          Redhat
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
           System

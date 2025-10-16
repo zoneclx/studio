@@ -6,7 +6,7 @@ import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'n
 import type { ThemeProviderProps } from 'next-themes/dist/types';
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return <NextThemesProvider {...props} themes={['light', 'dark', 'system', 'redhat']}>{children}</NextThemesProvider>;
 }
 
 export const useTheme = useNextTheme;

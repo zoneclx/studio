@@ -54,6 +54,31 @@
     --gradient-mid: 240 20% 5%;
     --gradient-end: 280 50% 15%;
   }
+
+  .redhat {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 100% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 100% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 100% 25%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 100% 20%;
+    --input: 0 100% 15%;
+    --ring: 0 100% 50%;
+    --gradient-start: 0 100% 20%;
+    --gradient-mid: 0 0% 5%;
+    --gradient-end: 0 100% 15%;
+  }
 }
 
 @layer base {
