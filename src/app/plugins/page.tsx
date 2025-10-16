@@ -102,7 +102,7 @@ export default function PluginsPage() {
 
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4 flex-1 pt-24">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-in-up">
         <h1 className="text-4xl font-bold font-display flex items-center gap-3">
           <Box className="w-10 h-10" />
           Plugins & Integrations
@@ -113,47 +113,49 @@ export default function PluginsPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {pluginsList.map((plugin) => {
+        {pluginsList.map((plugin, index) => {
           const isConnected = connectedPlugins.includes(plugin.id);
           return (
-            <Card key={plugin.id} className="flex flex-col">
-              <CardHeader className="flex flex-row items-start justify-between">
-                <div className="flex items-start gap-4">
-                  {plugin.icon}
-                  <div>
-                    <CardTitle>{plugin.name}</CardTitle>
-                    <CardDescription className="mt-1">{plugin.description}</CardDescription>
+            <div key={plugin.id} className="animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.2}s` }}>
+              <Card className="flex flex-col h-full">
+                <CardHeader className="flex flex-row items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    {plugin.icon}
+                    <div>
+                      <CardTitle>{plugin.name}</CardTitle>
+                      <CardDescription className="mt-1">{plugin.description}</CardDescription>
+                    </div>
                   </div>
-                </div>
-                {isConnected && <Badge variant="secondary">Connected</Badge>}
-              </CardHeader>
-              <CardContent className="flex-1">
-                <div className="space-y-2">
-                  <Label htmlFor={`api-key-${plugin.id}`} className="text-xs text-muted-foreground">
-                    API Key
-                  </Label>
-                  <Input
-                    id={`api-key-${plugin.id}`}
-                    type="password"
-                    placeholder="Enter your API key"
-                    value={localApiKeys[plugin.id] || ''}
-                    onChange={(e) => handleApiKeyChange(plugin.id, e.target.value)}
-                    disabled={isConnected}
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                {isConnected ? (
-                  <Button variant="destructive" className="w-full" onClick={() => handleDisconnect(plugin.id)}>
-                    Disconnect
-                  </Button>
-                ) : (
-                  <Button className="w-full" onClick={() => handleConnect(plugin.id)}>
-                    Save & Connect
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
+                  {isConnected && <Badge variant="secondary">Connected</Badge>}
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <div className="space-y-2">
+                    <Label htmlFor={`api-key-${plugin.id}`} className="text-xs text-muted-foreground">
+                      API Key
+                    </Label>
+                    <Input
+                      id={`api-key-${plugin.id}`}
+                      type="password"
+                      placeholder="Enter your API key"
+                      value={localApiKeys[plugin.id] || ''}
+                      onChange={(e) => handleApiKeyChange(plugin.id, e.target.value)}
+                      disabled={isConnected}
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  {isConnected ? (
+                    <Button variant="destructive" className="w-full" onClick={() => handleDisconnect(plugin.id)}>
+                      Disconnect
+                    </Button>
+                  ) : (
+                    <Button className="w-full" onClick={() => handleConnect(plugin.id)}>
+                      Save & Connect
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </div>
           )
         })}
       </div>

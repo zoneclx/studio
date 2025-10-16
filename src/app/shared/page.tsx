@@ -67,7 +67,7 @@ export default function SharedPage() {
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4 flex-1 pt-24">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-in-up">
         <h1 className="text-4xl font-bold font-display flex items-center gap-3">
           <Users className="w-10 h-10" />
           Shared With Me
@@ -78,7 +78,7 @@ export default function SharedPage() {
       </header>
 
         {mockSharedProjects.length === 0 ? (
-             <Card className="p-8 text-center">
+             <Card className="p-8 text-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <CardTitle>Nothing Shared Yet</CardTitle>
                 <p className="mt-2 text-muted-foreground">
                     When someone shares a project with you, it will appear here.
@@ -86,31 +86,33 @@ export default function SharedPage() {
             </Card>
         ) : (
             <div className="space-y-4">
-                {mockSharedProjects.map((project) => (
-                    <Card key={project.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
-                        <div className="flex-1">
-                           <CardTitle className="text-xl mb-1">{project.name}</CardTitle>
-                           <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1 mt-2">
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="h-5 w-5">
-                                        <AvatarImage src={project.sharedBy.avatar} alt={project.sharedBy.name} />
-                                        <AvatarFallback><User className="w-3 h-3" /></AvatarFallback>
-                                    </Avatar>
-                                    <span>{project.sharedBy.name}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{formatDistanceToNow(project.sharedAt, { addSuffix: true })}</span>
-                                </div>
-                           </div>
-                        </div>
-                        <Link href="/create">
-                            <Button className="w-full sm:w-auto">
-                                <Code className="w-4 h-4 mr-2" />
-                                Open in Editor
-                            </Button>
-                        </Link>
-                    </Card>
+                {mockSharedProjects.map((project, index) => (
+                    <div key={project.id} className="animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.2}s` }}>
+                        <Card className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
+                            <div className="flex-1">
+                               <CardTitle className="text-xl mb-1">{project.name}</CardTitle>
+                               <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1 mt-2">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="h-5 w-5">
+                                            <AvatarImage src={project.sharedBy.avatar} alt={project.sharedBy.name} />
+                                            <AvatarFallback><User className="w-3 h-3" /></AvatarFallback>
+                                        </Avatar>
+                                        <span>{project.sharedBy.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Clock className="w-4 h-4" />
+                                        <span>{formatDistanceToNow(project.sharedAt, { addSuffix: true })}</span>
+                                    </div>
+                               </div>
+                            </div>
+                            <Link href="/create">
+                                <Button className="w-full sm:w-auto">
+                                    <Code className="w-4 h-4 mr-2" />
+                                    Open in Editor
+                                </Button>
+                            </Link>
+                        </Card>
+                    </div>
                 ))}
             </div>
         )}

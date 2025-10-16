@@ -127,14 +127,14 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col flex-1 p-4 pt-24">
       <main className="container mx-auto max-w-2xl py-8 px-4 flex-1">
-        <header className="mb-8">
+        <header className="mb-8 animate-fade-in-up">
           <h1 className="text-4xl font-bold font-display">Your Profile</h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Customize your account details and manage your password.
           </p>
         </header>
         <div className="space-y-8">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <Card>
               <CardHeader className="items-center">
                 <div className="relative">
@@ -189,7 +189,7 @@ export default function ProfilePage() {
             </Card>
           </form>
 
-          <form onSubmit={handlePasswordChange}>
+          <form onSubmit={handlePasswordChange} className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
