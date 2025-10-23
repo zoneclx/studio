@@ -56,7 +56,7 @@ export default function Home() {
     }, []);
 
     const renderTextEffect = () => {
-        const effectContainerClass = "text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]";
+        const effectContainerClass = "text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]";
         
         if (!mounted) {
             return <div className={effectContainerClass} />;
@@ -205,5 +205,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
