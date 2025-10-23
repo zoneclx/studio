@@ -85,7 +85,8 @@
               "description": "The unique Firebase Auth ID of the user."
             }
           ]
-        }
+        },
+        "rules": "allow read, write: if request.auth.uid == userId;"
       },
       {
         "path": "/users/{userId}/generatedTexts/{generatedTextId}",
