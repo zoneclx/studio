@@ -11,9 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Code, Archive, Users, Plug, Search, User as UserIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const quickLinks = [
-  { title: 'AI Web Builder', description: 'Create a new project with AI.', href: '/create', icon: <Code className="w-8 h-8" /> },
+  { title: 'AI Web Builder', description: 'Create a new project with AI.', href: '/under-development', icon: <Code className="w-8 h-8" />, status: 'under-development' },
   { title: 'Your Projects', description: 'View and manage your saved work.', href: '/my-archive', icon: <Archive className="w-8 h-8" /> },
   { title: 'Community Chat', description: 'Connect with other developers.', href: '/chat', icon: <Users className="w-8 h-8" /> },
   { title: 'Explore Plugins', description: 'Extend your editor\'s capabilities.', href: '/plugins', icon: <Plug className="w-8 h-8" /> },
@@ -83,7 +84,10 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickLinks.map((link, index) => (
             <Link href={link.href} key={index}>
-              <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all transform hover:-translate-y-1">
+              <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all transform hover:-translate-y-1 relative">
+                {link.status === 'under-development' && (
+                  <Badge variant="secondary" className="absolute top-2 right-2">Under Development</Badge>
+                )}
                 <CardHeader>
                   <div className="text-primary">{link.icon}</div>
                   <CardTitle className="mt-2">{link.title}</CardTitle>
