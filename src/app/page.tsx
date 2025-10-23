@@ -21,27 +21,28 @@ const animatedTitles = [
 ];
 
 const redhatTitles = [
-    "Accessing the Mainframe...",
-    "Bypassing Security Protocols...",
-    "Initiating Code Injection...",
-    "Welcome to the Grid, User.",
-    "Compiling Kernel...",
-    "Decrypting Firewalls...",
-    "Establishing Secure Shell...",
-    "Loading System Exploits...",
-    "Matrix Connection Established.",
-    "Running Rootkit...",
-    "Pinging Global Network...",
-    "Authenticating Anonymously...",
-    "Splicing the ICE...",
-    "Ghost in the Machine.",
-    "Access Granted.",
-    "Executing quantum algorithms...",
-    "Navigating neural networks...",
-    "Decompiling encrypted archives...",
-    "Routing through anonymous proxies...",
-    "Overriding system lockdown...",
-    "Welcome, Mono Studio.",
+    "Initializing virtual DOM...",
+    "Compiling TypeScript to Assembly...",
+    "Spinning up cloud instance...",
+    "Deploying to the edge network...",
+    "Synchronizing with Git repository...",
+    "Hot-reloading module: /app/page.tsx...",
+    "Welcome to your Cloud IDE.",
+    "Bootstrapping Next.js server...",
+    "Establishing secure development tunnel...",
+    "Running Lighthouse performance audit...",
+    "Minifying JavaScript bundle...",
+    "Pruning node_modules tree...",
+    "Authenticating via SSH key...",
+    "Just-In-Time compilation engaged.",
+    "Rendering server components...",
+    "Connecting to live-share session...",
+    "Type 'help' for a list of commands.",
+    "Your environment is ready.",
+    "Fetching dependencies from cache...",
+    "Warming up serverless functions...",
+    "Optimizing asset delivery...",
+    "Welcome to Mono Studio.",
 ];
 
 const features = [
@@ -228,5 +229,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
