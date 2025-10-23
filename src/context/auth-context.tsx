@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword, sendEmailVerification } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { doc, collection, query, where, getDocs, limit } from 'firebase/firestore';
@@ -18,6 +18,7 @@ interface AuthContextType {
   updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
   changePassword: (currentPass: string, newPass: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,7 +80,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signUp = async (email: string, pass: string) => {
-    initiateEmailSignUp(auth, email, pass);
+    initiateEmailSignUp(auth, email, pass, (user) => {
+        if(user) {
+            sendEmailVerification(user);
+        }
+    });
     // Let the onAuthStateChanged handle the redirect.
   };
 
@@ -132,6 +137,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const changePassword = async (currentPass: string, newPass: string) => {
     if (!user || !user.email) throw new Error("Not authenticated");
+    if (!user.emailVerified) throw new Error("Email not verified. Please verify your email before changing the password.");
+
     const credential = EmailAuthProvider.credential(user.email, currentPass);
     await reauthenticateWithCredential(user, credential);
     await updatePassword(user, newPass);
@@ -139,6 +146,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const forgotPassword = async (email: string) => {
     await sendPasswordResetEmail(auth, email);
+  };
+
+  const sendVerificationEmail = async () => {
+    if (!user) throw new Error("Not authenticated");
+    await sendEmailVerification(user);
   };
 
   const value = {
@@ -149,7 +161,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     signOut,
     updateProfile,
     changePassword,
-    forgotPassword
+    forgotPassword,
+    sendVerificationEmail,
   };
 
   return (

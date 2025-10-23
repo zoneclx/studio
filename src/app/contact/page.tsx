@@ -6,7 +6,7 @@ import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ContactPage() {
-  const email = 'enzogimena.business@gmail.com';
+  const email = 'support@bytestudio.dev';
 
   return (
     <div className="container mx-auto max-w-2xl py-8 px-4 flex-1 flex items-center justify-center pt-24">
@@ -20,7 +20,7 @@ export default function ContactPage() {
         </CardHeader>
         <CardContent className="text-center">
           <p className="text-muted-foreground mb-4">
-            For any questions, feedback, or inquiries, please reach out to us via email.
+            For any questions, feedback, or inquiries, including help with your account, please reach out to us via email.
           </p>
           <a href={`mailto:${email}`} className="text-lg font-semibold text-primary hover:underline break-all">
             {email}
