@@ -25,7 +25,7 @@ const redhatTitles = [
     "Bypass Security Protocols.",
     "Initiate Code Injection.",
     "Accessing the Grid.",
-    "Welcome, Mono Code.",
+    "Welcome, Mono Studio.",
 ];
 
 const features = [
@@ -212,5 +212,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    

@@ -111,7 +111,7 @@ export default function LoginPage() {
             </div>
             <Link href="/mono-login" className='w-full'>
                 <Button variant="outline" className="w-full" type="button">
-                    Sign in with MonoAi
+                    Sign in with Mono Studio
                 </Button>
             </Link>
           </CardContent>

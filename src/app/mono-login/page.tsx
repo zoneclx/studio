@@ -53,7 +53,7 @@ export default function MonoLoginPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold font-display flex items-center justify-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
-            MonoAi
+            Mono Studio
           </CardTitle>
           <CardDescription>
             Sign in to continue to your account.
