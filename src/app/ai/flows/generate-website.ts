@@ -8,6 +8,7 @@
  */
 
 import { ai } from '@/app/ai/genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
 const WebFileSchema = z.object({
@@ -27,6 +28,7 @@ export async function generateWebsite(prompt: string): Promise<GenerateWebsiteOu
 
 const generationPrompt = ai.definePrompt({
   name: 'generateWebsitePrompt',
+  model: googleAI.model('gemini-1.5-pro-preview'),
   input: { schema: z.string() },
   output: { schema: GenerateWebsiteOutputSchema },
   prompt: `

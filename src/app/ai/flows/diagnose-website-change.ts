@@ -9,6 +9,7 @@
  */
 
 import { ai } from '@/app/ai/genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
 const DiagnoseWebsiteChangeInputSchema = z.object({
@@ -29,6 +30,7 @@ export async function diagnoseWebsiteChange(input: DiagnoseWebsiteChangeInput): 
 
 const diagnosisPrompt = ai.definePrompt({
   name: 'diagnoseWebsiteChangePrompt',
+  model: googleAI.model('gemini-1.5-flash-preview'),
   input: { schema: DiagnoseWebsiteChangeInputSchema },
   output: { schema: DiagnoseWebsiteChangeOutputSchema },
   prompt: `
