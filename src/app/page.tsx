@@ -63,7 +63,7 @@ export default function Home() {
             return (
                 <HackerEffect
                     texts={animatedTitles}
-                    className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
+                    className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px] text-primary"
                 />
             );
         }
@@ -201,3 +201,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
