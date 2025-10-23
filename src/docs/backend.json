@@ -1,0 +1,120 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the MonoMuse application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email"
+      ]
+    },
+    "GeneratedText": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GeneratedText",
+      "type": "object",
+      "description": "Represents AI-generated text content.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the GeneratedText entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N GeneratedText)"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "The user prompt used to generate the text."
+        },
+        "generatedText": {
+          "type": "string",
+          "description": "The AI-generated text content."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the text was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "prompt",
+        "generatedText",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection of user profiles. Each document is keyed by the user's unique Firebase Auth ID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique Firebase Auth ID of the user."
+            }
+          ]
+        },
+        "rules": "allow read, write: if request.auth.uid == userId;"
+      },
+      {
+        "path": "/users/{userId}/generatedTexts/{generatedTextId}",
+        "definition": {
+          "entityName": "GeneratedText",
+          "schema": {
+            "$ref": "#/backend/entities/GeneratedText"
+          },
+          "description": "Subcollection of generated texts owned by a specific user. Ensures path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique Firebase Auth ID of the user."
+            },
+            {
+              "name": "generatedTextId",
+              "description": "The unique ID of the generated text document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/messages/{messageId}",
+        "rules": "allow read, write: if request.auth != null;",
+        "description": "A public chat room for all authenticated users."
+      }
+    ],
+    "reasoning": "The error `FirebaseError: Missing or insufficient permissions` indicates that the Firestore Security Rules are preventing the `list` operation on the `/messages` collection. The provided data entities (`User`, `GeneratedText`) do not include a `messages` collection. Based on the application description, the `GeneratedText` entity is most likely related to the missing permission, since it involves AI generation. This design assumes a requirement to retrieve all user messages. The structure uses path-based ownership under the `/users/{userId}/generatedTexts/{generatedTextId}` path, granting each user access only to their own generated texts. This approach ensures data isolation and simplifies security rules, which only need to check if `request.auth.uid == userId`. QAPs are satisfied because listing documents is restricted to the authenticated user's own `generatedTexts` subcollection; there are no cross-user list operations. If there's a new requirement to retrieve all messages, this structure will not solve it."
+  }
+}
