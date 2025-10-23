@@ -38,34 +38,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const router = useRouter();
   
   useEffect(() => {
-    if (user && !isUserLoading) {
-      const userDocRef = doc(firestore, 'users', user.uid);
-      let profileData: any = {};
-      let profileUpdateNeeded = false;
-
-      if (!user.displayName) {
-        profileData.displayName = generateRandomUsername();
-        profileData.displayName_lowercase = profileData.displayName.toLowerCase();
-        profileUpdateNeeded = true;
-      }
-      
-      const firestorePayload: any = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || profileData.displayName,
-        displayName_lowercase: (user.displayName || profileData.displayName).toLowerCase(),
-      };
-
-      if (profileUpdateNeeded) {
-        // This is a non-blocking call to update both Auth and Firestore
-        firebaseUpdateProfile(user, { displayName: profileData.displayName });
-        setDocumentNonBlocking(userDocRef, firestorePayload, { merge: true });
-      } else {
-        // Just update firestore, non-blocking
-        setDocumentNonBlocking(userDocRef, firestorePayload, { merge: true });
-      }
+    if (user && !isUserLoading && !user.displayName) {
+      const randomUsername = generateRandomUsername();
+      // This is a non-blocking call to update the Auth profile
+      firebaseUpdateProfile(user, { displayName: randomUsername });
     }
-  }, [user, isUserLoading, firestore]);
+  }, [user, isUserLoading]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
@@ -99,7 +77,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!user) throw new Error("Not authenticated");
 
     const authUpdatePayload: { displayName?: string } = {};
-    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string } = {};
+    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string, email?: string, uid?: string } = {};
 
     if (details.name && details.name !== user.displayName) {
       const isTaken = await isUsernameTaken(details.name);
@@ -115,14 +93,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       firestoreUpdatePayload.displayName = details.name;
       firestoreUpdatePayload.displayName_lowercase = details.name.toLowerCase();
     }
+    
+    firestoreUpdatePayload.email = user.email!;
+    firestoreUpdatePayload.uid = user.uid;
 
     if (Object.keys(authUpdatePayload).length > 0) {
       await firebaseUpdateProfile(user, authUpdatePayload);
     }
-    if (Object.keys(firestoreUpdatePayload).length > 0) {
-      const userDocRef = doc(firestore, 'users', user.uid);
-      await setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
-    }
+    
+    const userDocRef = doc(firestore, 'users', user.uid);
+    // This is now the primary place where user data is written to Firestore
+    await setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
