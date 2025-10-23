@@ -28,7 +28,7 @@ export async function generateWebsite(prompt: string): Promise<GenerateWebsiteOu
 
 const generationPrompt = ai.definePrompt({
   name: 'generateWebsitePrompt',
-  model: googleAI.model('gemini-pro'),
+  model: googleAI.model('gemini-1.5-flash-latest'),
   input: { schema: z.string() },
   output: { schema: GenerateWebsiteOutputSchema },
   prompt: `
