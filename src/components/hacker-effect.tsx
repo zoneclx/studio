@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 type HackerEffectProps = {
@@ -10,7 +10,7 @@ type HackerEffectProps = {
   className?: string;
 };
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{};\':",.<>/?`~';
 
 export default function HackerEffect({
   texts,
@@ -18,65 +18,55 @@ export default function HackerEffect({
   className,
 }: HackerEffectProps) {
   const [textIndex, setTextIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('');
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [revealedText, setRevealedText] = useState('');
+  const [scrambledChar, setScrambledChar] = useState('');
   
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const textRef = useRef(texts);
+  const animationFrameRef = useRef<number>();
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    const targetText = texts[textIndex];
-    let currentIndex = 0;
+  const animate = useCallback(() => {
+    const targetText = textRef.current[textIndex];
+    let currentLength = revealedText.length;
 
-    const animateChar = () => {
-      if (currentIndex >= targetText.length) {
-        // Animation for the current text is complete
-        setIsAnimating(false);
-        // Wait for the delay, then switch to the next text
-        timeoutRef.current = setTimeout(() => {
-          setTextIndex(prev => (prev + 1) % texts.length);
-          setDisplayedText('');
-          setIsAnimating(true);
-        }, delay);
-        return;
-      }
-      
-      // Start scrambling the current character
+    if (currentLength < targetText.length) {
       let scrambleCount = 0;
       const maxScrambles = 3;
       
-      const scrambleInterval = setInterval(() => {
-        if (scrambleCount >= maxScrambles) {
-          clearInterval(scrambleInterval);
-          // Reveal the correct character
-          setDisplayedText(prev => prev + targetText[currentIndex]);
-          currentIndex++;
-          // Move to the next character
-          animateChar();
-        } else {
-          // Show a random character
-          const randomChar = characters[Math.floor(Math.random() * characters.length)];
-          setDisplayedText(prev => prev.slice(0, currentIndex) + randomChar);
+      const updateScramble = () => {
+        if (scrambleCount < maxScrambles) {
+          setScrambledChar(characters[Math.floor(Math.random() * characters.length)]);
           scrambleCount++;
+          timeoutRef.current = setTimeout(updateScramble, 50);
+        } else {
+          setScrambledChar('');
+          setRevealedText(targetText.substring(0, currentLength + 1));
         }
-      }, 50);
-    };
-
-    if (isAnimating) {
-      animateChar();
+      };
+      updateScramble();
+    } else {
+      // Finished revealing, wait for delay then switch to next text
+      timeoutRef.current = setTimeout(() => {
+        setTextIndex(prev => (prev + 1) % textRef.current.length);
+        setRevealedText('');
+      }, delay);
     }
+  }, [textIndex, revealedText, delay]);
+
+  useEffect(() => {
+    // Start animation when revealedText or textIndex changes
+    animate();
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [textIndex, texts, delay, isAnimating]);
-
+  }, [revealedText, textIndex, animate]);
 
   return (
-    <h2 className={cn('font-mono break-words', className)}>
-      <span className="text-foreground">{displayedText.slice(0,-1)}</span>
-      <span className="text-primary">{displayedText.slice(-1)}</span>
+    <h2 className={cn('font-mono', className)}>
+      <span className="text-foreground">{revealedText}</span>
+      {scrambledChar && <span className="text-primary">{scrambledChar}</span>}
     </h2>
   );
 }
-
-    
