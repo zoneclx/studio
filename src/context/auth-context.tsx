@@ -3,14 +3,14 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, signOut as firebaseSignOut, sendPasswordResetEmail } from 'firebase/auth';
+import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser } from '@/firebase/provider';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, pass: string) => Promise<void>;
+  signIn: (email: string, pass: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, pass: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
@@ -25,7 +25,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const auth = useFirebaseAuth();
   const router = useRouter();
 
-  const signIn = async (email: string, pass: string) => {
+  const signIn = async (email: string, pass: string, rememberMe = false) => {
+    const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+    await setPersistence(auth, persistence);
     initiateEmailSignIn(auth, email, pass);
     router.push('/dashboard');
   };

@@ -12,10 +12,12 @@ import { useAuth } from '@/context/auth-context';
 import { Sparkles, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -25,12 +27,12 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signIn(email, password, rememberMe);
       toast({
         title: 'Success!',
         description: 'You have successfully signed in.',
       });
-      router.push('/create');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -99,6 +101,15 @@ export default function LoginPage() {
                 className="bg-background"
                 disabled={loading}
               />
+            </div>
+             <div className="flex items-center space-x-2">
+                <Checkbox id="remember" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked as boolean)} />
+                <label
+                    htmlFor="remember"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Remember me
+                </label>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
