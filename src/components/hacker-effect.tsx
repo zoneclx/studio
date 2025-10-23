@@ -11,74 +11,60 @@ type HackerEffectProps = {
   className?: string;
 };
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export default function HackerEffect({
   texts,
-  iterations = 3,
   delay = 2000,
   className,
 }: HackerEffectProps) {
   const [textIndex, setTextIndex] = useState(0);
-  const [displayText, setDisplayText] = useState(texts[0]);
+  const [revealedText, setRevealedText] = useState('');
+  const [scrambledChar, setScrambledChar] = useState('');
   
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-
-  const scramble = useCallback((targetText: string) => {
-    let iteration = 0;
-    
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-    }
-
-    intervalRef.current = setInterval(() => {
-        setDisplayText(
-            targetText
-            .split("")
-            .map((letter, index) => {
-              if (index < iteration) {
-                return targetText[index];
-              }
-              return characters[Math.floor(Math.random() * characters.length)];
-            })
-            .join("")
-        );
-
-      if (iteration >= targetText.length) {
-        if(intervalRef.current) clearInterval(intervalRef.current);
-      }
-
-      iteration += 1 / iterations;
-    }, 40);
-  }, [iterations]);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    scramble(texts[textIndex]);
-    
-    const timeout = setTimeout(() => {
-      setTextIndex(prev => (prev + 1) % texts.length);
-    }, delay + texts[textIndex].length * 40);
+    const targetText = texts[textIndex];
+    let currentIndex = 0;
+    let scrambleCount = 0;
+
+    const animate = () => {
+      if (currentIndex < targetText.length) {
+        if (scrambleCount < 3) { // Scramble 3 times
+          setScrambledChar(characters[Math.floor(Math.random() * characters.length)]);
+          scrambleCount++;
+          timeoutRef.current = setTimeout(animate, 50);
+        } else {
+          setRevealedText(prev => prev + targetText[currentIndex]);
+          setScrambledChar('');
+          currentIndex++;
+          scrambleCount = 0;
+          timeoutRef.current = setTimeout(animate, 30);
+        }
+      } else {
+        // Finished typing the text, wait for delay then switch to next text
+        timeoutRef.current = setTimeout(() => {
+          setRevealedText('');
+          setTextIndex(prev => (prev + 1) % texts.length);
+        }, delay);
+      }
+    };
+
+    animate();
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      clearTimeout(timeout);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, [textIndex, texts, scramble, delay]);
+  }, [textIndex, texts, delay]);
+
 
   return (
     <h2 className={cn('font-mono', className)}>
-      {displayText.split("").map((char, index) => {
-          const isResolved = texts[textIndex][index] === char;
-          return (
-              <span key={index} className={isResolved ? 'text-foreground' : 'text-primary'}>
-                  {char}
-              </span>
-          )
-      })}
+      <span className="text-foreground">{revealedText}</span>
+      <span className="text-primary">{scrambledChar}</span>
     </h2>
   );
 }
