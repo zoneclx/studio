@@ -13,33 +13,44 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
 const animatedTitles = [
-    "Build a Website with AI.",
-    "From Prompt to Production in Seconds.",
+    "Build Websites in Your Browser.",
+    "A Powerful Cloud-Based Editor.",
     "The Future of Web Creation is Here.",
-    "Your AI-Powered Web Builder.",
-    "Design, Code, and Deploy with AI.",
+    "Your Collaborative Coding Sandbox.",
+    "Design, Code, and Collaborate.",
 ];
 
 const redhatTitles = [
-    "Unlock the Mainframe.",
-    "Bypass Security Protocols.",
-    "Initiate Code Injection.",
-    "Accessing the Grid.",
+    "Accessing the Mainframe...",
+    "Bypassing Security Protocols...",
+    "Initiating Code Injection...",
+    "Welcome to the Grid, User.",
+    "Compiling Kernel...",
+    "Decrypting Firewalls...",
+    "Establishing Secure Shell...",
+    "Loading System Exploits...",
+    "Matrix Connection Established.",
+    "Running Rootkit...",
+    "Pinging Global Network...",
+    "Authenticating Anonymously...",
+    "Splicing the ICE...",
+    "Ghost in the Machine.",
+    "Access Granted.",
+    "Executing quantum algorithms...",
+    "Navigating neural networks...",
+    "Decompiling encrypted archives...",
+    "Routing through anonymous proxies...",
+    "Overriding system lockdown...",
     "Welcome, Mono Studio.",
 ];
 
 const features = [
     {
-        icon: <Sparkles className="w-8 h-8 text-primary" />,
-        title: "AI-Powered Generation",
-        description: "Describe your ideal website, and let our AI generate the initial HTML, CSS, and JavaScript for you in seconds.",
-    },
-    {
         icon: <Code className="w-8 h-8 text-primary" />,
         title: "Full-Featured Editor",
-        description: "Refine your generated code with a complete in-browser editor, featuring a file explorer and live preview.",
+        description: "Refine your code with a complete in-browser editor, featuring a file explorer, live preview, and integrated terminal.",
     },
-     {
+    {
         icon: <MessageSquare className="w-8 h-8 text-primary" />,
         title: "Real-time Collaboration",
         description: "Connect with other developers in the global chat room. Share ideas and collaborate in real-time on your projects.",
@@ -48,6 +59,11 @@ const features = [
         icon: <Server className="w-8 h-8 text-primary" />,
         title: "Powered by Firebase",
         description: "Built on a secure and scalable backend with Firebase Authentication and Firestore for a seamless experience.",
+    },
+    {
+        icon: <Sparkles className="w-8 h-8 text-primary" />,
+        title: "AI-Assisted Features",
+        description: "Leverage AI to generate code, get suggestions, and accelerate your development workflow. (Currently under development).",
     },
 ];
 
@@ -101,13 +117,13 @@ export default function HomePage() {
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Mono Studio is a powerful, AI-driven web builder that turns your ideas into reality.
-                        Describe, generate, and deploy your next great project without ever leaving your browser.
+                        Mono Studio is a powerful, browser-based development environment.
+                        Write, test, and collaborate on your next great project without ever leaving your browser.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/create">
+                        <Link href="/dashboard">
                         <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
-                            Start Building <ArrowRight className="ml-2 h-5 w-5" />
+                            Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         </Link>
                     </div>
@@ -148,7 +164,7 @@ export default function HomePage() {
                 <div className="text-center mb-12 animate-fade-in-up">
                     <h2 className="text-3xl sm:text-4xl font-bold font-display">A New Way to Build Software</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                        We combine a powerful editor with an intuitive AI to make complex tasks simple.
+                        We combine a powerful editor with collaborative tools to make complex tasks simple.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -212,3 +228,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
