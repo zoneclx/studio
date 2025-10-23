@@ -1,0 +1,121 @@
+/**
+ * @fileoverview Firestore Security Rules for MonoMuse.
+ *
+ * Core Philosophy: This ruleset enforces a strict user-ownership model,
+ * where each user has full control over their data, and no cross-user access
+ * is permitted.
+ *
+ * Data Structure: All user-related data (prompts, generated texts, saved results)
+ * is nested under /users/{userId}, ensuring clear ownership.
+ *
+ * Key Security Decisions:
+ * - Users can only access their own data.
+ * - Listing operations are restricted to the owning user.
+ * - The rules do not validate the data schema beyond the ownership fields.
+ *
+ * Denormalization for Authorization:
+ * - Each prompt, generatedText, and savedResult document is stored under the user's
+ *   document, allowing us to use path-based authorization (isOwner(userId))
+ *   without additional reads.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Defines if the current user is signed in
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Defines if the current user is the owner of the resource
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * @description Defines if the current user is the owner of the resource and it exists
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && exists(resource);
+    }
+
+    /**
+     * @description Enforces that a userId field matches the authenticated user's UID
+     */
+    function isValidUserId(userId) {
+        return request.resource.data.userId == request.auth.uid;
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
+     * @path /users/{userId}
+     * @allow (create) - Authenticated user creates their own profile.
+     * @deny (create) - Authenticated user tries to create a profile with a different userId.
+     * @allow (get, update, delete) - Authenticated user accesses their own profile.
+     * @deny (get, update, delete) - Authenticated user tries to access another user's profile.
+     * @principle Enforces user-ownership.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/prompts/{promptId} collection.
+     * @path /users/{userId}/prompts/{promptId}
+     * @allow (create) - Authenticated user creates a prompt for themselves.
+     * @deny (create) - Authenticated user tries to create a prompt for another user.
+     * @allow (get, update, delete) - Authenticated user accesses their own prompt.
+     * @deny (get, update, delete) - Authenticated user tries to access another user's prompt.
+     * @principle Enforces user-ownership.
+     */
+    match /users/{userId}/prompts/{promptId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId} collection.
+     * @path /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId}
+     * @allow (create) - Authenticated user creates a generated text for their own prompt.
+     * @deny (create) - Authenticated user tries to create a generated text for another user's prompt.
+     * @allow (get, update, delete) - Authenticated user accesses their own generated text.
+     * @deny (get, update, delete) - Authenticated user tries to access another user's generated text.
+     * @principle Enforces user-ownership.
+     */
+    match /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/savedResults/{savedResultId} collection.
+     * @path /users/{userId}/savedResults/{savedResultId}
+     * @allow (create) - Authenticated user saves a result for themselves.
+     * @deny (create) - Authenticated user tries to save a result for another user.
+     * @allow (get, update, delete) - Authenticated user accesses their own saved result.
+     * @deny (get, update, delete) - Authenticated user tries to access another user's saved result.
+     * @principle Enforces user-ownership.
+     */
+    match /users/{userId}/savedResults/{savedResultId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+  }
+}

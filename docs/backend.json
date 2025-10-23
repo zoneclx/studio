@@ -1,0 +1,220 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the MonoMuse application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the user account was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "createdAt"
+      ]
+    },
+    "Prompt": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Prompt",
+      "type": "object",
+      "description": "Represents a user-submitted prompt for AI processing.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the prompt."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Prompt)"
+        },
+        "text": {
+          "type": "string",
+          "description": "The text content of the prompt."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the prompt was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "text",
+        "createdAt"
+      ]
+    },
+    "GeneratedText": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GeneratedText",
+      "type": "object",
+      "description": "Represents the AI-generated text resulting from a prompt.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the generated text."
+        },
+        "promptId": {
+          "type": "string",
+          "description": "Reference to Prompt. (Relationship: Prompt 1:1 GeneratedText)"
+        },
+        "text": {
+          "type": "string",
+          "description": "The text content of the AI-generated output."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the generated text was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "promptId",
+        "text",
+        "createdAt"
+      ]
+    },
+    "SavedResult": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SavedResult",
+      "type": "object",
+      "description": "Represents a saved AI generated text.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the saved result."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N SavedResult)"
+        },
+        "generatedTextId": {
+          "type": "string",
+          "description": "Reference to GeneratedText. (Relationship: GeneratedText 1:1 SavedResult)"
+        },
+        "savedAt": {
+          "type": "string",
+          "description": "The date and time the text was saved.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "generatedTextId",
+        "savedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles.  `userId` is the Firebase Authentication UID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/prompts/{promptId}",
+        "definition": {
+          "entityName": "Prompt",
+          "schema": {
+            "$ref": "#/backend/entities/Prompt"
+          },
+          "description": "Stores prompts submitted by a user. `userId` is the owner. `promptId` is the unique ID of the prompt.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user who created the prompt."
+            },
+            {
+              "name": "promptId",
+              "description": "The unique ID of the prompt."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId}",
+        "definition": {
+          "entityName": "GeneratedText",
+          "schema": {
+            "$ref": "#/backend/entities/GeneratedText"
+          },
+          "description": "Stores the AI-generated text for a specific prompt. `userId` is the owner. `promptId` references the parent prompt.  `generatedTextId` is the unique ID of the generated text.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user who owns the prompt."
+            },
+            {
+              "name": "promptId",
+              "description": "The ID of the prompt that generated this text."
+            },
+            {
+              "name": "generatedTextId",
+              "description": "The unique ID of the generated text."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/savedResults/{savedResultId}",
+        "definition": {
+          "entityName": "SavedResult",
+          "schema": {
+            "$ref": "#/backend/entities/SavedResult"
+          },
+          "description": "Stores saved AI-generated texts for a specific user. `userId` is the owner. `savedResultId` is the unique ID of the saved result.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user who saved the result."
+            },
+            {
+              "name": "savedResultId",
+              "description": "The unique ID of the saved result."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to be secure, scalable, and easily debuggable, adhering to the core principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters).  \n\nUsers are stored in a top-level `users` collection.  Each user's prompts and related generated texts and saved results are stored in subcollections under their user document to enforce clear ownership and simplify security rules.  This path-based ownership `/users/{userId}/prompts/{promptId}` makes security rules straightforward (only the user can access their own data), and avoids the need for complex `get()` calls in security rules, ensuring Authorization Independence.\n\n`prompts` are stored in a subcollection under each user, enabling easy retrieval of all prompts for a given user.  Each `prompt` has an associated `generatedText` document in a subcollection, representing the AI-generated output. This nested structure clearly represents the relationship between prompts and generated texts. Saved results are stored in a separate `savedResults` subcollection for each user.\n\nThis structure supports QAPs (Rules are not Filters) by ensuring that listing operations are always scoped to a specific user.  Rules can easily enforce that only the authenticated user can list their own prompts, generated texts, or saved results."
+  }
+}
