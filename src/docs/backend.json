@@ -53,6 +53,6 @@
         "rules": "allow read, write: if request.auth != null && request.auth.uid == userId;"
       }
     ],
-    "reasoning": "The persistent 'Missing or insufficient permissions' error indicates a problem with the security rules. This complete rewrite simplifies the backend definition and enforces the correct, secure rule for user profiles: a user can only read or write to their own document in the 'users' collection. The unused 'messages' collection and its rules have been removed to prevent future conflicts. This directly addresses the error by aligning permissions with the application's functionality."
+    "reasoning": "A fresh backend definition to solve persistent permission errors. This rule ensures that a user can only read or write to their own document in the 'users' collection, which is a secure and standard practice for managing user profiles. All other collections and rules have been removed to ensure a clean state."
   }
 }
