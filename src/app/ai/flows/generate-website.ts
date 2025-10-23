@@ -23,12 +23,12 @@ const GenerateWebsiteOutputSchema = z.object({
 export type GenerateWebsiteOutput = z.infer<typeof GenerateWebsiteOutputSchema>;
 
 export async function generateWebsite(prompt: string): Promise<GenerateWebsiteOutput> {
-  return generateWebsiteFlow(prompt);
+  return await generateWebsiteFlow(prompt);
 }
 
 const generationPrompt = ai.definePrompt({
   name: 'generateWebsitePrompt',
-  model: googleAI.model('gemini-1.5-pro-preview'),
+  model: googleAI.model('gemini-pro'),
   input: { schema: z.string() },
   output: { schema: GenerateWebsiteOutputSchema },
   prompt: `

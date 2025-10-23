@@ -25,12 +25,12 @@ export type DiagnoseWebsiteChangeOutput = z.infer<typeof DiagnoseWebsiteChangeOu
 
 
 export async function diagnoseWebsiteChange(input: DiagnoseWebsiteChangeInput): Promise<DiagnoseWebsiteChangeOutput> {
-  return diagnoseWebsiteChangeFlow(input);
+  return await diagnoseWebsiteChangeFlow(input);
 }
 
 const diagnosisPrompt = ai.definePrompt({
   name: 'diagnoseWebsiteChangePrompt',
-  model: googleAI.model('gemini-1.5-flash-preview'),
+  model: googleAI.model('gemini-pro-vision'),
   input: { schema: DiagnoseWebsiteChangeInputSchema },
   output: { schema: DiagnoseWebsiteChangeOutputSchema },
   prompt: `
