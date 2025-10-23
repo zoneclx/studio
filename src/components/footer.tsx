@@ -42,6 +42,7 @@ const footerNav = [
       items: [
         { title: "Chat", href: "/chat" },
         { title: "Shared Projects", href: "/shared" },
+        { title: "Contact Us", href: "/contact" },
       ],
     },
     {
@@ -103,5 +104,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-    

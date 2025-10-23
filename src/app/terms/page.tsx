@@ -59,6 +59,12 @@ export default function TermsPage() {
                   All matters relating to the Service and these Terms and any dispute or claim arising therefrom or related thereto shall be governed by and construed in accordance with the internal laws of the State of California without giving effect to any choice or conflict of law provision or rule.
                 </p>
               </section>
+               <section>
+                <h2 className="text-xl font-semibold text-foreground mb-2">7. Contact Us</h2>
+                <p>
+                  If you have questions or comments about these Terms of Service, please contact us at: enzogimena.business@gmail.com
+                </p>
+              </section>
             </div>
           </ScrollArea>
         </CardContent>
