@@ -20,6 +20,7 @@ import {
   Eye,
   PlusCircle,
   Terminal,
+  MessageSquare,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -41,6 +42,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
 import { MobileEditorNav } from './mobile-editor-nav';
+import AiChat from './ai-chat';
 
 const defaultFiles = [
   {
@@ -122,7 +124,7 @@ export default function WebEditor() {
   const [newFileName, setNewFileName] = useState('');
   
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
+  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai'>('files');
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
 
@@ -450,6 +452,10 @@ export default function WebEditor() {
         </div>
     </div>
   );
+  
+  const renderAiChatView = () => (
+    <AiChat />
+  );
 
   return (
     <div className="flex h-full flex-col pt-16">
@@ -460,64 +466,65 @@ export default function WebEditor() {
             {mobileView === 'editor' && renderEditorView()}
             {mobileView === 'preview' && renderPreviewView()}
             {mobileView === 'terminal' && renderTerminalView()}
+            {mobileView === 'ai' && renderAiChatView()}
           </div>
         ) : (
-          <ResizablePanelGroup direction="vertical" className="flex-1">
-            <ResizablePanel defaultSize={70}>
-                <ResizablePanelGroup direction="horizontal" className="flex-1">
-                    <ResizablePanel
-                    defaultSize={20}
-                    minSize={15}
-                    className="min-w-[200px] flex flex-col"
+          <ResizablePanelGroup direction="horizontal" className="flex-1">
+            <ResizablePanel
+            defaultSize={15}
+            minSize={10}
+            className="min-w-[200px] flex flex-col"
+            >
+            <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
+                <div className="flex justify-between items-center mb-2 px-2">
+                    <h2 className="text-sm font-semibold">Project Files</h2>
+                    <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <PlusCircle className="w-4 h-4" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create New File</DialogTitle>
+                                <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="filename" className="text-right">Filename</Label>
+                                    <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                                <Button onClick={handleCreateFile}>Create File</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+                <ScrollArea className="flex-1">
+                {files.map((file) => (
+                    <button
+                    key={file.name}
+                    onClick={() => setActiveFile(file.name)}
+                    className={cn(
+                        'w-full text-left text-sm px-2 py-1.5 rounded-md flex items-center gap-2',
+                        activeFile === file.name
+                        ? 'bg-muted'
+                        : 'hover:bg-muted/50'
+                    )}
                     >
-                    <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
-                        <div className="flex justify-between items-center mb-2 px-2">
-                            <h2 className="text-sm font-semibold">Project Files</h2>
-                            <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                                        <PlusCircle className="w-4 h-4" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Create New File</DialogTitle>
-                                        <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="filename" className="text-right">Filename</Label>
-                                            <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
-                                        <Button onClick={handleCreateFile}>Create File</Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                        <ScrollArea className="flex-1">
-                        {files.map((file) => (
-                            <button
-                            key={file.name}
-                            onClick={() => setActiveFile(file.name)}
-                            className={cn(
-                                'w-full text-left text-sm px-2 py-1.5 rounded-md flex items-center gap-2',
-                                activeFile === file.name
-                                ? 'bg-muted'
-                                : 'hover:bg-muted/50'
-                            )}
-                            >
-                            <FileIcon filename={file.name} />
-                            {file.name}
-                            </button>
-                        ))}
-                        </ScrollArea>
-                    </div>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={45}>
+                    <FileIcon filename={file.name} />
+                    {file.name}
+                    </button>
+                ))}
+                </ScrollArea>
+            </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={55}>
+                <ResizablePanelGroup direction="vertical">
+                    <ResizablePanel defaultSize={65}>
                         <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
                             <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
                                 <TabsList className="h-8">
@@ -601,13 +608,28 @@ export default function WebEditor() {
                     </ResizablePanel>
                     <ResizableHandle withHandle />
                     <ResizablePanel defaultSize={35}>
-                        {renderPreviewView()}
+                        <Tabs defaultValue="terminal" className="h-full flex flex-col">
+                            <TabsList className="h-10 rounded-none bg-background/50 border-b p-1">
+                                <TabsTrigger value="terminal" className="h-8">
+                                    <Terminal className="w-4 h-4 mr-2" /> Terminal
+                                </TabsTrigger>
+                                <TabsTrigger value="ai-chat" className="h-8">
+                                    <MessageSquare className="w-4 h-4 mr-2" /> AI Chat
+                                </TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="terminal" className="flex-1 m-0">
+                                {renderTerminalView()}
+                            </TabsContent>
+                            <TabsContent value="ai-chat" className="flex-1 m-0">
+                                {renderAiChatView()}
+                            </TabsContent>
+                        </Tabs>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={30}>
-                {renderTerminalView()}
+                {renderPreviewView()}
             </ResizablePanel>
           </ResizablePanelGroup>
         )}

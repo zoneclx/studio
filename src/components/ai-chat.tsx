@@ -1,617 +1,147 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  File,
-  Play,
-  Save,
-  Share2,
-  FileType2,
-  Palette,
-  Braces,
-  Eye,
-  PlusCircle,
-  Terminal,
-} from 'lucide-react';
-import { Textarea } from './ui/textarea';
-import { Button } from './ui/button';
-import { ScrollArea } from './ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/auth-context';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sparkles, Send, Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from '@/components/ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { MobileNav } from './mobile-nav';
-import { MobileEditorNav } from './mobile-editor-nav';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { cn } from '@/lib/utils';
+import { Badge } from './ui/badge';
+import { Card, CardContent } from './ui/card';
 
-const defaultFiles = [
-  {
-    name: 'index.html',
-    language: 'html',
-    content: `<!DOCTYPE html>
-<html>
-<head>
-  <title>My Awesome Site</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Hello, World!</h1>
-  <p>This is a sample page.</p>
-  <script src="script.js"></script>
-</body>
-</html>`,
-  },
-  {
-    name: 'style.css',
-    language: 'css',
-    content: `body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+interface Message {
+    id: string;
+    text: string;
+    sender: 'user' | 'ai';
+    image?: string;
 }
 
-h1 {
-  color: #007bff;
-}`,
-  },
-  {
-    name: 'script.js',
-    language: 'javascript',
-    content: `console.log('Hello from script.js!');
-console.log('You can see this in the terminal.');`,
-  },
-];
+export default function AiChat() {
+    const { toast } = useToast();
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [input, setInput] = useState('');
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-const fileIcons: { [key: string]: React.ReactNode } = {
-  html: <FileType2 className="w-4 h-4" />,
-  css: <Palette className="w-4 h-4" />,
-  js: <Braces className="w-4 h-4" />,
-  default: <File className="w-4 h-4" />,
-};
-
-const FileIcon = ({ filename }: { filename: string }) => {
-  const extension = filename.split('.').pop() || '';
-  return fileIcons[extension] || fileIcons.default;
-};
-
-interface Project {
-  id: string;
-  name: string;
-  files: { name: string; language: string; content: string }[];
-  timestamp: string;
-}
-
-export default function WebEditor() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const [projectName, setProjectName] = useState('Untitled Project');
-  const [files, setFiles] = useState(defaultFiles);
-  const [activeFile, setActiveFile] = useState(defaultFiles[0].name);
-  const [previewContent, setPreviewContent] = useState('');
-  
-  const [isShareOpen, setShareOpen] = useState(false);
-  const [isSaveOpen, setSaveOpen] = useState(false);
-  const [isNewFileOpen, setNewFileOpen] = useState(false);
-  const [newFileName, setNewFileName] = useState('');
-  
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
-  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
-  const [terminalInput, setTerminalInput] = useState('');
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    const editingId = searchParams.get('edit');
-    if (editingId) {
-      try {
-        const storedProjectsStr = localStorage.getItem(`monostudio-archive-${user.uid}`);
-        if (storedProjectsStr) {
-          const storedProjects: Project[] = JSON.parse(storedProjectsStr);
-          const projectToEdit = storedProjects.find(p => p.id === editingId);
-          if (projectToEdit) {
-            setFiles(projectToEdit.files);
-            setProjectId(projectToEdit.id);
-            setProjectName(projectToEdit.name);
-            setActiveFile(projectToEdit.files[0]?.name || '');
-          }
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                toast({ title: "Image too large", description: "Please upload an image smaller than 2MB.", variant: "destructive" });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
-      } catch (error) {
-        console.error('Failed to load project for editing:', error);
-        toast({ title: "Load Error", description: "Could not load the project.", variant: 'destructive'});
-        router.push('/create');
-      }
-    }
-  }, [searchParams, user, router, toast]);
-
-  const handleFileChange = (fileName: string, newContent: string) => {
-    setFiles(
-      files.map((file) =>
-        file.name === fileName ? { ...file, content: newContent } : file
-      )
-    );
-  };
-  
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.source !== (document.querySelector('iframe')?.contentWindow)) {
-          return;
-      }
-      const { type, message } = event.data;
-      if (type === 'console') {
-        setTerminalOutput(prev => [...prev, message]);
-      }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
+    const handleSendMessage = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!input.trim() && !imagePreview) return;
+
+        const userMessage: Message = { id: Date.now().toString(), text: input, sender: 'user', image: imagePreview || undefined };
+        setMessages(prev => [...prev, userMessage]);
+        setInput('');
+        setImagePreview(null);
+        setIsLoading(true);
+        
+        // Simulate AI response
+        setTimeout(() => {
+            const aiResponse: Message = {
+                id: (Date.now() + 1).toString(),
+                sender: 'ai',
+                text: `This is a simulated AI response to your request: "${input}". Image analysis is also simulated.`
+            };
+            setMessages(prev => [...prev, aiResponse]);
+            setIsLoading(false);
+        }, 1500);
     };
-  }, []);
 
-  const runPreview = () => {
-    const htmlFile = files.find((f) => f.name.endsWith('.html'));
-    const cssFile = files.find((f) => f.name.endsWith('.css'));
-    const jsFile = files.find((f) => f.name.endsWith('.js'));
 
-    if (!htmlFile || !htmlFile.content) {
-      setPreviewContent(
-        '<html><body>No HTML file found. Create an index.html to see a preview.</body></html>'
-      );
-      return;
-    }
-
-    const consoleInterceptor = `
-      <script>
-        const originalLog = console.log;
-        console.log = (...args) => {
-          originalLog(...args);
-          window.parent.postMessage({ type: 'console', message: args.map(arg => JSON.stringify(arg)).join(' ') }, '*');
-        };
-      </script>
-    `;
-
-    let processedHtml = htmlFile.content.replace('</head>', `${consoleInterceptor}</head>`);
-
-    if (cssFile) {
-      processedHtml = processedHtml.replace(
-        '</head>',
-        `<style>${cssFile.content}</style></head>`
-      );
-    }
-    if (jsFile) {
-      processedHtml = processedHtml.replace(
-        '</body>',
-        `<script>${jsFile.content}<\/script></body>`
-      );
-    }
-
-    setPreviewContent(processedHtml);
-  };
-
-  useEffect(() => {
-    runPreview();
-  }, [files]);
-
-  const saveWork = () => {
-    if (!user) {
-      toast({
-        title: 'Please log in',
-        description: 'You need to be logged in to save your work.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    if (!projectName.trim()) {
-        toast({ title: 'Project Name Required', description: 'Please enter a name for your project.', variant: 'destructive'});
-        return;
-    }
-
-    try {
-      const storageKey = `monostudio-archive-${user.uid}`;
-      const storedProjectsStr = localStorage.getItem(storageKey);
-      const projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
-      
-      const newTimestamp = new Date().toISOString();
-
-      if (projectId) { // Updating existing project
-        const projectIndex = projects.findIndex(p => p.id === projectId);
-        if (projectIndex !== -1) {
-          projects[projectIndex] = { ...projects[projectIndex], name: projectName, files, timestamp: newTimestamp };
-        }
-      } else { // Saving new project
-        const newProjectId = `proj-${Date.now()}`;
-        const newProject: Project = {
-          id: newProjectId,
-          name: projectName,
-          files,
-          timestamp: newTimestamp
-        };
-        projects.push(newProject);
-        setProjectId(newProjectId);
-      }
-
-      localStorage.setItem(storageKey, JSON.stringify(projects));
-      toast({
-        title: 'Project Saved!',
-        description: `${projectName} has been saved.`,
-      });
-      setSaveOpen(false);
-    } catch (error) {
-      toast({
-        title: 'Save Failed',
-        description: 'Could not save your work. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleShare = () => {
-    toast({
-        title: "Project Shared!",
-        description: "Your project has been shared successfully (simulation)."
-    });
-    setShareOpen(false);
-  }
-
-  const handleCreateFile = () => {
-    if (!newFileName || !newFileName.includes('.')) {
-        toast({ title: 'Invalid Filename', description: 'Please enter a valid filename with an extension (e.g., "new.js").', variant: 'destructive' });
-        return;
-    }
-    if (files.some(f => f.name === newFileName)) {
-        toast({ title: 'File Exists', description: 'A file with this name already exists.', variant: 'destructive' });
-        return;
-    }
-
-    const extension = newFileName.split('.').pop() || '';
-    const language = ['html', 'css', 'js'].includes(extension) ? extension : 'plaintext';
-    
-    let content = '';
-    if (language === 'html') content = '<!DOCTYPE html>\\n<html>\\n<head>\\n  <title>New Page</title>\\n</head>\\n<body>\\n\\n</body>\\n</html>';
-    if (language === 'css') content = '/* New CSS File */';
-    if (language === 'js') content = '// New JavaScript File';
-    
-    const newFile = { name: newFileName, language, content };
-    setFiles([...files, newFile]);
-    setActiveFile(newFileName);
-    setNewFileName('');
-    setNewFileOpen(false);
-    toast({ title: 'File Created', description: `Successfully created ${newFileName}.` });
-  };
-
-  const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const command = terminalInput.trim();
-      const newOutput = [...terminalOutput, `> ${command}`];
-      
-      if (command.toLowerCase() === 'clear') {
-        setTerminalOutput(['> Terminal cleared.']);
-      } else if (command) {
-        newOutput.push(`-bash: command not found: ${command}`);
-        setTerminalOutput(newOutput);
-      } else {
-        setTerminalOutput(newOutput);
-      }
-      
-      setTerminalInput('');
-    }
-  };
-
-  const currentFile = useMemo(
-    () => files.find((f) => f.name === activeFile),
-    [files, activeFile]
-  );
-  
-  const handleSaveClick = () => {
-    if (!user) {
-       toast({ title: 'Login Required', description: 'Please log in to save your project.', variant: 'destructive' });
-       return;
-    }
-    setSaveOpen(true);
-  }
-  
-  const editorActions = { runPreview, saveWork: handleSaveClick, handleShare: () => setShareOpen(true) };
-  
-  const handleSelectFileMobile = (fileName: string) => {
-    setActiveFile(fileName);
-    setMobileView('editor');
-  };
-
-  const renderFilesView = () => (
-    <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
-        <div className="flex justify-between items-center mb-2 px-2 pt-2">
-            <h2 className="text-lg font-semibold">Project Files</h2>
-            <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <PlusCircle className="w-5 h-5" />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Create New File</DialogTitle>
-                        <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="filename" className="text-right">Filename</Label>
-                            <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
-                        <Button onClick={handleCreateFile}>Create File</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
-        <ScrollArea className="flex-1">
-          {files.map((file) => (
-            <button
-              key={file.name}
-              onClick={() => handleSelectFileMobile(file.name)}
-              className={cn(
-                'w-full text-left text-base p-3 rounded-md flex items-center gap-3',
-                 activeFile === file.name
-                  ? 'bg-muted'
-                  : 'hover:bg-muted/50'
-              )}
-            >
-              <FileIcon filename={file.name} />
-              {file.name}
-            </button>
-          ))}
-        </ScrollArea>
-    </div>
-  );
-
-  const renderEditorView = () => (
-    <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
-        <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
-            <h2 className="font-semibold flex items-center gap-2">
-                <FileIcon filename={activeFile} />
-                {activeFile}
-            </h2>
-            <div className="lg:hidden">
-                <MobileNav actions={editorActions} />
-            </div>
-        </header>
-        <TabsContent value={activeFile} className="flex-1 p-0 m-0">
-            <Textarea
-                value={currentFile?.content || ''}
-                onChange={(e) => handleFileChange(activeFile, e.target.value)}
-                placeholder="Start coding..."
-                className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
-            />
-        </TabsContent>
-    </Tabs>
-  );
-
-  const renderPreviewView = () => (
-      <iframe
-        srcDoc={previewContent}
-        title="Preview"
-        sandbox="allow-scripts allow-same-origin"
-        className="w-full h-full bg-white border-none"
-      />
-  );
-  
-  const renderTerminalView = () => (
-     <div className="h-full flex-1 flex flex-col bg-black text-white font-mono text-sm">
-        <ScrollArea className="flex-1 p-4">
-            {terminalOutput.map((line, index) => (
-                <p key={index} className="whitespace-pre-wrap">{line}</p>
-            ))}
-        </ScrollArea>
-        <div className="flex items-center gap-2 p-2 border-t border-gray-700">
-            <span>></span>
-            <Input 
-                type="text"
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
-                onKeyDown={handleTerminalCommand}
-                className="bg-transparent border-none text-white w-full p-0 h-auto focus-visible:ring-0"
-                placeholder="Type a command..."
-            />
-        </div>
-    </div>
-  );
-
-  return (
-    <div className="flex h-full flex-col pt-16">
-      <div className='flex-1 flex flex-col min-h-0'>
-        {isMobile ? (
-          <div className="flex-1 pb-14">
-            {mobileView === 'files' && renderFilesView()}
-            {mobileView === 'editor' && renderEditorView()}
-            {mobileView === 'preview' && renderPreviewView()}
-            {mobileView === 'terminal' && renderTerminalView()}
-          </div>
-        ) : (
-          <ResizablePanelGroup direction="vertical" className="flex-1">
-            <ResizablePanel defaultSize={70}>
-                <ResizablePanelGroup direction="horizontal" className="flex-1">
-                    <ResizablePanel
-                    defaultSize={20}
-                    minSize={15}
-                    className="min-w-[200px] flex flex-col"
-                    >
-                    <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
-                        <div className="flex justify-between items-center mb-2 px-2">
-                            <h2 className="text-sm font-semibold">Project Files</h2>
-                            <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                                        <PlusCircle className="w-4 h-4" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Create New File</DialogTitle>
-                                        <DialogDescription>Enter a name for your new file, including the extension (e.g., .html, .css, .js).</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="filename" className="text-right">Filename</Label>
-                                            <Input id="filename" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} className="col-span-3" placeholder="e.g., contact.html" />
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
-                                        <Button onClick={handleCreateFile}>Create File</Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                        <ScrollArea className="flex-1">
-                        {files.map((file) => (
-                            <button
-                            key={file.name}
-                            onClick={() => setActiveFile(file.name)}
-                            className={cn(
-                                'w-full text-left text-sm px-2 py-1.5 rounded-md flex items-center gap-2',
-                                activeFile === file.name
-                                ? 'bg-muted'
-                                : 'hover:bg-muted/50'
-                            )}
-                            >
-                            <FileIcon filename={file.name} />
-                            {file.name}
-                            </button>
+    return (
+        <div className="flex flex-col h-full bg-background">
+            <header className="flex items-center gap-2 p-3 border-b">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <h2 className="text-lg font-semibold">AI Assistant</h2>
+                <Badge variant="outline">Beta</Badge>
+            </header>
+            <CardContent className="flex-1 p-0 flex flex-col">
+                <ScrollArea className="flex-1 p-4">
+                    <div className="space-y-6">
+                        {messages.length === 0 && (
+                            <div className="text-center text-muted-foreground py-8">
+                                <p>Ask me to make changes to your code!</p>
+                                <p className="text-xs">e.g., "Change the background to dark blue"</p>
+                            </div>
+                        )}
+                        {messages.map(msg => (
+                            <div key={msg.id} className={cn("flex items-start gap-3", msg.sender === 'user' ? 'flex-row-reverse' : '')}>
+                                <Avatar className="w-8 h-8">
+                                    <AvatarImage src={msg.sender === 'ai' ? 'https://i.ibb.co/3k5mR5c/ezgif-com-webp-to-jpg-2.jpg' : undefined} />
+                                    <AvatarFallback>{msg.sender === 'ai' ? 'AI' : 'U'}</AvatarFallback>
+                                </Avatar>
+                                <div className={cn("rounded-lg p-3 max-w-xs md:max-w-sm break-words", msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
+                                    {msg.image && <img src={msg.image} alt="uploaded content" className="rounded-md mb-2" />}
+                                    <p className="text-sm">{msg.text}</p>
+                                </div>
+                            </div>
                         ))}
-                        </ScrollArea>
+                         {isLoading && (
+                            <div className="flex items-start gap-3">
+                                <Avatar className="w-8 h-8">
+                                    <AvatarFallback>AI</AvatarFallback>
+                                </Avatar>
+                                <div className="rounded-lg p-3 bg-muted">
+                                    <p className="text-sm animate-pulse">Thinking...</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={45}>
-                        <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
-                            <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
-                                <TabsList className="h-8">
-                                {files.map((file) => (
-                                    <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
-                                    <FileIcon filename={file.name} /> 
-                                    <span className="hidden sm:inline">{file.name}</span>
-                                    </TabsTrigger>
-                                ))}
-                                </TabsList>
-                                <div className="hidden lg:flex items-center gap-2">
-                                <Button variant="ghost" size="sm" onClick={runPreview}>
-                                    <Play className="w-4 h-4 mr-2" /> Run
+                </ScrollArea>
+                <div className="p-3 border-t bg-background">
+                    <form onSubmit={handleSendMessage} className="relative">
+                        {imagePreview && (
+                            <div className="relative mb-2 w-20 h-20">
+                                <img src={imagePreview} alt="upload preview" className="w-full h-full object-cover rounded-md" />
+                                <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => setImagePreview(null)}>
+                                    <X className="w-4 h-4" />
                                 </Button>
-                                 <Dialog open={isSaveOpen} onOpenChange={setSaveOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="ghost" size="sm" onClick={handleSaveClick}>
-                                            <Save className="w-4 h-4 mr-2" /> Save
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Save Project</DialogTitle>
-                                            <DialogDescription>
-                                                Give your project a name. This will create a new project or update the existing one.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="project-name" className="text-right">
-                                                Project Name
-                                                </Label>
-                                                <Input id="project-name" value={projectName} onChange={e => setProjectName(e.target.value)} className="col-span-3" />
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button type="submit" onClick={saveWork}>Save Project</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                                <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm">
-                                            <Share2 className="w-4 h-4 mr-2" /> Share
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Share Project</DialogTitle>
-                                            <DialogDescription>
-                                                Enter the email of the person you want to share this project with.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="email" className="text-right">
-                                                Email
-                                                </Label>
-                                                <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button type="submit" onClick={handleShare}>Share</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                                </div>
-                                 <div className="lg:hidden">
-                                    <MobileNav actions={editorActions} />
-                                </div>
-                            </header>
-                            <TabsContent value={activeFile} className="flex-1 p-0 m-0">
-                                <Textarea
-                                    value={currentFile?.content || ''}
-                                    onChange={(e) => handleFileChange(activeFile, e.target.value)}
-                                    placeholder="Start coding..."
-                                    className="w-full h-full resize-none border-0 rounded-none font-mono text-sm bg-transparent focus-visible:ring-0"
-                                />
-                            </TabsContent>
-                        </Tabs>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={35}>
-                        {renderPreviewView()}
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={30}>
-                {renderTerminalView()}
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        )}
-      </div>
-      {isMobile && <MobileEditorNav activeView={mobileView} setView={setMobileView} />}
-    </div>
-  );
+                            </div>
+                        )}
+                        <Textarea
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Describe a change or ask a question..."
+                            className="pr-20"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSendMessage(e);
+                                }
+                            }}
+                        />
+                        <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                             <label htmlFor="image-upload" className="cursor-pointer">
+                                <Button size="icon" variant="ghost" asChild>
+                                    <div>
+                                        <Upload className="w-5 h-5" />
+                                        <input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                                    </div>
+                                </Button>
+                            </label>
+                            <Button type="submit" size="icon" disabled={isLoading || (!input.trim() && !imagePreview)}>
+                                <Send className="w-5 h-5" />
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            </CardContent>
+        </div>
+    );
 }
