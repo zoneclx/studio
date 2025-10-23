@@ -11,9 +11,7 @@ if (GENKIT_ENV === 'dev') {
   if (!(global as any).__aiInstance) {
     (global as any).__aiInstance = genkit({
       plugins: [
-        googleAI({
-          apiVersion: 'v1beta',
-        }),
+        googleAI(),
       ],
       logLevel: 'debug',
       enableTracingAndMetrics: true,
@@ -24,9 +22,7 @@ if (GENKIT_ENV === 'dev') {
   // In production, create a new instance
   aiInstance = genkit({
     plugins: [
-      googleAI({
-        apiVersion: 'v1beta',
-      }),
+      googleAI(),
     ],
   });
 }
