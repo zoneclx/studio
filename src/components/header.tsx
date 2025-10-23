@@ -83,7 +83,6 @@ export default function Header() {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || ''} />
                     <AvatarFallback>
                       <UserIcon className="w-5 h-5" />
                     </AvatarFallback>

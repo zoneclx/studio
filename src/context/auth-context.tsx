@@ -15,7 +15,7 @@ interface AuthContextType {
   signIn: (email: string, pass: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, pass: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
+  updateProfile: (details: { name?: string }) => Promise<void>;
   changePassword: (currentPass: string, newPass: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
@@ -49,25 +49,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         profileUpdateNeeded = true;
       }
       
+      const firestorePayload: any = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || profileData.displayName,
+        displayName_lowercase: (user.displayName || profileData.displayName).toLowerCase(),
+      };
+
       if (profileUpdateNeeded) {
         // This is a non-blocking call to update both Auth and Firestore
         firebaseUpdateProfile(user, { displayName: profileData.displayName });
-        setDocumentNonBlocking(userDocRef, { 
-            uid: user.uid,
-            email: user.email,
-            displayName: profileData.displayName,
-            displayName_lowercase: profileData.displayName_lowercase,
-            photoURL: user.photoURL 
-        }, { merge: true });
+        setDocumentNonBlocking(userDocRef, firestorePayload, { merge: true });
       } else {
         // Just update firestore, non-blocking
-        setDocumentNonBlocking(userDocRef, { 
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            displayName_lowercase: user.displayName?.toLowerCase(),
-            photoURL: user.photoURL 
-        }, { merge: true });
+        setDocumentNonBlocking(userDocRef, firestorePayload, { merge: true });
       }
     }
   }, [user, isUserLoading, firestore]);
@@ -100,11 +95,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return !querySnapshot.empty;
   };
 
-  const updateProfile = async (details: { name?: string; avatar?: string }) => {
+  const updateProfile = async (details: { name?: string }) => {
     if (!user) throw new Error("Not authenticated");
 
-    const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
-    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string; photoURL?: string } = {};
+    const authUpdatePayload: { displayName?: string } = {};
+    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string } = {};
 
     if (details.name && details.name !== user.displayName) {
       const isTaken = await isUsernameTaken(details.name);
@@ -119,11 +114,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       authUpdatePayload.displayName = details.name;
       firestoreUpdatePayload.displayName = details.name;
       firestoreUpdatePayload.displayName_lowercase = details.name.toLowerCase();
-    }
-    
-    if (details.avatar) {
-      authUpdatePayload.photoURL = details.avatar;
-      firestoreUpdatePayload.photoURL = details.avatar;
     }
 
     if (Object.keys(authUpdatePayload).length > 0) {

@@ -9,54 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Edit, KeyRound, ShieldCheck, ShieldAlert, MailWarning } from 'lucide-react';
+import { User, KeyRound, ShieldCheck, ShieldAlert, MailWarning } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-
-const MAX_AVATAR_SIZE = 512; // Max width/height in pixels
-
-// Function to resize image on the client-side
-const resizeImage = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let { width, height } = img;
-
-        if (width > height) {
-          if (width > MAX_AVATAR_SIZE) {
-            height *= MAX_AVATAR_SIZE / width;
-            width = MAX_AVATAR_SIZE;
-          }
-        } else {
-          if (height > MAX_AVATAR_SIZE) {
-            width *= MAX_AVATAR_SIZE / height;
-            height = MAX_AVATAR_SIZE;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          return reject(new Error('Could not get canvas context'));
-        }
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg')); // Use JPEG for better compression
-      };
-      img.onerror = (error) => reject(error);
-    };
-    reader.onerror = (error) => reject(error);
-  });
-};
-
 
 export default function ProfilePage() {
   const { user, loading, updateProfile, changePassword, sendVerificationEmail } = useAuth();
@@ -64,9 +22,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
 
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -80,32 +36,14 @@ export default function ProfilePage() {
     }
     if (user) {
       setName(user.displayName || '');
-      setAvatar(user.photoURL || '');
     }
   }, [user, loading, router]);
-
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      try {
-        const resizedImageDataUrl = await resizeImage(file);
-        setAvatar(resizedImageDataUrl);
-      } catch (error) {
-        console.error("Image resizing failed:", error);
-        toast({
-          title: 'Image Processing Failed',
-          description: 'Could not process the selected image. Please try another one.',
-          variant: 'destructive',
-        });
-      }
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await updateProfile({ name, avatar });
+      await updateProfile({ name });
       toast({
         title: 'Profile Updated',
         description: 'Your changes have been saved successfully.',
@@ -207,31 +145,8 @@ export default function ProfilePage() {
         <div className="space-y-8">
           <form onSubmit={handleSubmit} className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <Card>
-              <CardHeader className="items-center">
-                <div className="relative">
-                  <Avatar className="w-24 h-24">
-                    <AvatarImage src={avatar} alt={name} />
-                    <AvatarFallback>
-                      <User className="w-12 h-12" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="absolute bottom-0 right-0 rounded-full h-8 w-8"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleAvatarChange}
-                    className="hidden"
-                    accept="image/jpeg,image/png,image/webp"
-                  />
-                </div>
+              <CardHeader>
+                  <CardTitle>Account Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
