@@ -1,12 +1,11 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 type HackerEffectProps = {
   texts: string[];
-  iterations?: number;
   delay?: number;
   className?: string;
 };
@@ -19,52 +18,65 @@ export default function HackerEffect({
   className,
 }: HackerEffectProps) {
   const [textIndex, setTextIndex] = useState(0);
-  const [revealedText, setRevealedText] = useState('');
-  const [scrambledChar, setScrambledChar] = useState('');
+  const [displayedText, setDisplayedText] = useState('');
+  const [isAnimating, setIsAnimating] = useState(true);
   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const targetText = texts[textIndex];
     let currentIndex = 0;
-    let scrambleCount = 0;
 
-    const animate = () => {
-      if (currentIndex < targetText.length) {
-        if (scrambleCount < 3) { // Scramble 3 times
-          setScrambledChar(characters[Math.floor(Math.random() * characters.length)]);
-          scrambleCount++;
-          timeoutRef.current = setTimeout(animate, 50);
-        } else {
-          setRevealedText(prev => prev + targetText[currentIndex]);
-          setScrambledChar('');
-          currentIndex++;
-          scrambleCount = 0;
-          timeoutRef.current = setTimeout(animate, 30);
-        }
-      } else {
-        // Finished typing the text, wait for delay then switch to next text
+    const animateChar = () => {
+      if (currentIndex >= targetText.length) {
+        // Animation for the current text is complete
+        setIsAnimating(false);
+        // Wait for the delay, then switch to the next text
         timeoutRef.current = setTimeout(() => {
-          setRevealedText('');
           setTextIndex(prev => (prev + 1) % texts.length);
+          setDisplayedText('');
+          setIsAnimating(true);
         }, delay);
+        return;
       }
+      
+      // Start scrambling the current character
+      let scrambleCount = 0;
+      const maxScrambles = 3;
+      
+      const scrambleInterval = setInterval(() => {
+        if (scrambleCount >= maxScrambles) {
+          clearInterval(scrambleInterval);
+          // Reveal the correct character
+          setDisplayedText(prev => prev + targetText[currentIndex]);
+          currentIndex++;
+          // Move to the next character
+          animateChar();
+        } else {
+          // Show a random character
+          const randomChar = characters[Math.floor(Math.random() * characters.length)];
+          setDisplayedText(prev => prev.slice(0, currentIndex) + randomChar);
+          scrambleCount++;
+        }
+      }, 50);
     };
 
-    animate();
+    if (isAnimating) {
+      animateChar();
+    }
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [textIndex, texts, delay]);
+  }, [textIndex, texts, delay, isAnimating]);
 
 
   return (
-    <h2 className={cn('font-mono', className)}>
-      <span className="text-foreground">{revealedText}</span>
-      <span className="text-primary">{scrambledChar}</span>
+    <h2 className={cn('font-mono break-words', className)}>
+      <span className="text-foreground">{displayedText.slice(0,-1)}</span>
+      <span className="text-primary">{displayedText.slice(-1)}</span>
     </h2>
   );
 }
+
+    
