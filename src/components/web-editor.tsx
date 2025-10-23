@@ -128,7 +128,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
   const [newFileName, setNewFileName] = useState('');
   
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
+  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'ai-chat'>('files');
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
 
@@ -457,6 +457,12 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
         </div>
     </div>
   );
+
+  const renderAiChatView = () => (
+    <div className="h-full">
+        <AiChat />
+    </div>
+  );
   
   return (
     <div className="flex h-full flex-col pt-16">
@@ -466,7 +472,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
             {mobileView === 'files' && renderFilesView()}
             {mobileView === 'editor' && renderEditorView()}
             {mobileView === 'preview' && renderPreviewView()}
-            {mobileView === 'terminal' && renderTerminalView()}
+            {mobileView === 'ai-chat' && renderAiChatView()}
           </div>
         ) : (
           <ResizablePanelGroup direction="horizontal" className="flex-1">
@@ -608,22 +614,28 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
                     </ResizablePanel>
                     <ResizableHandle withHandle />
                     <ResizablePanel defaultSize={35}>
-                        <Tabs defaultValue="terminal" className="h-full flex flex-col">
-                            <TabsList className="h-10 rounded-none bg-background/50 border-b p-1">
-                                <TabsTrigger value="terminal" className="h-8">
-                                    <Terminal className="w-4 h-4 mr-2" /> Terminal
-                                </TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="terminal" className="flex-1 m-0">
-                                {renderTerminalView()}
-                            </TabsContent>
-                        </Tabs>
+                        {renderTerminalView()}
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={30}>
-                {renderPreviewView()}
+                 <Tabs defaultValue="preview" className="h-full flex flex-col">
+                    <TabsList className="h-10 rounded-none bg-background/50 border-b p-1">
+                        <TabsTrigger value="preview" className="h-8">
+                            <Eye className="w-4 h-4 mr-2" /> Preview
+                        </TabsTrigger>
+                        <TabsTrigger value="ai-chat" className="h-8">
+                            <MessageSquare className="w-4 h-4 mr-2" /> AI Chat
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="preview" className="flex-1 m-0">
+                        {renderPreviewView()}
+                    </TabsContent>
+                    <TabsContent value="ai-chat" className="flex-1 m-0">
+                       {renderAiChatView()}
+                    </TabsContent>
+                </Tabs>
             </ResizablePanel>
           </ResizablePanelGroup>
         )}

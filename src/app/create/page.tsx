@@ -1,18 +1,11 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import WebEditor from '@/components/web-editor';
-import WebBuilder from '@/components/web-builder';
-
-interface WebFile {
-    name: string;
-    language: string;
-    content: string;
-}
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
