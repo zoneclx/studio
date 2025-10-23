@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,59 +16,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Sparkles, CheckCircle, Mail } from 'lucide-react';
+import { Sparkles, CheckCircle, Mail, ArrowLeft } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1: enter email, 2: email sent, 3: reset password, 4: success
+  const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
   const { forgotPassword } = useAuth();
-  const router = useRouter();
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // In a real app, this would trigger an email.
-      // For simulation, we check if user exists and move to next step.
-      const users = JSON.parse(localStorage.getItem('monochrome-auth-users') || '[]');
-      const userExists = users.some((u: any) => u.email === email);
-      if (!userExists) {
-        throw new Error("No account found with this email.");
-      }
-      setStep(2);
+      await forgotPassword(email);
+      setEmailSent(true);
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast({ title: 'Error', description: "Passwords don't match.", variant: 'destructive' });
-      return;
-    }
-    setLoading(true);
-    try {
-      await forgotPassword(email, newPassword);
-      toast({
-        title: 'Success!',
-        description: 'Your password has been reset.',
-      });
-      setStep(4);
-    } catch (error: any) {
-      toast({
-        title: 'Reset Failed',
-        description: error.message,
+        description: error.message || "Failed to send password reset email.",
         variant: 'destructive',
       });
     } finally {
@@ -78,15 +43,24 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <div className="w-full max-w-sm mb-4">
+            <Link
+                href="/"
+                className="inline-flex items-center text-muted-foreground hover:text-foreground"
+            >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+            </Link>
+        </div>
       <Card className="w-full max-w-sm border-border/50 bg-card">
-        {step === 1 && (
+        {!emailSent ? (
           <form onSubmit={handleEmailSubmit}>
             <CardHeader>
               <CardTitle className="text-2xl font-display flex items-center gap-2">
                 <Link href="/" className="flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-primary" />
-                  Mono Studio
+                  Forgot Password
                 </Link>
               </CardTitle>
               <CardDescription>
@@ -104,6 +78,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-background"
+                  disabled={loading}
                 />
               </div>
             </CardContent>
@@ -119,52 +94,17 @@ export default function ForgotPasswordPage() {
               </div>
             </CardFooter>
           </form>
-        )}
-        {step === 2 && (
+        ) : (
             <>
                 <CardHeader className="items-center text-center">
                     <Mail className="w-16 h-16 text-primary mb-4" />
                     <CardTitle>Check Your Email</CardTitle>
-                    <CardDescription>A password reset link has been sent to {email}. (This is a simulation).</CardDescription>
+                    <CardDescription>A password reset link has been sent to {email}. Please check your inbox and spam folder.</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex-col gap-4">
-                    <Button className="w-full" onClick={() => setStep(3)}>Reset Password (from simulated email)</Button>
-                    <Button variant="ghost" className="w-full" onClick={() => setStep(1)}>Back</Button>
-                </CardFooter>
-            </>
-        )}
-        {step === 3 && (
-          <form onSubmit={handlePasswordReset}>
-            <CardHeader>
-              <CardTitle>Reset Password</CardTitle>
-              <CardDescription>Enter your new password for {email}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Resetting...' : 'Reset Password'}
-              </Button>
-            </CardFooter>
-          </form>
-        )}
-        {step === 4 && (
-            <>
-                <CardHeader className="items-center text-center">
-                    <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-                    <CardTitle>Password Reset!</CardTitle>
-                    <CardDescription>Your password has been successfully updated.</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                    <Button className="w-full" onClick={() => router.push('/login')}>Return to Login</Button>
+                    <Link href="/login" className="w-full">
+                      <Button className="w-full">Return to Login</Button>
+                    </Link>
                 </CardFooter>
             </>
         )}

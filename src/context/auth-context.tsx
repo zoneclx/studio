@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, signOut as firebaseSignOut } from 'firebase/auth';
+import { User, signOut as firebaseSignOut, sendPasswordResetEmail } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser } from '@/firebase/provider';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 
@@ -15,7 +15,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   updateProfile: (details: { name?: string; avatar?: string }) => Promise<void>;
   changePassword: (currentPass: string, newPass: string) => Promise<void>;
-  forgotPassword: (email: string, newPass: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,9 +51,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // This will be replaced with Firebase Auth logic
   };
   
-  const forgotPassword = async (email: string, newPass: string) => {
-      console.log('forgotPassword not implemented with Firebase yet');
-    // This will be replaced with Firebase Auth logic
+  const forgotPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
   };
 
   const value = {
