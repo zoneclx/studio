@@ -48,7 +48,7 @@ const Logo = () => {
         return (
             <div className="flex items-center gap-2">
                 <Terminal className="w-6 h-6 text-primary" />
-                <span className="text-xl font-bold font-display">Mono Code</span>
+                <span className="text-xl font-bold font-display">Mono Studio</span>
             </div>
         );
     }
