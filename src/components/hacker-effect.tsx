@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 type HackerEffectProps = {
@@ -21,13 +21,16 @@ export default function HackerEffect({
 }: HackerEffectProps) {
   const [textIndex, setTextIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState(texts[0]);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const scramble = useCallback((targetText: string) => {
-    setIsAnimating(true);
     let iteration = 0;
 
-    const interval = setInterval(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(() => {
       const newText = targetText
         .split('')
         .map((_, index) => {
@@ -41,27 +44,30 @@ export default function HackerEffect({
       setDisplayedText(newText);
 
       if (iteration >= targetText.length) {
-        clearInterval(interval);
-        setIsAnimating(false);
+        if (intervalRef.current) clearInterval(intervalRef.current);
       }
 
       iteration += 1 / (iterations / 2);
     }, 30);
-
-    return () => clearInterval(interval);
   }, [iterations]);
 
   useEffect(() => {
-    if (isAnimating) return;
+    scramble(texts[textIndex]);
 
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [textIndex, texts, scramble]);
+
+  useEffect(() => {
     const timeout = setTimeout(() => {
-      const nextIndex = (textIndex + 1) % texts.length;
-      setTextIndex(nextIndex);
-      scramble(texts[nextIndex]);
+        setTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [textIndex, texts, delay, isAnimating, scramble]);
+  }, [displayedText, texts.length, delay]);
 
   return (
     <h2 className={cn('font-mono', className)}>
