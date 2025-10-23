@@ -36,11 +36,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const router = useRouter();
 
   const updateUserProfile = useCallback(async (userToUpdate: User, profileData: any) => {
-    // Update Firebase Auth profile
-    await firebaseUpdateProfile(userToUpdate, {
-      displayName: profileData.displayName,
-      photoURL: profileData.photoURL,
-    });
+    // Prepare updates for Firebase Auth profile
+    const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
+    if (profileData.displayName) {
+        authUpdatePayload.displayName = profileData.displayName;
+    }
+    if (profileData.photoURL) {
+        authUpdatePayload.photoURL = profileData.photoURL;
+    }
+
+    // Update Firebase Auth profile if there's anything to update
+    if (Object.keys(authUpdatePayload).length > 0) {
+        await firebaseUpdateProfile(userToUpdate, authUpdatePayload);
+    }
+    
     // Update Firestore document
     const userDocRef = doc(firestore, 'users', userToUpdate.uid);
     setDocumentNonBlocking(userDocRef, profileData, { merge: true });
@@ -49,7 +58,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     if (user && !isUserLoading) {
       let profileUpdateNeeded = false;
-      let profileData = {
+      let profileData: any = {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
@@ -93,11 +102,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
     if (!user) throw new Error("Not authenticated");
-    await updateUserProfile(user, {
-        displayName: details.name,
-        photoURL: details.avatar,
-        displayName_lowercase: details.name?.toLowerCase(),
-    });
+
+    const updatePayload: { displayName?: string; displayName_lowercase?: string; photoURL?: string } = {};
+
+    if (details.name) {
+      updatePayload.displayName = details.name;
+      updatePayload.displayName_lowercase = details.name.toLowerCase();
+    }
+    if (details.avatar) {
+      updatePayload.photoURL = details.avatar;
+    }
+
+    await updateUserProfile(user, updatePayload);
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
