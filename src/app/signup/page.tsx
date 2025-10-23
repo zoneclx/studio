@@ -100,17 +100,6 @@ export default function SignupPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
-            <div className="relative my-2">
-                <Separator />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 bg-card">
-                    <span className="text-xs text-muted-foreground">OR</span>
-                </div>
-            </div>
-            <Link href="/mono-login" className='w-full'>
-                <Button variant="outline" className="w-full" type="button">
-                    Sign in with Firebase
-                </Button>
-            </Link>
           </CardContent>
           <CardFooter className="flex-col items-center">
             <div className="text-center text-sm">

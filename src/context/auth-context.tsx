@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
@@ -21,38 +21,69 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper function to generate a random username
+const generateRandomUsername = () => {
+    const adjectives = ["Creative", "Cyber", "Quantum", "Nano", "Digital", "Glitch", "Byte", "Data", "Logic", "Pixel"];
+    const nouns = ["Wizard", "Ninja", "Hacker", "Explorer", "Pioneer", "Jedi", "Phantom", "Surfer", "Golem", "Matrix"];
+    const randomNumber = Math.floor(Math.random() * 900) + 100;
+    return `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${randomNumber}`;
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user, isUserLoading } = useUser();
   const auth = useFirebaseAuth();
   const firestore = useFirestore();
   const router = useRouter();
+
+  const updateUserProfile = useCallback(async (userToUpdate: User, profileData: any) => {
+    // Update Firebase Auth profile
+    await firebaseUpdateProfile(userToUpdate, {
+      displayName: profileData.displayName,
+      photoURL: profileData.photoURL,
+    });
+    // Update Firestore document
+    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
+    setDocumentNonBlocking(userDocRef, profileData, { merge: true });
+  }, [firestore]);
   
   useEffect(() => {
-    if (user) {
-      // When user object is available, create/update their profile in Firestore.
-      // This is a non-blocking operation.
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const profileData = {
+    if (user && !isUserLoading) {
+      let profileUpdateNeeded = false;
+      let profileData = {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         displayName_lowercase: user.displayName?.toLowerCase(),
         photoURL: user.photoURL,
       };
-      setDocumentNonBlocking(userDocRef, profileData, { merge: true });
+
+      if (!user.displayName) {
+        profileData.displayName = generateRandomUsername();
+        profileData.displayName_lowercase = profileData.displayName.toLowerCase();
+        profileUpdateNeeded = true;
+      }
+      
+      const userDocRef = doc(firestore, 'users', user.uid);
+      if (profileUpdateNeeded) {
+        // This is a non-blocking call to update both Auth and Firestore
+        updateUserProfile(user, profileData);
+      } else {
+        // Just update firestore, non-blocking
+        setDocumentNonBlocking(userDocRef, profileData, { merge: true });
+      }
     }
-  }, [user, firestore]);
+  }, [user, isUserLoading, firestore, updateUserProfile]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
     await setPersistence(auth, persistence);
     initiateEmailSignIn(auth, email, pass);
-    router.push('/dashboard');
+    // Let the onAuthStateChanged handle the redirect via the user/loading state in pages.
   };
 
   const signUp = async (email: string, pass: string) => {
     initiateEmailSignUp(auth, email, pass);
-    router.push('/dashboard');
+    // Let the onAuthStateChanged handle the redirect.
   };
 
   const signOut = async () => {
@@ -62,11 +93,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
     if (!user) throw new Error("Not authenticated");
-    await firebaseUpdateProfile(user, {
-      displayName: details.name,
-      photoURL: details.avatar,
+    await updateUserProfile(user, {
+        displayName: details.name,
+        photoURL: details.avatar,
+        displayName_lowercase: details.name?.toLowerCase(),
     });
-    // The useEffect will handle updating Firestore
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
