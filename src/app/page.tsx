@@ -56,22 +56,26 @@ export default function Home() {
     }, []);
 
     const renderTextEffect = () => {
+        const effectContainerClass = "text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]";
+        
         if (!mounted) {
-            return <div className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]" />;
+            return <div className={effectContainerClass} />;
         }
         if (theme === 'redhat') {
             return (
-                <HackerEffect
-                    texts={animatedTitles}
-                    className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px] text-primary"
-                />
+                <div className={effectContainerClass}>
+                    <HackerEffect
+                        texts={animatedTitles}
+                    />
+                </div>
             );
         }
         return (
-            <TypewriterEffect
-                texts={animatedTitles}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px]"
-            />
+             <div className={effectContainerClass}>
+                <TypewriterEffect
+                    texts={animatedTitles}
+                />
+            </div>
         );
     }
 
