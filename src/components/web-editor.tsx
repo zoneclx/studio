@@ -127,7 +127,7 @@ export default function WebEditor() {
   
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'ai-chat'>('files');
-  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte AI Terminal (simulation)...', '> Logs from your script will appear here.']);
+  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
   
   const handleGenerationComplete = (generatedFiles: { name: string; language: string; content: string }[]) => {
@@ -149,7 +149,7 @@ export default function WebEditor() {
     if (editingId) {
       setHasGenerated(true); // If we're editing, we can assume it was generated
       try {
-        const storedProjectsStr = localStorage.getItem(`byteai-archive-${user.uid}`);
+        const storedProjectsStr = localStorage.getItem(`bytestudio-archive-${user.uid}`);
         if (storedProjectsStr) {
           const storedProjects: Project[] = JSON.parse(storedProjectsStr);
           const projectToEdit = storedProjects.find(p => p.id === editingId);
@@ -253,7 +253,7 @@ export default function WebEditor() {
     }
 
     try {
-      const storageKey = `byteai-archive-${user.uid}`;
+      const storageKey = `bytestudio-archive-${user.uid}`;
       const storedProjectsStr = localStorage.getItem(storageKey);
       const projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
       

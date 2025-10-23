@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Byte AI</title>
+        <title>Byte Studio</title>
         <meta name="description" content="Your Development Environment in the Cloud." />
       </head>
       <body

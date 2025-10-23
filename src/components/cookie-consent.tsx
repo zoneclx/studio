@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Cookie } from 'lucide-react';
 import { Card } from './ui/card';
 
-const COOKIE_CONSENT_KEY = 'byteai-cookie-consent';
+const COOKIE_CONSENT_KEY = 'bytestudio-cookie-consent';
 
 export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);

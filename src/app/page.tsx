@@ -42,7 +42,7 @@ const redhatTitles = [
     "Fetching dependencies from cache...",
     "Warming up serverless functions...",
     "Optimizing asset delivery...",
-    "Welcome to Byte AI.",
+    "Welcome to Byte Studio.",
 ];
 
 const features = [
@@ -118,7 +118,7 @@ export default function HomePage() {
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Byte AI is a powerful, browser-based development environment.
+                        Byte Studio is a powerful, browser-based development environment.
                         Write, test, and collaborate on your next great project without ever leaving your browser.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -192,7 +192,7 @@ export default function HomePage() {
                     <Badge variant="outline" className="text-sm">Powered by Next.js & Firebase</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Development</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        Byte AI leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
+                        Byte Studio leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
@@ -200,12 +200,12 @@ export default function HomePage() {
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-display">About Byte AI</h3>
+                                <h3 className="text-2xl font-display">About Byte Studio</h3>
                             </div>
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">
-                                Byte AI is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful development tools, making it easy for anyone to build, test, and deploy applications without needing a complex local setup. We believe in the power of ideas, and our platform is built to get you from concept to production in minutes.
+                                Byte Studio is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful development tools, making it easy for anyone to build, test, and deploy applications without needing a complex local setup. We believe in the power of ideas, and our platform is built to get you from concept to production in minutes.
                             </p>
                         </CardContent>
                     </Card>

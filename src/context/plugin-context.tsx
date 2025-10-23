@@ -12,7 +12,7 @@ interface PluginContextType {
 
 const PluginContext = createContext<PluginContextType | undefined>(undefined);
 
-const PLUGIN_STORAGE_KEY = 'byteai-plugins';
+const PLUGIN_STORAGE_KEY = 'bytestudio-plugins';
 
 export const PluginProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [connectedPlugins, setConnectedPlugins] = useState<string[]>([]);

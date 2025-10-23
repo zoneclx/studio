@@ -21,7 +21,7 @@ export default function TermsPage() {
               <section>
                 <h2 className="text-xl font-semibold text-foreground mb-2">1. Agreement to Terms</h2>
                 <p>
-                  By using our application, Byte AI, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the application. We may revise and update these Terms of Service from time to time in our sole discretion. All changes are effective immediately when we post them.
+                  By using our application, Byte Studio, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the application. We may revise and update these Terms of Service from time to time in our sole discretion. All changes are effective immediately when we post them.
                 </p>
               </section>
               <section>
