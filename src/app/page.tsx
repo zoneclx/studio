@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Code, Terminal, Share2, Sparkles, Server, GitBranch } from 'lucide-react';
+import { ArrowRight, Code, Terminal, Share2, Sparkles, Server, GitBranch, MessageSquare } from 'lucide-react';
 import HackerEffect from '@/components/hacker-effect';
 import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
@@ -25,29 +25,29 @@ const redhatTitles = [
     "Bypass Security Protocols.",
     "Initiate Code Injection.",
     "Accessing the Grid.",
-    "Welcome, Shadow Coder.",
+    "Welcome, Mono Code.",
 ];
 
 const features = [
     {
         icon: <Code className="w-8 h-8 text-primary" />,
         title: "Full-Featured Editor",
-        description: "Enjoy a complete coding environment with syntax highlighting, file explorer, and live preview, right in your browser.",
+        description: "Enjoy a complete coding environment with a file explorer, live preview, and integrated terminal, right in your browser.",
     },
     {
-        icon: <GitBranch className="w-8 h-8 text-primary" />,
-        title: "Version Control",
-        description: "Simulated version control allows you to save, track changes, and manage your projects with ease.",
+        icon: <Sparkles className="w-8 h-8 text-primary" />,
+        title: "AI-Powered Assistant",
+        description: "Leverage our integrated AI chat to get help, generate code, and make changes to your project with natural language.",
     },
      {
-        icon: <Share2 className="w-8 h-8 text-primary" />,
-        title: "Instant Sharing",
-        description: "Share your projects with a single click. Collaborate with others or showcase your work effortlessly.",
+        icon: <MessageSquare className="w-8 h-8 text-primary" />,
+        title: "Real-time Collaboration",
+        description: "Connect with other developers in the global chat room. Share ideas and collaborate in real-time.",
     },
     {
         icon: <Server className="w-8 h-8 text-primary" />,
-        title: "Free to Start",
-        description: "Experiment with the editor on our trial page. Sign up to unlock the full potential and save your projects.",
+        title: "Powered by Firebase",
+        description: "Built on a secure and scalable backend with Firebase Authentication and Firestore for a seamless experience.",
     },
 ];
 
@@ -173,7 +173,7 @@ export default function HomePage() {
         <section className="py-16 md:py-24 bg-background">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12 animate-fade-in-up">
-                    <Badge variant="outline" className="text-sm">Powered by Next.js & Vercel</Badge>
+                    <Badge variant="outline" className="text-sm">Powered by Next.js & Firebase</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Development</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
                         Mono Studio leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
