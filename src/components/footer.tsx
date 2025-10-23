@@ -40,7 +40,6 @@ const footerNav = [
     {
       title: "Community",
       items: [
-        { title: "Chat", href: "/chat" },
         { title: "Shared Projects", href: "/shared" },
         { title: "Contact Us", href: "/contact" },
       ],

@@ -10,7 +10,6 @@ import {
   Plug,
   Users,
   Terminal,
-  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
@@ -119,12 +118,6 @@ export default function Header() {
                   <Link href="/shared">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Shared With Me</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/chat">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    <span>Chat</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

@@ -35,37 +35,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const auth = useFirebaseAuth();
   const firestore = useFirestore();
   const router = useRouter();
-
-  const updateUserProfile = useCallback(async (userToUpdate: User, profileData: any) => {
-    // Prepare updates for Firebase Auth profile
-    const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
-    if (profileData.displayName) {
-        authUpdatePayload.displayName = profileData.displayName;
-    }
-    if (profileData.photoURL) {
-        authUpdatePayload.photoURL = profileData.photoURL;
-    }
-
-    // Update Firebase Auth profile if there's anything to update
-    if (Object.keys(authUpdatePayload).length > 0) {
-        await firebaseUpdateProfile(userToUpdate, authUpdatePayload);
-    }
-    
-    // Update Firestore document
-    const userDocRef = doc(firestore, 'users', userToUpdate.uid);
-    setDocumentNonBlocking(userDocRef, profileData, { merge: true });
-  }, [firestore]);
   
   useEffect(() => {
     if (user && !isUserLoading) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      let profileData: any = {};
       let profileUpdateNeeded = false;
-      let profileData: any = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        displayName_lowercase: user.displayName?.toLowerCase(),
-        photoURL: user.photoURL,
-      };
 
       if (!user.displayName) {
         profileData.displayName = generateRandomUsername();
@@ -73,16 +48,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         profileUpdateNeeded = true;
       }
       
-      const userDocRef = doc(firestore, 'users', user.uid);
       if (profileUpdateNeeded) {
         // This is a non-blocking call to update both Auth and Firestore
-        updateUserProfile(user, profileData);
+        firebaseUpdateProfile(user, { displayName: profileData.displayName });
+        setDocumentNonBlocking(userDocRef, { 
+            uid: user.uid,
+            email: user.email,
+            displayName: profileData.displayName,
+            displayName_lowercase: profileData.displayName_lowercase,
+            photoURL: user.photoURL 
+        }, { merge: true });
       } else {
         // Just update firestore, non-blocking
-        setDocumentNonBlocking(userDocRef, profileData, { merge: true });
+        setDocumentNonBlocking(userDocRef, { 
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            displayName_lowercase: user.displayName?.toLowerCase(),
+            photoURL: user.photoURL 
+        }, { merge: true });
       }
     }
-  }, [user, isUserLoading, firestore, updateUserProfile]);
+  }, [user, isUserLoading, firestore]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
@@ -111,7 +98,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
     if (!user) throw new Error("Not authenticated");
 
-    const updatePayload: { displayName?: string; displayName_lowercase?: string; photoURL?: string } = {};
+    const authUpdatePayload: { displayName?: string; photoURL?: string } = {};
+    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string; photoURL?: string } = {};
 
     if (details.name && details.name !== user.displayName) {
       const isTaken = await isUsernameTaken(details.name);
@@ -121,18 +109,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           description: 'This display name is already in use. Please choose another one.',
           variant: 'destructive',
         });
-        return; // Stop the update process
+        throw new Error('Username Taken');
       }
-      updatePayload.displayName = details.name;
-      updatePayload.displayName_lowercase = details.name.toLowerCase();
+      authUpdatePayload.displayName = details.name;
+      firestoreUpdatePayload.displayName = details.name;
+      firestoreUpdatePayload.displayName_lowercase = details.name.toLowerCase();
     }
     
     if (details.avatar) {
-      updatePayload.photoURL = details.avatar;
+      authUpdatePayload.photoURL = details.avatar;
+      firestoreUpdatePayload.photoURL = details.avatar;
     }
 
-    if (Object.keys(updatePayload).length > 0) {
-        await updateUserProfile(user, updatePayload);
+    if (Object.keys(authUpdatePayload).length > 0) {
+      await firebaseUpdateProfile(user, authUpdatePayload);
+    }
+    if (Object.keys(firestoreUpdatePayload).length > 0) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
     }
   };
 

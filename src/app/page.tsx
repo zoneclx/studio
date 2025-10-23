@@ -52,11 +52,6 @@ const features = [
         description: "Refine your code with a complete in-browser editor, featuring a file explorer, live preview, and integrated terminal.",
     },
     {
-        icon: <MessageSquare className="w-8 h-8 text-primary" />,
-        title: "Real-time Collaboration",
-        description: "Connect with other developers in the global chat room. Share ideas and collaborate in real-time on your projects.",
-    },
-    {
         icon: <Server className="w-8 h-8 text-primary" />,
         title: "Powered by Firebase",
         description: "Built on a secure and scalable backend with Firebase Authentication and Firestore for a seamless experience.",
@@ -168,7 +163,7 @@ export default function HomePage() {
                         We combine a powerful editor with collaborative tools to make complex tasks simple.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature, index) => (
                         <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.3}s` }}>
                             <Card className="h-full text-center bg-card/80 border-border/50 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1">

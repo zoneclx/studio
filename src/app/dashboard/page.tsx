@@ -7,13 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Code, Archive, Users, Plug } from 'lucide-react';
+import { Code, Archive, Plug } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const quickLinks = [
   { title: 'AI Web Builder', description: 'Create a new project with AI.', href: '/under-development', icon: <Code className="w-8 h-8" />, status: 'under-development' },
   { title: 'Your Projects', description: 'View and manage your saved work.', href: '/my-archive', icon: <Archive className="w-8 h-8" /> },
-  { title: 'Community Chat', description: 'Connect with other developers.', href: '/chat', icon: <Users className="w-8 h-8" /> },
   { title: 'Explore Plugins', description: 'Extend your editor\'s capabilities.', href: '/plugins', icon: <Plug className="w-8 h-8" /> },
 ];
 
@@ -55,7 +54,7 @@ export default function DashboardPage() {
 
       <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
         <h2 className="text-2xl font-bold font-display mb-4">Quick Links</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickLinks.map((link, index) => (
             <Link href={link.href} key={index}>
               <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all transform hover:-translate-y-1 relative">
