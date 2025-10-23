@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
-import { doc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -100,20 +101,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     router.push('/');
   };
 
+  const isUsernameTaken = async (username: string): Promise<boolean> => {
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('displayName_lowercase', '==', username.toLowerCase()), limit(1));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
+  };
+
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
     if (!user) throw new Error("Not authenticated");
 
     const updatePayload: { displayName?: string; displayName_lowercase?: string; photoURL?: string } = {};
 
-    if (details.name) {
+    if (details.name && details.name !== user.displayName) {
+      const isTaken = await isUsernameTaken(details.name);
+      if (isTaken) {
+        toast({
+          title: 'Username Taken',
+          description: 'This display name is already in use. Please choose another one.',
+          variant: 'destructive',
+        });
+        return; // Stop the update process
+      }
       updatePayload.displayName = details.name;
       updatePayload.displayName_lowercase = details.name.toLowerCase();
     }
+    
     if (details.avatar) {
       updatePayload.photoURL = details.avatar;
     }
 
-    await updateUserProfile(user, updatePayload);
+    if (Object.keys(updatePayload).length > 0) {
+        await updateUserProfile(user, updatePayload);
+    }
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
