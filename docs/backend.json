@@ -78,7 +78,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Collection of user profiles.  Each document is keyed by the user's unique Firebase Auth ID.",
+          "description": "Collection of user profiles. Each document is keyed by the user's unique Firebase Auth ID.",
           "params": [
             {
               "name": "userId",
