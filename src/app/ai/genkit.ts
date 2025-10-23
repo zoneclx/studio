@@ -1,6 +1,9 @@
-import { Ai } from '@genkit-ai/core';
+
+'use client';
+
+import { genkit, Ai } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
-import { genkit, GENKIT_ENV } from 'genkit';
+import { GENKIT_ENV } from '@genkit-ai/core';
 
 let aiInstance: Ai;
 
