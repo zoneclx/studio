@@ -68,7 +68,7 @@ export default function Footer() {
                 <div className="col-span-full lg:col-span-1">
                     <Link href="/" className="flex items-center gap-2 text-xl font-bold font-display">
                         <Sparkles className="w-6 h-6 text-primary" />
-                        Mono Studio
+                        Byte AI
                     </Link>
                     <p className="mt-4 text-sm text-muted-foreground">A powerful, AI-driven web builder.</p>
                 </div>
@@ -89,7 +89,7 @@ export default function Footer() {
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t py-6">
                 <p className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} Enzo-Gimena, Inc. All rights reserved.
+                    © {new Date().getFullYear()} Byte AI, Inc. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
                     {socialLinks.map((link) => (

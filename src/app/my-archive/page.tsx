@@ -44,7 +44,7 @@ export default function MyArchivePage() {
     }
     if (user) {
       try {
-        const data = localStorage.getItem(`monostudio-archive-${user.uid}`);
+        const data = localStorage.getItem(`byteai-archive-${user.uid}`);
         if (data) {
           const parsedData: SavedWork[] = JSON.parse(data);
           // Sort by timestamp descending

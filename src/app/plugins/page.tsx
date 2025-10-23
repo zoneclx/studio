@@ -108,7 +108,7 @@ export default function PluginsPage() {
           Plugins & Integrations
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Extend the functionality of Mono Studio by connecting services. (This is a simulation)
+          Extend the functionality of Byte AI by connecting services. (This is a simulation)
         </p>
       </header>
 

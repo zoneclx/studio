@@ -43,6 +43,7 @@ import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
 import { MobileEditorNav } from './mobile-editor-nav';
 import AiChat from './ai-chat';
+import WebBuilder from './web-builder';
 
 const defaultFiles = [
   {
@@ -106,20 +107,17 @@ interface Project {
   timestamp: string;
 }
 
-interface WebEditorProps {
-    initialFiles?: { name: string; language: string; content: string }[];
-}
-
-export default function WebEditor({ initialFiles }: WebEditorProps) {
+export default function WebEditor() {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectName, setProjectName] = useState('Untitled Project');
-  const [files, setFiles] = useState(initialFiles || defaultFiles);
-  const [activeFile, setActiveFile] = useState((initialFiles || defaultFiles)[0].name);
+  const [files, setFiles] = useState(defaultFiles);
+  const [activeFile, setActiveFile] = useState(defaultFiles[0].name);
   const [previewContent, setPreviewContent] = useState('');
   
   const [isShareOpen, setShareOpen] = useState(false);
@@ -129,9 +127,15 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
   
   const [isMobile, setIsMobile] = useState(false);
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'ai-chat'>('files');
-  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
+  const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte AI Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
-
+  
+  const handleGenerationComplete = (generatedFiles: { name: string; language: string; content: string }[]) => {
+    setFiles(generatedFiles);
+    setActiveFile(generatedFiles[0]?.name || '');
+    setHasGenerated(true);
+  };
+  
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
     checkMobile();
@@ -142,9 +146,10 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
   useEffect(() => {
     if (!user) return;
     const editingId = searchParams.get('edit');
-    if (editingId && !initialFiles) { // only load from storage if not coming from builder
+    if (editingId) {
+      setHasGenerated(true); // If we're editing, we can assume it was generated
       try {
-        const storedProjectsStr = localStorage.getItem(`monostudio-archive-${user.uid}`);
+        const storedProjectsStr = localStorage.getItem(`byteai-archive-${user.uid}`);
         if (storedProjectsStr) {
           const storedProjects: Project[] = JSON.parse(storedProjectsStr);
           const projectToEdit = storedProjects.find(p => p.id === editingId);
@@ -161,7 +166,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
         router.push('/create');
       }
     }
-  }, [searchParams, user, router, toast, initialFiles]);
+  }, [searchParams, user, router, toast]);
 
   const handleFileChange = (fileName: string, newContent: string) => {
     setFiles(
@@ -248,7 +253,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
     }
 
     try {
-      const storageKey = `monostudio-archive-${user.uid}`;
+      const storageKey = `byteai-archive-${user.uid}`;
       const storedProjectsStr = localStorage.getItem(storageKey);
       const projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
       
@@ -357,6 +362,10 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
     setActiveFile(fileName);
     setMobileView('editor');
   };
+  
+   if (!hasGenerated) {
+    return <WebBuilder onGenerationComplete={handleGenerationComplete} />;
+  }
 
   const renderFilesView = () => (
     <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
@@ -463,7 +472,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
         <AiChat />
     </div>
   );
-  
+
   return (
     <div className="flex h-full flex-col pt-16">
       <div className='flex-1 flex flex-col min-h-0'>

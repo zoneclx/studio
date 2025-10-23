@@ -13,8 +13,8 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
 const animatedTitles = [
-    "Build Websites in Your Browser.",
-    "A Powerful Cloud-Based Editor.",
+    "Build a website with a single prompt.",
+    "AI-powered website generation.",
     "The Future of Web Creation is Here.",
     "Your Collaborative Coding Sandbox.",
     "Design, Code, and Collaborate.",
@@ -42,7 +42,7 @@ const redhatTitles = [
     "Fetching dependencies from cache...",
     "Warming up serverless functions...",
     "Optimizing asset delivery...",
-    "Welcome to Mono Studio.",
+    "Welcome to Byte AI.",
 ];
 
 const features = [
@@ -118,7 +118,7 @@ export default function HomePage() {
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Mono Studio is a powerful, browser-based development environment.
+                        Byte AI is a powerful, browser-based development environment.
                         Write, test, and collaborate on your next great project without ever leaving your browser.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -192,7 +192,7 @@ export default function HomePage() {
                     <Badge variant="outline" className="text-sm">Powered by Next.js & Firebase</Badge>
                     <h2 className="text-3xl sm:text-4xl font-bold font-display mt-4">Pioneering the Future of Web Development</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        Mono Studio leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
+                        Byte AI leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
@@ -200,12 +200,12 @@ export default function HomePage() {
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-display">About Mono Studio</h3>
+                                <h3 className="text-2xl font-display">About Byte AI</h3>
                             </div>
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">
-                                Mono Studio is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful development tools, making it easy for anyone to build, test, and deploy applications without needing a complex local setup. We believe in the power of ideas, and our platform is built to get you from concept to production in minutes.
+                                Byte AI is more than just a tool; it's your creative partner. Our mission is to democratize access to powerful development tools, making it easy for anyone to build, test, and deploy applications without needing a complex local setup. We believe in the power of ideas, and our platform is built to get you from concept to production in minutes.
                             </p>
                         </CardContent>
                     </Card>

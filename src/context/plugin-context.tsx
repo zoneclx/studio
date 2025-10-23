@@ -12,7 +12,7 @@ interface PluginContextType {
 
 const PluginContext = createContext<PluginContextType | undefined>(undefined);
 
-const PLUGIN_STORAGE_KEY = 'monochrome-plugins';
+const PLUGIN_STORAGE_KEY = 'byteai-plugins';
 
 export const PluginProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [connectedPlugins, setConnectedPlugins] = useState<string[]>([]);
