@@ -55,7 +55,7 @@ const EditorIcon = () => (
     <Terminal className="w-8 h-8 text-primary" />
 );
 
-export default function Home() {
+export default function HomePage() {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
@@ -71,7 +71,7 @@ export default function Home() {
         }
         if (theme === 'redhat') {
             return (
-                <div className={effectContainerClass}>
+                <div className={cn(effectContainerClass, 'text-foreground')}>
                     <HackerEffect
                         texts={redhatTitles}
                     />
@@ -213,7 +213,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
