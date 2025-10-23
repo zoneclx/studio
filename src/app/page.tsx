@@ -20,6 +20,14 @@ const animatedTitles = [
     "Build Anything, Anywhere.",
 ];
 
+const redhatTitles = [
+    "Unlock the Mainframe.",
+    "Bypass Security Protocols.",
+    "Initiate Code Injection.",
+    "Accessing the Grid.",
+    "Welcome, Shadow Coder.",
+];
+
 const features = [
     {
         icon: <Code className="w-8 h-8 text-primary" />,
@@ -65,7 +73,7 @@ export default function Home() {
             return (
                 <div className={effectContainerClass}>
                     <HackerEffect
-                        texts={animatedTitles}
+                        texts={redhatTitles}
                     />
                 </div>
             );
@@ -205,3 +213,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
