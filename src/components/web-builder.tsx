@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Wand2 } from 'lucide-react';
 import { handleWebsiteGeneration } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,8 +32,8 @@ export default function WebBuilder({ onGenerationComplete }: WebBuilderProps) {
     }
     setIsLoading(true);
     try {
-      const files = await handleWebsiteGeneration(currentPrompt);
-      onGenerationComplete(files);
+      const result = await handleWebsiteGeneration(currentPrompt);
+      onGenerationComplete(result.files);
     } catch (error) {
       console.error(error);
       toast({ title: 'Generation Failed', description: 'Something went wrong. Please try again.', variant: 'destructive' });
@@ -43,49 +43,60 @@ export default function WebBuilder({ onGenerationComplete }: WebBuilderProps) {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl font-display flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-primary" />
-            AI Website Builder
-          </CardTitle>
-          <CardDescription>
-            Describe the website you want to create. The more detail, the better the result.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(prompt); }}>
-            <Textarea
-              placeholder="e.g., A modern, dark-themed portfolio website for a graphic designer with a grid layout..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              rows={5}
-              disabled={isLoading}
-            />
-            <Button type="submit" className="w-full mt-4" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                'Generate Website'
-              )}
-            </Button>
-          </form>
-          <div className="mt-6">
-            <p className="text-sm text-muted-foreground mb-2 text-center">Or try an example:</p>
-            <div className="grid grid-cols-2 gap-2">
-              {examplePrompts.map((p, i) => (
-                <Button key={i} variant="outline" size="sm" onClick={() => { setPrompt(p); handleSubmit(p); }} disabled={isLoading}>
-                  {p}
-                </Button>
-              ))}
+    <div className="flex-1 flex items-center justify-center p-4 pt-24 md:pt-4">
+      <div className="relative w-full max-w-3xl">
+        <Card className="w-full bg-card/50 backdrop-blur-sm animate-fade-in-up">
+          <CardHeader className="text-center">
+            <div className="mx-auto bg-primary/10 p-3 rounded-full mb-4 border border-primary/20">
+                <Wand2 className="w-8 h-8 text-primary" />
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            <CardTitle className="text-3xl font-display">
+              AI Website Builder
+            </CardTitle>
+            <CardDescription className="max-w-md mx-auto">
+              Describe the website you want to create. The more detail you provide, the better the result will be.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(prompt); }}>
+              <div className="relative">
+                 <Textarea
+                    placeholder="e.g., A modern, dark-themed portfolio website for a graphic designer with a grid layout for projects..."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    rows={5}
+                    disabled={isLoading}
+                    className="pr-24"
+                />
+                <Button type="submit" size="icon" className="absolute bottom-3 right-3" disabled={isLoading}>
+                {isLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                    <Sparkles className="h-5 w-5" />
+                )}
+                </Button>
+              </div>
+            </form>
+            <div className="mt-6">
+              <p className="text-sm text-muted-foreground mb-3 text-center">Or, try an example prompt</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {examplePrompts.map((p, i) => (
+                  <Button 
+                    key={i} 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-left justify-start h-auto py-2"
+                    onClick={() => { setPrompt(p); }} 
+                    disabled={isLoading}
+                  >
+                    {p}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

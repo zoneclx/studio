@@ -1,0 +1,34 @@
+
+import { genkit, Ai } from '@genkit-ai/core';
+import { googleAI } from '@genkit-ai/google-genai';
+import { GENKIT_ENV } from 'genkit';
+
+let aiInstance: Ai;
+
+if (GENKIT_ENV === 'dev') {
+  // In development, use a global instance to avoid re-initialization
+  // which can cause issues with Next.js hot-reloading.
+  if (!(global as any).__aiInstance) {
+    (global as any).__aiInstance = genkit({
+      plugins: [
+        googleAI({
+          apiVersion: 'v1beta',
+        }),
+      ],
+      logLevel: 'debug',
+      enableTracingAndMetrics: true,
+    });
+  }
+  aiInstance = (global as any).__aiInstance;
+} else {
+  // In production, create a new instance
+  aiInstance = genkit({
+    plugins: [
+      googleAI({
+        apiVersion: 'v1beta',
+      }),
+    ],
+  });
+}
+
+export const ai = aiInstance;
