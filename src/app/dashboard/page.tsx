@@ -32,50 +32,13 @@ interface AppUser {
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const firestore = useFirestore();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-
-  const usersRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
-
-  // Query for user search. This is dynamic based on searchTerm.
-  const searchQuery = useMemoFirebase(() => {
-    // Only run the query if there is a search term.
-    if (!searchTerm.trim() || !isSearching) {
-        return null;
-    }
-    // We create a query that searches for a match at the beginning of the displayName or email.
-    // Firestore is limited in its text search capabilities without a third-party service.
-    // This is a basic prefix search.
-    const endTerm = searchTerm.toLowerCase() + '\uf8ff';
-    return query(
-        usersRef,
-        or(
-            and(where('displayName_lowercase', '>=', searchTerm.toLowerCase()), where('displayName_lowercase', '<=', endTerm)),
-            and(where('email', '>=', searchTerm.toLowerCase()), where('email', '<=', endTerm))
-        )
-    );
-  }, [searchTerm, usersRef, isSearching]);
-
-  const { data: searchResults, isLoading: searchLoading } = useCollection<AppUser>(searchQuery);
   
-  const displayUsers = isSearching ? searchResults : null;
-
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login?redirect=/dashboard');
     }
   }, [user, loading, router]);
   
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-        setIsSearching(true); // Triggers the useCollection hook by updating the query
-    } else {
-        setIsSearching(false);
-    }
-  };
-
   if (loading || !user) {
     return (
       <div className="container mx-auto max-w-5xl py-8 px-4 flex-1 pt-24">
@@ -124,53 +87,6 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <h2 className="text-2xl font-bold font-display mb-4">Find Users</h2>
-         <Card>
-            <CardHeader>
-                <CardTitle>Search for other developers</CardTitle>
-                <CardDescription>Search for other users on the platform by their name or email.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 mb-6">
-                    <Input 
-                        placeholder="Search by name or email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <Button type="submit" size="icon">
-                        <Search className="w-5 h-5" />
-                    </Button>
-                </form>
-                <div className="space-y-4">
-                    {searchLoading ? (
-                        <>
-                            <Skeleton className="h-16 w-full" />
-                            <Skeleton className="h-16 w-full" />
-                        </>
-                    ) : displayUsers && displayUsers.length > 0 ? (
-                        displayUsers.filter(u => u.id !== user.uid).map(foundUser => (
-                            <div key={foundUser.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                               <div className="flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarImage src={foundUser.photoURL} />
-                                        <AvatarFallback>{foundUser.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-semibold">{foundUser.displayName}</p>
-                                        <p className="text-sm text-muted-foreground">{foundUser.email}</p>
-                                    </div>
-                               </div>
-                               <Button variant="outline" size="sm">View Profile</Button>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-muted-foreground">{isSearching ? 'No users found.' : 'Enter a name or email to search.'}</p>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
-      </section>
     </div>
   );
 }
