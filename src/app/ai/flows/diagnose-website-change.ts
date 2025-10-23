@@ -11,13 +11,13 @@
 import { ai } from '@/app/ai/genkit';
 import { z } from 'zod';
 
-export const DiagnoseWebsiteChangeInputSchema = z.object({
+const DiagnoseWebsiteChangeInputSchema = z.object({
   text: z.string().describe('The user\'s request or question about the website code.'),
   image: z.string().optional().describe("An optional image provided by the user as a data URI for visual context. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 export type DiagnoseWebsiteChangeInput = z.infer<typeof DiagnoseWebsiteChangeInputSchema>;
 
-export const DiagnoseWebsiteChangeOutputSchema = z.object({
+const DiagnoseWebsiteChangeOutputSchema = z.object({
   text: z.string().describe('The AI\'s response, providing an explanation or suggested code change.'),
 });
 export type DiagnoseWebsiteChangeOutput = z.infer<typeof DiagnoseWebsiteChangeOutputSchema>;
