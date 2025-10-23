@@ -1,4 +1,3 @@
-
 import { Ai } from '@genkit-ai/core';
 import { googleAI } from '@genkit-ai/google-genai';
 import { genkit, GENKIT_ENV } from 'genkit';
