@@ -618,15 +618,9 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
                                 <TabsTrigger value="terminal" className="h-8">
                                     <Terminal className="w-4 h-4 mr-2" /> Terminal
                                 </TabsTrigger>
-                                <TabsTrigger value="ai-chat" className="h-8">
-                                    <MessageSquare className="w-4 h-4 mr-2" /> AI Chat
-                                </TabsTrigger>
                             </TabsList>
                             <TabsContent value="terminal" className="flex-1 m-0">
                                 {renderTerminalView()}
-                            </TabsContent>
-                            <TabsContent value="ai-chat" className="flex-1 m-0">
-                                {renderAiChatView()}
                             </TabsContent>
                         </Tabs>
                     </ResizablePanel>

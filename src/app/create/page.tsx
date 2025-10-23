@@ -17,17 +17,12 @@ interface WebFile {
 export default function CreatePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [generatedFiles, setGeneratedFiles] = useState<WebFile[] | null>(null);
-
+  
   useEffect(() => {
     if (!loading && !user) {
       router.push('/signup?redirect=/create');
     }
   }, [user, loading, router]);
-
-  const handleGenerationComplete = (files: WebFile[]) => {
-    setGeneratedFiles(files);
-  };
 
   if (loading || !user) {
     return (
@@ -48,11 +43,7 @@ export default function CreatePage() {
 
   return (
     <div className="flex-1 h-screen">
-        {generatedFiles ? (
-            <WebEditor initialFiles={generatedFiles} />
-        ) : (
-            <WebBuilder onGenerationComplete={handleGenerationComplete} />
-        )}
+        <WebEditor />
     </div>
   );
 }
