@@ -1,121 +1,70 @@
 /**
- * @fileoverview Firestore Security Rules for MonoMuse.
+ * @fileoverview Firestore Security Rules for MonoMuse application.
  *
- * Core Philosophy: This ruleset enforces a strict user-ownership model,
- * where each user has full control over their data, and no cross-user access
- * is permitted.
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for AI-generated text content.
+ * Each user can only access their own generated texts, ensuring data privacy and isolation.
  *
- * Data Structure: All user-related data (prompts, generated texts, saved results)
- * is nested under /users/{userId}, ensuring clear ownership.
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles, keyed by Firebase Auth UID.
+ * - /users/{userId}/generatedTexts/{generatedTextId}: Stores AI-generated text content owned by a specific user.
  *
  * Key Security Decisions:
- * - Users can only access their own data.
- * - Listing operations are restricted to the owning user.
- * - The rules do not validate the data schema beyond the ownership fields.
- *
- * Denormalization for Authorization:
- * - Each prompt, generatedText, and savedResult document is stored under the user's
- *   document, allowing us to use path-based authorization (isOwner(userId))
- *   without additional reads.
+ * - Users can only list their own generated texts, preventing unauthorized access to other users' content.
+ * - The 'messages' collection is not defined. Assuming the error refers to listing `generatedTexts`.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Defines if the current user is signed in
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Defines if the current user is the owner of the resource
-     */
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Defines if the current user is the owner of the resource and it exists
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && exists(resource);
-    }
-
-    /**
-     * @description Enforces that a userId field matches the authenticated user's UID
-     */
-    function isValidUserId(userId) {
-        return request.resource.data.userId == request.auth.uid;
-    }
-
-    /**
-     * @description Rules for the /users/{userId} collection.
+     * @description Allows users to read and write their own user profile.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user creates their own profile.
-     * @deny (create) - Authenticated user tries to create a profile with a different userId.
-     * @allow (get, update, delete) - Authenticated user accesses their own profile.
-     * @deny (get, update, delete) - Authenticated user tries to access another user's profile.
-     * @principle Enforces user-ownership.
+     * @allow (create) - Authenticated user can create their own profile with matching UID.
+     * @allow (get, update, delete) - Authenticated user can read, update, and delete their own profile with matching UID.
+     * @deny (create) - Unauthenticated user cannot create any profile.
+     * @deny (get, update, delete) - Authenticated user cannot access other user's profiles (UID mismatch).
+     * @principle Enforces document ownership for user profiles.
      */
     match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
       allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.id == request.auth.uid;
+      allow delete: if isSignedIn() && isOwner(userId) && resource.data.id == request.auth.uid;
     }
 
     /**
-     * @description Rules for the /users/{userId}/prompts/{promptId} collection.
-     * @path /users/{userId}/prompts/{promptId}
-     * @allow (create) - Authenticated user creates a prompt for themselves.
-     * @deny (create) - Authenticated user tries to create a prompt for another user.
-     * @allow (get, update, delete) - Authenticated user accesses their own prompt.
-     * @deny (get, update, delete) - Authenticated user tries to access another user's prompt.
-     * @principle Enforces user-ownership.
+     * @description Allows users to manage their own generated texts.
+     * @path /users/{userId}/generatedTexts/{generatedTextId}
+     * @allow (create) - Authenticated user can create generated texts under their own user ID.
+     * @allow (get, list, update, delete) - Authenticated user can access, list, update, and delete their own generated texts (UID match).
+     * @deny (create) - Unauthenticated user cannot create generated texts.
+     * @deny (get, list, update, delete) - Authenticated user cannot access generated texts under other user's IDs (UID mismatch).
+     * @principle Enforces document ownership for generated texts.
      */
-    match /users/{userId}/prompts/{promptId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
-    }
+    match /users/{userId}/generatedTexts/{generatedTextId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-    /**
-     * @description Rules for the /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId} collection.
-     * @path /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId}
-     * @allow (create) - Authenticated user creates a generated text for their own prompt.
-     * @deny (create) - Authenticated user tries to create a generated text for another user's prompt.
-     * @allow (get, update, delete) - Authenticated user accesses their own generated text.
-     * @deny (get, update, delete) - Authenticated user tries to access another user's generated text.
-     * @principle Enforces user-ownership.
-     */
-    match /users/{userId}/prompts/{promptId}/generatedTexts/{generatedTextId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
-    }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
 
-    /**
-     * @description Rules for the /users/{userId}/savedResults/{savedResultId} collection.
-     * @path /users/{userId}/savedResults/{savedResultId}
-     * @allow (create) - Authenticated user saves a result for themselves.
-     * @deny (create) - Authenticated user tries to save a result for another user.
-     * @allow (get, update, delete) - Authenticated user accesses their own saved result.
-     * @deny (get, update, delete) - Authenticated user tries to access another user's saved result.
-     * @principle Enforces user-ownership.
-     */
-    match /users/{userId}/savedResults/{savedResultId} {
       allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && isOwner(userId) && resource.data.userId == request.auth.uid;
     }
   }
 }
