@@ -1,16 +1,18 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import WebEditor from '@/components/web-editor';
+import WebBuilder from '@/components/web-builder';
 
 export default function CreatePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  
+  const [generatedFiles, setGeneratedFiles] = useState<{ name: string; language: string; content: string }[] | null>(null);
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/signup?redirect=/create');
@@ -34,9 +36,17 @@ export default function CreatePage() {
     );
   }
 
+  if (!generatedFiles) {
+    return (
+        <div className="flex-1 h-screen">
+            <WebBuilder onGenerationComplete={setGeneratedFiles} />
+        </div>
+    );
+  }
+
   return (
     <div className="flex-1 h-screen">
-        <WebEditor />
+        <WebEditor initialFiles={generatedFiles} />
     </div>
   );
 }
