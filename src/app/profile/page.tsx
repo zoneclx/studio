@@ -13,6 +13,48 @@ import { User, Edit, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const MAX_AVATAR_SIZE = 512; // Max width/height in pixels
+
+// Function to resize image on the client-side
+const resizeImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+
+        if (width > height) {
+          if (width > MAX_AVATAR_SIZE) {
+            height *= MAX_AVATAR_SIZE / width;
+            width = MAX_AVATAR_SIZE;
+          }
+        } else {
+          if (height > MAX_AVATAR_SIZE) {
+            width *= MAX_AVATAR_SIZE / height;
+            height = MAX_AVATAR_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return reject(new Error('Could not get canvas context'));
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg')); // Use JPEG for better compression
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+
 export default function ProfilePage() {
   const { user, loading, updateProfile, changePassword } = useAuth();
   const router = useRouter();
@@ -38,14 +80,20 @@ export default function ProfilePage() {
     }
   }, [user, loading, router]);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const resizedImageDataUrl = await resizeImage(file);
+        setAvatar(resizedImageDataUrl);
+      } catch (error) {
+        console.error("Image resizing failed:", error);
+        toast({
+          title: 'Image Processing Failed',
+          description: 'Could not process the selected image. Please try another one.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -158,7 +206,7 @@ export default function ProfilePage() {
                     ref={fileInputRef}
                     onChange={handleAvatarChange}
                     className="hidden"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                   />
                 </div>
               </CardHeader>
