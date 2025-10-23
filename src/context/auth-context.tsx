@@ -27,10 +27,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signIn = async (email: string, pass: string) => {
     initiateEmailSignIn(auth, email, pass);
+    router.push('/dashboard');
   };
 
   const signUp = async (email: string, pass: string) => {
     initiateEmailSignUp(auth, email, pass);
+    router.push('/dashboard');
   };
 
   const signOut = async () => {
@@ -79,3 +81,5 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+    

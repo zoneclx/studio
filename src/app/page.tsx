@@ -13,11 +13,11 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
 const animatedTitles = [
-    "Your Development Environment in the Cloud.",
-    "Code, Collaborate, and Deploy.",
-    "From Idea to Deployment in Seconds.",
-    "The Future of Web Development.",
-    "Build Anything, Anywhere.",
+    "Build a Website with AI.",
+    "From Prompt to Production in Seconds.",
+    "The Future of Web Creation is Here.",
+    "Your AI-Powered Web Builder.",
+    "Design, Code, and Deploy with AI.",
 ];
 
 const redhatTitles = [
@@ -30,19 +30,19 @@ const redhatTitles = [
 
 const features = [
     {
-        icon: <Code className="w-8 h-8 text-primary" />,
-        title: "Full-Featured Editor",
-        description: "Enjoy a complete coding environment with a file explorer, live preview, and integrated terminal, right in your browser.",
+        icon: <Sparkles className="w-8 h-8 text-primary" />,
+        title: "AI-Powered Generation",
+        description: "Describe your ideal website, and let our AI generate the initial HTML, CSS, and JavaScript for you in seconds.",
     },
     {
-        icon: <Sparkles className="w-8 h-8 text-primary" />,
-        title: "AI-Powered Assistant",
-        description: "Leverage our integrated AI chat to get help, generate code, and make changes to your project with natural language.",
+        icon: <Code className="w-8 h-8 text-primary" />,
+        title: "Full-Featured Editor",
+        description: "Refine your generated code with a complete in-browser editor, featuring a file explorer and live preview.",
     },
      {
         icon: <MessageSquare className="w-8 h-8 text-primary" />,
         title: "Real-time Collaboration",
-        description: "Connect with other developers in the global chat room. Share ideas and collaborate in real-time.",
+        description: "Connect with other developers in the global chat room. Share ideas and collaborate in real-time on your projects.",
     },
     {
         icon: <Server className="w-8 h-8 text-primary" />,
@@ -101,14 +101,13 @@ export default function HomePage() {
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
-                        Mono Studio is a powerful, browser-based development environment.
-                        Code, build, and deploy your next great idea without ever leaving your browser.
-                        The future of development is here.
+                        Mono Studio is a powerful, AI-driven web builder that turns your ideas into reality.
+                        Describe, generate, and deploy your next great project without ever leaving your browser.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Link href="/create">
                         <Button size="lg" className="font-bold text-lg w-full sm:w-auto">
-                            Start Coding <ArrowRight className="ml-2 h-5 w-5" />
+                            Start Building <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                         </Link>
                     </div>
@@ -149,7 +148,7 @@ export default function HomePage() {
                 <div className="text-center mb-12 animate-fade-in-up">
                     <h2 className="text-3xl sm:text-4xl font-bold font-display">A New Way to Build Software</h2>
                     <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                        We combine a powerful editor with an intuitive interface to make complex tasks simple.
+                        We combine a powerful editor with an intuitive AI to make complex tasks simple.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -213,3 +212,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
