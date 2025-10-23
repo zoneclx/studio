@@ -15,59 +15,65 @@ const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 
 export default function HackerEffect({
   texts,
-  iterations = 8,
+  iterations = 3, // controls scramble iterations per letter
   delay = 2000,
   className,
 }: HackerEffectProps) {
   const [textIndex, setTextIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState(texts[0]);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [displayedText, setDisplayedText] = useState('');
+  const animationFrameRef = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const scramble = useCallback((targetText: string) => {
-    let iteration = 0;
+    let currentText = '';
+    let letterIndex = 0;
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = setInterval(() => {
-      const newText = targetText
-        .split('')
-        .map((_, index) => {
-          if (index < iteration) {
-            return targetText[index];
-          }
-          return characters[Math.floor(Math.random() * characters.length)];
-        })
-        .join('');
-      
-      setDisplayedText(newText);
-
-      if (iteration >= targetText.length) {
-        if (intervalRef.current) clearInterval(intervalRef.current);
+    const animate = () => {
+      if (letterIndex >= targetText.length) {
+        setDisplayedText(targetText);
+        // Schedule next text after a delay
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          setTextIndex(prev => (prev + 1) % texts.length);
+        }, delay);
+        return;
       }
 
-      iteration += 1 / (iterations / 2);
-    }, 30);
-  }, [iterations]);
+      let scrambleIteration = 0;
+      const scrambleLetter = () => {
+        if (scrambleIteration >= iterations) {
+          currentText += targetText[letterIndex];
+          letterIndex++;
+          setDisplayedText(currentText);
+          // Move to the next letter
+          animationFrameRef.current = requestAnimationFrame(animate);
+        } else {
+          const randomChar = characters[Math.floor(Math.random() * characters.length)];
+          setDisplayedText(currentText + randomChar);
+          scrambleIteration++;
+          setTimeout(scrambleLetter, 40); // speed of scrambling a single letter
+        }
+      };
+      scrambleLetter();
+    };
+    
+    animate();
+
+  }, [iterations, delay, texts.length]);
 
   useEffect(() => {
+    setDisplayedText(''); // Reset displayed text when target text changes
     scramble(texts[textIndex]);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
   }, [textIndex, texts, scramble]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-        setTextIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, [displayedText, texts.length, delay]);
 
   return (
     <h2 className={cn('font-mono', className)}>
