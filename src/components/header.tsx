@@ -9,6 +9,7 @@ import {
   Archive,
   Plug,
   Users,
+  Terminal,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,43 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
+
+const Logo = () => {
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <span className="text-xl font-bold font-display">Mono Studio</span>
+            </div>
+        );
+    }
+    
+    if (theme === 'redhat') {
+        return (
+            <div className="flex items-center gap-2">
+                <Terminal className="w-6 h-6 text-primary" />
+                <span className="text-xl font-bold font-display">Shadow Code</span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <span className="text-xl font-bold font-display">Mono Studio</span>
+        </div>
+    );
+};
+
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -29,12 +67,9 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-primary" />
-            <span className="text-xl font-bold font-display">Mono Studio</span>
-          </Link>
-        </div>
+        <Link href="/">
+          <Logo />
+        </Link>
 
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
