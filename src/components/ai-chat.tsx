@@ -5,12 +5,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Send, Upload, X } from 'lucide-react';
+import { Sparkles, Send, Upload, X, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { cn } from '@/lib/utils';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
+import { handleAiChat } from '@/app/actions';
+
 
 interface Message {
     id: string;
@@ -25,6 +27,7 @@ export default function AiChat() {
     const [input, setInput] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -35,7 +38,9 @@ export default function AiChat() {
             }
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImagePreview(reader.result as string);
+                const result = reader.result as string;
+                setImagePreview(result);
+                setUploadedImage(result);
             };
             reader.readAsDataURL(file);
         }
@@ -43,24 +48,28 @@ export default function AiChat() {
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim() && !imagePreview) return;
+        if (!input.trim() && !uploadedImage) return;
 
-        const userMessage: Message = { id: Date.now().toString(), text: input, sender: 'user', image: imagePreview || undefined };
+        const userMessage: Message = { id: Date.now().toString(), text: input, sender: 'user', image: uploadedImage || undefined };
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setImagePreview(null);
+        setUploadedImage(null);
         setIsLoading(true);
         
-        // Simulate AI response
-        setTimeout(() => {
+        try {
+            const aiResponseText = await handleAiChat(input, uploadedImage || undefined);
             const aiResponse: Message = {
                 id: (Date.now() + 1).toString(),
                 sender: 'ai',
-                text: `This is a simulated AI response to your request: "${input}". Image analysis is also simulated.`
+                text: aiResponseText
             };
             setMessages(prev => [...prev, aiResponse]);
+        } catch (error) {
+            toast({ title: "AI Chat Error", description: "Could not get a response from the AI.", variant: "destructive" });
+        } finally {
             setIsLoading(false);
-        }, 1500);
+        }
     };
 
 
@@ -87,7 +96,7 @@ export default function AiChat() {
                                     <AvatarFallback>{msg.sender === 'ai' ? 'AI' : 'U'}</AvatarFallback>
                                 </Avatar>
                                 <div className={cn("rounded-lg p-3 max-w-xs md:max-w-sm break-words", msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted')}>
-                                    {msg.image && <img src={msg.image} alt="uploaded content" className="rounded-md mb-2" />}
+                                    {msg.image && <img src={msg.image} alt="uploaded content" className="rounded-md mb-2 max-w-full h-auto" />}
                                     <p className="text-sm">{msg.text}</p>
                                 </div>
                             </div>
@@ -95,10 +104,11 @@ export default function AiChat() {
                          {isLoading && (
                             <div className="flex items-start gap-3">
                                 <Avatar className="w-8 h-8">
+                                    <AvatarImage src={'https://i.ibb.co/3k5mR5c/ezgif-com-webp-to-jpg-2.jpg'} />
                                     <AvatarFallback>AI</AvatarFallback>
                                 </Avatar>
-                                <div className="rounded-lg p-3 bg-muted">
-                                    <p className="text-sm animate-pulse">Thinking...</p>
+                                <div className="rounded-lg p-3 bg-muted flex items-center">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
                                 </div>
                             </div>
                         )}
@@ -109,7 +119,7 @@ export default function AiChat() {
                         {imagePreview && (
                             <div className="relative mb-2 w-20 h-20">
                                 <img src={imagePreview} alt="upload preview" className="w-full h-full object-cover rounded-md" />
-                                <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => setImagePreview(null)}>
+                                <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setImagePreview(null); setUploadedImage(null); }}>
                                     <X className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -125,17 +135,18 @@ export default function AiChat() {
                                     handleSendMessage(e);
                                 }
                             }}
+                            disabled={isLoading}
                         />
                         <div className="absolute bottom-2 right-2 flex items-center gap-1">
                              <label htmlFor="image-upload" className="cursor-pointer">
-                                <Button size="icon" variant="ghost" asChild>
+                                <Button size="icon" variant="ghost" asChild disabled={isLoading}>
                                     <div>
                                         <Upload className="w-5 h-5" />
                                         <input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                                     </div>
                                 </Button>
                             </label>
-                            <Button type="submit" size="icon" disabled={isLoading || (!input.trim() && !imagePreview)}>
+                            <Button type="submit" size="icon" disabled={isLoading || (!input.trim() && !uploadedImage)}>
                                 <Send className="w-5 h-5" />
                             </Button>
                         </div>

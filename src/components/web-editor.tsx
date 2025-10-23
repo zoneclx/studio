@@ -106,7 +106,11 @@ interface Project {
   timestamp: string;
 }
 
-export default function WebEditor() {
+interface WebEditorProps {
+    initialFiles?: { name: string; language: string; content: string }[];
+}
+
+export default function WebEditor({ initialFiles }: WebEditorProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -114,8 +118,8 @@ export default function WebEditor() {
 
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectName, setProjectName] = useState('Untitled Project');
-  const [files, setFiles] = useState(defaultFiles);
-  const [activeFile, setActiveFile] = useState(defaultFiles[0].name);
+  const [files, setFiles] = useState(initialFiles || defaultFiles);
+  const [activeFile, setActiveFile] = useState((initialFiles || defaultFiles)[0].name);
   const [previewContent, setPreviewContent] = useState('');
   
   const [isShareOpen, setShareOpen] = useState(false);
@@ -138,7 +142,7 @@ export default function WebEditor() {
   useEffect(() => {
     if (!user) return;
     const editingId = searchParams.get('edit');
-    if (editingId) {
+    if (editingId && !initialFiles) { // only load from storage if not coming from builder
       try {
         const storedProjectsStr = localStorage.getItem(`monostudio-archive-${user.uid}`);
         if (storedProjectsStr) {
@@ -157,7 +161,7 @@ export default function WebEditor() {
         router.push('/create');
       }
     }
-  }, [searchParams, user, router, toast]);
+  }, [searchParams, user, router, toast, initialFiles]);
 
   const handleFileChange = (fileName: string, newContent: string) => {
     setFiles(
@@ -226,6 +230,7 @@ export default function WebEditor() {
 
   useEffect(() => {
     runPreview();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 
   const saveWork = () => {
