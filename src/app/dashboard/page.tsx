@@ -1,19 +1,14 @@
 
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Code, Archive, Users, Plug, Search, User as UserIcon } from 'lucide-react';
+import { Code, Archive, Users, Plug } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, or, and, startAt, endAt } from 'firebase/firestore';
 
 const quickLinks = [
   { title: 'AI Web Builder', description: 'Create a new project with AI.', href: '/under-development', icon: <Code className="w-8 h-8" />, status: 'under-development' },
@@ -21,13 +16,6 @@ const quickLinks = [
   { title: 'Community Chat', description: 'Connect with other developers.', href: '/chat', icon: <Users className="w-8 h-8" /> },
   { title: 'Explore Plugins', description: 'Extend your editor\'s capabilities.', href: '/plugins', icon: <Plug className="w-8 h-8" /> },
 ];
-
-interface AppUser {
-    id: string;
-    displayName: string;
-    email: string;
-    photoURL: string;
-}
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
