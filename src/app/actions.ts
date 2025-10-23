@@ -1,3 +1,4 @@
+
 'use server';
 
 // NOTE: This is a mock implementation.
@@ -104,7 +105,7 @@ export async function handleAiChat(text: string, image?: string): Promise<string
 
     let response = `This is a simulated AI response to your message: "${text}".`;
     if(image) {
-        response += " I have also "received" the image you uploaded."
+        response += " I have also 'received' the image you uploaded."
     }
 
     if(text.toLowerCase().includes("change background")) {
