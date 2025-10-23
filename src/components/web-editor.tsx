@@ -128,7 +128,7 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
   const [newFileName, setNewFileName] = useState('');
   
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai'>('files');
+  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal'>('files');
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Mono Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
 
@@ -458,10 +458,6 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
     </div>
   );
   
-  const renderAiChatView = () => (
-    <AiChat />
-  );
-
   return (
     <div className="flex h-full flex-col pt-16">
       <div className='flex-1 flex flex-col min-h-0'>
@@ -471,7 +467,6 @@ export default function WebEditor({ initialFiles }: WebEditorProps) {
             {mobileView === 'editor' && renderEditorView()}
             {mobileView === 'preview' && renderPreviewView()}
             {mobileView === 'terminal' && renderTerminalView()}
-            {mobileView === 'ai' && renderAiChatView()}
           </div>
         ) : (
           <ResizablePanelGroup direction="horizontal" className="flex-1">
