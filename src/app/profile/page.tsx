@@ -33,8 +33,8 @@ export default function ProfilePage() {
       router.push('/login');
     }
     if (user) {
-      setName(user.name || '');
-      setAvatar(user.avatar || '');
+      setName(user.displayName || '');
+      setAvatar(user.photoURL || '');
     }
   }, [user, loading, router]);
 
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
-                    value={user.email}
+                    value={user.email!}
                     disabled
                   />
                 </div>
