@@ -40,7 +40,8 @@ export default function DashboardPage() {
 
   // Query for user search. This is dynamic based on searchTerm.
   const searchQuery = useMemoFirebase(() => {
-    if (!searchTerm.trim()) {
+    // Only run the query if there is a search term.
+    if (!searchTerm.trim() || !isSearching) {
         return null;
     }
     // We create a query that searches for a match at the beginning of the displayName or email.
@@ -54,12 +55,11 @@ export default function DashboardPage() {
             and(where('email', '>=', searchTerm.toLowerCase()), where('email', '<=', endTerm))
         )
     );
-  }, [searchTerm, usersRef]);
+  }, [searchTerm, usersRef, isSearching]);
 
   const { data: searchResults, isLoading: searchLoading } = useCollection<AppUser>(searchQuery);
-  const { data: allUsers, isLoading: allUsersLoading } = useCollection<AppUser>(usersRef);
   
-  const displayUsers = searchTerm.trim() ? searchResults : allUsers;
+  const displayUsers = isSearching ? searchResults : null;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -69,7 +69,11 @@ export default function DashboardPage() {
   
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSearching(true); // Triggers the useCollection hook by updating the query
+    if (searchTerm.trim()) {
+        setIsSearching(true); // Triggers the useCollection hook by updating the query
+    } else {
+        setIsSearching(false);
+    }
   };
 
   if (loading || !user) {
@@ -139,7 +143,7 @@ export default function DashboardPage() {
                     </Button>
                 </form>
                 <div className="space-y-4">
-                    {(searchLoading || allUsersLoading) ? (
+                    {searchLoading ? (
                         <>
                             <Skeleton className="h-16 w-full" />
                             <Skeleton className="h-16 w-full" />
@@ -161,7 +165,7 @@ export default function DashboardPage() {
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-muted-foreground">No users found.</p>
+                        <p className="text-center text-muted-foreground">{isSearching ? 'No users found.' : 'Enter a name or email to search.'}</p>
                     )}
                 </div>
             </CardContent>
