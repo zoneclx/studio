@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Code, Archive, Users, Plug, Search, User as UserIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, or, and, startAt, endAt } from 'firebase/firestore';
 
 const quickLinks = [
   { title: 'AI Web Builder', description: 'Create a new project with AI.', href: '/under-development', icon: <Code className="w-8 h-8" />, status: 'under-development' },
@@ -20,18 +22,44 @@ const quickLinks = [
   { title: 'Explore Plugins', description: 'Extend your editor\'s capabilities.', href: '/plugins', icon: <Plug className="w-8 h-8" /> },
 ];
 
-// Mock user search results
-const mockUsers = [
-    { id: '1', name: 'Jane Doe', email: 'jane@example.com', avatar: 'https://i.ibb.co/9v3Cq3G/ezgif-com-webp-to-jpg-1.jpg' },
-    { id: '2', name: 'John Smith', email: 'john@example.com', avatar: 'https://i.ibb.co/ryj1PzC/ezgif-com-webp-to-jpg.jpg' },
-    { id: '3', name: 'Alex Ray', email: 'alex@example.com', avatar: 'https://i.ibb.co/3k5mR5c/ezgif-com-webp-to-jpg-2.jpg' },
-];
+interface AppUser {
+    id: string;
+    displayName: string;
+    email: string;
+    photoURL: string;
+}
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState(mockUsers);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const usersRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
+
+  // Query for user search. This is dynamic based on searchTerm.
+  const searchQuery = useMemoFirebase(() => {
+    if (!searchTerm.trim()) {
+        return null;
+    }
+    // We create a query that searches for a match at the beginning of the displayName or email.
+    // Firestore is limited in its text search capabilities without a third-party service.
+    // This is a basic prefix search.
+    const endTerm = searchTerm.toLowerCase() + '\uf8ff';
+    return query(
+        usersRef,
+        or(
+            and(where('displayName_lowercase', '>=', searchTerm.toLowerCase()), where('displayName_lowercase', '<=', endTerm)),
+            and(where('email', '>=', searchTerm.toLowerCase()), where('email', '<=', endTerm))
+        )
+    );
+  }, [searchTerm, usersRef]);
+
+  const { data: searchResults, isLoading: searchLoading } = useCollection<AppUser>(searchQuery);
+  const { data: allUsers, isLoading: allUsersLoading } = useCollection<AppUser>(usersRef);
+  
+  const displayUsers = searchTerm.trim() ? searchResults : allUsers;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,18 +67,9 @@ export default function DashboardPage() {
     }
   }, [user, loading, router]);
   
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchTerm.trim()) {
-        setSearchResults(mockUsers); // Show all mock users if search is empty
-    } else {
-        // This is a simulation, in a real app you'd query your backend
-        const results = mockUsers.filter(u => 
-            u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            u.email.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setSearchResults(results);
-    }
+    setIsSearching(true); // Triggers the useCollection hook by updating the query
   };
 
   if (loading || !user) {
@@ -106,10 +125,10 @@ export default function DashboardPage() {
          <Card>
             <CardHeader>
                 <CardTitle>Search for other developers</CardTitle>
-                <CardDescription>This is a simulation. In a real app, this would search a database of public profiles.</CardDescription>
+                <CardDescription>Search for other users on the platform by their name or email.</CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSearch} className="flex items-center gap-2 mb-6">
+                <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 mb-6">
                     <Input 
                         placeholder="Search by name or email..."
                         value={searchTerm}
@@ -120,22 +139,28 @@ export default function DashboardPage() {
                     </Button>
                 </form>
                 <div className="space-y-4">
-                    {searchResults.map(foundUser => (
-                        <div key={foundUser.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                           <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src={foundUser.avatar} />
-                                    <AvatarFallback><UserIcon /></AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-semibold">{foundUser.name}</p>
-                                    <p className="text-sm text-muted-foreground">{foundUser.email}</p>
-                                </div>
-                           </div>
-                           <Button variant="outline" size="sm">View Profile</Button>
-                        </div>
-                    ))}
-                    {searchResults.length === 0 && (
+                    {(searchLoading || allUsersLoading) ? (
+                        <>
+                            <Skeleton className="h-16 w-full" />
+                            <Skeleton className="h-16 w-full" />
+                        </>
+                    ) : displayUsers && displayUsers.length > 0 ? (
+                        displayUsers.filter(u => u.id !== user.uid).map(foundUser => (
+                            <div key={foundUser.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+                               <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={foundUser.photoURL} />
+                                        <AvatarFallback>{foundUser.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="font-semibold">{foundUser.displayName}</p>
+                                        <p className="text-sm text-muted-foreground">{foundUser.email}</p>
+                                    </div>
+                               </div>
+                               <Button variant="outline" size="sm">View Profile</Button>
+                            </div>
+                        ))
+                    ) : (
                         <p className="text-center text-muted-foreground">No users found.</p>
                     )}
                 </div>
@@ -145,5 +170,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

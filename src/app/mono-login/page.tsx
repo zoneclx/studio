@@ -35,7 +35,7 @@ export default function MonoLoginPage() {
         title: 'Success!',
         description: 'You have successfully signed in.',
       });
-      router.push('/create');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',

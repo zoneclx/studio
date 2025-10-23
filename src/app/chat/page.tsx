@@ -1,22 +1,24 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Send, User as UserIcon, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { collection, query, orderBy, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useCollection, addDocumentNonBlocking, useMemoFirebase } from '@/firebase';
 
 interface Message {
   id: string;
   text: string;
-  timestamp: Date;
+  timestamp: Timestamp;
   user: {
     uid: string;
     displayName: string;
@@ -27,9 +29,14 @@ interface Message {
 export default function ChatPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const firestore = useFirestore();
   const [newMessage, setNewMessage] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  const messagesRef = useMemoFirebase(() => collection(firestore, 'messages'), [firestore]);
+  const messagesQuery = useMemoFirebase(() => query(messagesRef, orderBy('timestamp', 'asc')), [messagesRef]);
+
+  const { data: messages, isLoading: messagesLoading } = useCollection<Message>(messagesQuery);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -51,10 +58,9 @@ export default function ChatPage() {
     e.preventDefault();
     if (!newMessage.trim() || !user) return;
 
-    const message: Message = {
-      id: Date.now().toString(),
+    const messagePayload = {
       text: newMessage,
-      timestamp: new Date(),
+      timestamp: serverTimestamp(),
       user: {
         uid: user.uid,
         displayName: user.displayName || 'Anonymous',
@@ -62,7 +68,7 @@ export default function ChatPage() {
       },
     };
 
-    setMessages([...messages, message]);
+    addDocumentNonBlocking(messagesRef, messagePayload);
     setNewMessage('');
   };
   
@@ -97,19 +103,23 @@ export default function ChatPage() {
             Global Chat
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">
-            Chat with other users in real-time. (This is a simulation)
+            Chat with other users in real-time.
         </p>
       </header>
       <Card className="flex-1 flex flex-col animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
         <CardContent className="flex-1 p-6 flex flex-col gap-4">
           <ScrollArea className="flex-1 pr-4 -mr-4" ref={scrollAreaRef}>
-            {messages.length === 0 ? (
+            {messagesLoading ? (
+                <div className="flex h-full items-center justify-center">
+                    <Skeleton className="h-16 w-3/4" />
+                </div>
+            ) : messages && messages.length === 0 ? (
                 <div className="flex h-full items-center justify-center text-muted-foreground">
                     <p>No messages yet. Start the conversation!</p>
                 </div>
             ) : (
                 <div className="space-y-6">
-                {messages.map((msg) => (
+                {messages?.map((msg) => (
                     <div
                     key={msg.id}
                     className={`flex items-start gap-3 ${
@@ -119,7 +129,7 @@ export default function ChatPage() {
                     <Avatar>
                         <AvatarImage src={msg.user.photoURL} />
                         <AvatarFallback>
-                        <UserIcon />
+                        {msg.user.displayName?.charAt(0) || <UserIcon />}
                         </AvatarFallback>
                     </Avatar>
                     <div
@@ -131,9 +141,11 @@ export default function ChatPage() {
                     >
                         <p className="font-bold text-sm">{msg.user.displayName}</p>
                         <p className="text-base">{msg.text}</p>
-                        <p className="text-xs opacity-70 mt-1">
-                        {formatDistanceToNow(msg.timestamp, { addSuffix: true })}
-                        </p>
+                        {msg.timestamp && (
+                          <p className="text-xs opacity-70 mt-1">
+                            {formatDistanceToNow(msg.timestamp.toDate(), { addSuffix: true })}
+                          </p>
+                        )}
                     </div>
                     </div>
                 ))}

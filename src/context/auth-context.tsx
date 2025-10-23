@@ -1,11 +1,12 @@
 
 'use client';
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
-import { useAuth as useFirebaseAuth, useUser } from '@/firebase/provider';
+import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
+import { doc } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -21,9 +22,26 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user, isUserLoading, userError } = useUser();
+  const { user, isUserLoading } = useUser();
   const auth = useFirebaseAuth();
+  const firestore = useFirestore();
   const router = useRouter();
+  
+  useEffect(() => {
+    if (user) {
+      // When user object is available, create/update their profile in Firestore.
+      // This is a non-blocking operation.
+      const userDocRef = doc(firestore, 'users', user.uid);
+      const profileData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        displayName_lowercase: user.displayName?.toLowerCase(),
+        photoURL: user.photoURL,
+      };
+      setDocumentNonBlocking(userDocRef, profileData, { merge: true });
+    }
+  }, [user, firestore]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
@@ -42,15 +60,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     router.push('/');
   };
 
-  // These are now placeholders and will be re-implemented with Firebase.
   const updateProfile = async (details: { name?: string; avatar?: string }) => {
-    console.log('updateProfile not implemented with Firebase yet', details);
-    // This will be replaced with Firestore logic
+    if (!user) throw new Error("Not authenticated");
+    await firebaseUpdateProfile(user, {
+      displayName: details.name,
+      photoURL: details.avatar,
+    });
+    // The useEffect will handle updating Firestore
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
-     console.log('changePassword not implemented with Firebase yet');
-    // This will be replaced with Firebase Auth logic
+    if (!user || !user.email) throw new Error("Not authenticated");
+    const credential = EmailAuthProvider.credential(user.email, currentPass);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPass);
   };
   
   const forgotPassword = async (email: string) => {
