@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     const userDocRef = doc(firestore, 'users', user.uid);
     // This is now the primary place where user data is written to Firestore
-    await setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
+    setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
