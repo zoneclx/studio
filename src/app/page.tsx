@@ -112,9 +112,12 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {renderTextEffect()}
-                    <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-8 text-muted-foreground")}>
+                    <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-4 text-muted-foreground")}>
                         Byte Studio is a powerful, browser-based development environment.
                         Write, test, and collaborate on your next great project without ever leaving your browser.
+                    </p>
+                    <p className="text-sm max-w-xl mb-8 text-muted-foreground/80">
+                        Created by Shawn Enzo J. Gimena, a passionate high school student developer.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Link href="/dashboard">
@@ -190,7 +193,7 @@ export default function HomePage() {
                         Byte Studio leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
                     <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
@@ -204,20 +207,7 @@ export default function HomePage() {
                             </p>
                         </CardContent>
                     </Card>
-                     <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                        <CardHeader>
-                            <div className="flex items-center gap-2 mb-2">
-                                <User className="w-8 h-8 text-primary" />
-                                <h3 className="text-2xl font-display">About the Developer</h3>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">
-                                This application was created by Shawn Enzo J. Gimena, a passionate high school student with a drive for building innovative web solutions. This project showcases the power of modern development tools in the hands of a young creator.
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+                    <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
                                 <EditorIcon />
@@ -237,3 +227,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
