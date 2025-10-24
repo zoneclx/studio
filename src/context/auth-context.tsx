@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const auth = useFirebaseAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
   
   useEffect(() => {
     if (user && !isUserLoading && !user.displayName) {
@@ -83,6 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const isUsernameTaken = async (username: string): Promise<boolean> => {
+    if (!firestore) return false;
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('displayName_lowercase', '==', username.toLowerCase()), limit(1));
     const querySnapshot = await getDocs(q);
@@ -114,8 +116,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await firebaseUpdateProfile(user, authUpdatePayload);
     }
     
-    const userDocRef = doc(firestore, 'users', user.uid);
-    setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
+    if (firestore) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
+    }
   };
 
   const changePassword = async (currentPass: string, newPass: string) => {
@@ -124,14 +128,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const credential = EmailAuthProvider.credential(user.email, currentPass);
     try {
-        await reauthenticateWithCredential(user, credential);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPass);
     } catch (error: any) {
-        if (error.code === 'auth/invalid-credential') {
-            throw new Error('The current password you entered is incorrect. Please try again.');
-        }
-        throw error;
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+        throw new Error('The current password you entered is incorrect. Please try again.');
+      }
+      // Re-throw other errors
+      throw error;
     }
-    await updatePassword(user, newPass);
   };
   
   const forgotPassword = async (email: string) => {
