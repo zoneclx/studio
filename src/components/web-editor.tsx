@@ -586,6 +586,30 @@ export default function WebEditor() {
   if (isMobile) {
     return (
       <div className="flex h-full w-full flex-col">
+        <header className="h-14 bg-card border-b flex items-center justify-between px-4 shrink-0">
+            <Link href="/dashboard">
+                <Logo />
+            </Link>
+            <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Settings className="w-5 h-5" />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Editor Settings</DialogTitle>
+                        <DialogDescription>Customize your development environment.</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                    <div className="flex items-center justify-between">
+                        <Label>Theme</Label>
+                        <ThemeToggle />
+                    </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </header>
         <div className="flex-1 pb-14 overflow-y-auto">
           {mobileView === 'files' && renderFilesView(true)}
           {mobileView === 'editor' && renderEditorView()}
