@@ -384,13 +384,13 @@ function Editor() {
   };
 
   const renderFilesView = () => (
-    <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
-        <div className="flex justify-between items-center mb-2 px-2 pt-2">
-            <h2 className="text-lg font-semibold">Project Files</h2>
+    <div className="p-2 h-full bg-card/50 flex-1 flex flex-col min-h-0">
+        <div className="flex justify-between items-center mb-2 px-2 pt-2 shrink-0">
+            <h2 className="text-sm font-semibold uppercase">Explorer</h2>
             <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <PlusCircle className="w-5 h-5" />
+                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <PlusCircle className="w-4 h-4" />
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -419,8 +419,8 @@ function Editor() {
               className={cn(
                 'w-full text-left p-2 rounded-md flex items-center gap-2 text-sm',
                  activeFile === file.name
-                  ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  : 'hover:bg-sidebar-accent/50'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'hover:bg-accent/50'
               )}
             >
               <FileIcon filename={file.name} />
@@ -432,84 +432,77 @@ function Editor() {
   );
 
   const renderEditorView = () => (
-    <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col">
-        <header className="h-12 border-b flex items-center justify-between px-2 sm:px-4 shrink-0">
-            {!open && !isMobile && (
-                <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
-                    <PanelLeft className="w-5 h-5" />
-                </Button>
-            )}
-            <TabsList className="h-8">
+    <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b shrink-0">
+            <TabsList className="h-10 bg-transparent p-0 rounded-none border-0">
             {files.map((file) => (
-                <TabsTrigger key={file.name} value={file.name} className="h-7 text-xs flex items-center gap-1.5 px-2">
-                <FileIcon filename={file.name} /> 
-                <span className="hidden sm:inline">{file.name}</span>
+                <TabsTrigger 
+                    key={file.name} 
+                    value={file.name} 
+                    className="h-10 text-sm flex items-center gap-1.5 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent"
+                >
+                    <FileIcon filename={file.name} /> 
+                    <span className="hidden sm:inline">{file.name}</span>
                 </TabsTrigger>
             ))}
             </TabsList>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 px-4">
                 <div className="hidden lg:flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={runPreview}>
-                    <Play className="w-4 h-4 mr-2" /> Run
-                </Button>
+                    <Button variant="ghost" size="sm" onClick={runPreview}>
+                        <Play className="w-4 h-4 mr-2" /> Run
+                    </Button>
                     <Dialog open={isSaveOpen} onOpenChange={setSaveOpen}>
-                    <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" onClick={handleSaveClick}>
-                            <Save className="w-4 h-4 mr-2" /> Save
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Save Project</DialogTitle>
-                            <DialogDescription>
-                                Give your project a name. This will create a new project or update the existing one.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="project-name" className="text-right">
-                                Project Name
-                                </Label>
-                                <Input id="project-name" value={projectName} onChange={e => setProjectName(e.target.value)} className="col-span-3" />
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm" onClick={handleSaveClick}>
+                                <Save className="w-4 h-4 mr-2" /> Save
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Save Project</DialogTitle>
+                                <DialogDescription>
+                                    Give your project a name. This will create a new project or update the existing one.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="project-name" className="text-right">Project Name</Label>
+                                    <Input id="project-name" value={projectName} onChange={e => setProjectName(e.target.value)} className="col-span-3" />
+                                </div>
                             </div>
-                        </div>
-                        <DialogFooter>
-                            <Button type="submit" onClick={saveWork}>Save Project</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-                <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            <Share2 className="w-4 h-4 mr-2" /> Share
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Share Project</DialogTitle>
-                            <DialogDescription>
-                                Enter the email of the person you want to share this project with.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="email" className="text-right">
-                                Email
-                                </Label>
-                                <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                            <DialogFooter>
+                                <Button type="submit" onClick={saveWork}>Save Project</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={isShareOpen} onOpenChange={setShareOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                                <Share2 className="w-4 h-4 mr-2" /> Share
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Share Project</DialogTitle>
+                                <DialogDescription>Enter the email of the person you want to share this project with.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="email" className="text-right">Email</Label>
+                                    <Input id="email" type="email" placeholder="friend@example.com" className="col-span-3" />
+                                </div>
                             </div>
-                        </div>
-                        <DialogFooter>
-                            <Button type="submit" onClick={handleShare}>Share</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                            <DialogFooter>
+                                <Button type="submit" onClick={handleShare}>Share</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
                 <div className="lg:hidden">
                     <MobileNav actions={editorActions} />
                 </div>
             </div>
-        </header>
+        </div>
         <TabsContent value={activeFile} className="flex-1 p-0 m-0">
             <Textarea
                 value={currentFile?.content || ''}
@@ -531,20 +524,26 @@ function Editor() {
   );
   
   const renderTerminalView = () => (
-     <div className="h-full flex-1 flex flex-col bg-black text-white font-mono text-sm">
+     <div className="h-full flex-1 flex flex-col bg-background font-mono text-sm">
+        <header className="h-10 border-b flex items-center px-4 shrink-0">
+            <h2 className="font-semibold text-sm">TERMINAL</h2>
+        </header>
         <ScrollArea className="flex-1 p-4">
             {terminalOutput.map((line, index) => (
-                <p key={index} className="whitespace-pre-wrap">{line}</p>
+                <div key={index} className="flex">
+                    <span className='text-muted-foreground mr-2'>{line.startsWith('>') ? '' : ' '}</span>
+                    <p className="whitespace-pre-wrap">{line}</p>
+                </div>
             ))}
         </ScrollArea>
-        <div className="flex items-center gap-2 p-2 border-t border-gray-700">
-            <span>></span>
+        <div className="flex items-center gap-2 p-2 border-t">
+            <span className='text-muted-foreground'>></span>
             <Input 
                 type="text"
                 value={terminalInput}
                 onChange={(e) => setTerminalInput(e.target.value)}
                 onKeyDown={handleTerminalCommand}
-                className="bg-transparent border-none text-white w-full p-0 h-auto focus-visible:ring-0"
+                className="bg-transparent border-none text-foreground w-full p-0 h-auto focus-visible:ring-0"
                 placeholder="Type a command..."
             />
         </div>
@@ -564,9 +563,6 @@ function Editor() {
     if (activeSidebarView === 'ai-chat') {
         return (
             <div className="h-full flex flex-col">
-                <header className="p-2 shrink-0">
-                    <h2 className="text-lg font-semibold px-2">AI Assistant</h2>
-                </header>
                 <div className="flex-1 min-h-0">
                     <AiChat />
                 </div>
@@ -578,9 +574,8 @@ function Editor() {
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className='flex-1 flex flex-col min-h-0'>
         {isMobile ? (
-          <div className="flex-1 pb-14 pt-12">
+          <div className="flex-1 pb-14">
             {mobileView === 'files' && renderFilesView()}
             {mobileView === 'editor' && renderEditorView()}
             {mobileView === 'preview' && renderPreviewView()}
@@ -588,13 +583,8 @@ function Editor() {
             {mobileView === 'ai-chat' && renderAiChatView()}
           </div>
         ) : (
-          <div className="flex h-full">
+          <ResizablePanelGroup direction="horizontal" className="flex-1">
             <Sidebar>
-                <SidebarHeader>
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-                        <PanelLeft className="w-5 h-5" />
-                    </Button>
-                </SidebarHeader>
                 <SidebarContent>
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -628,52 +618,46 @@ function Editor() {
                 </SidebarFooter>
             </Sidebar>
 
-            <ResizablePanelGroup direction="horizontal" className="flex-1">
-                {open && (
-                    <>
-                        <ResizablePanel
-                            defaultSize={15}
-                            minSize={10}
-                            maxSize={25}
-                            className="min-w-[200px]"
-                        >
-                            <div className='h-full bg-background/50 border-r'>
-                                {renderSidebarContent()}
-                            </div>
-                        </ResizablePanel>
-                        <ResizableHandle withHandle />
-                    </>
-                )}
-                <ResizablePanel defaultSize={55}>
-                    <ResizablePanelGroup direction="vertical">
-                        <ResizablePanel defaultSize={65}>
-                            {renderEditorView()}
-                        </ResizablePanel>
-                        <ResizableHandle withHandle />
-                        <ResizablePanel defaultSize={35}>
-                            {renderTerminalView()}
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={30}>
-                    <div className="h-full">
-                        <header className="h-12 border-b flex items-center px-4">
-                            <h2 className="font-semibold flex items-center gap-2">
-                                <Eye className="w-5 h-5" />
-                                Preview
-                            </h2>
-                        </header>
-                        <div className="h-[calc(100%-3rem)]">
-                            {renderPreviewView()}
-                        </div>
+            <ResizablePanel defaultSize={15} minSize={10} maxSize={30}>
+                <div className='h-full bg-card'>
+                    {renderSidebarContent()}
+                </div>
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={55}>
+                <ResizablePanelGroup direction="vertical">
+                    <ResizablePanel defaultSize={70}>
+                        {renderEditorView()}
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel defaultSize={30}>
+                        {renderTerminalView()}
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </ResizablePanel>
+            
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={30}>
+                <div className="h-full bg-background">
+                    <header className="h-10 border-b flex items-center px-4">
+                        <h2 className="font-semibold flex items-center gap-2 text-sm">
+                            <Eye className="w-4 h-4" />
+                            PREVIEW
+                        </h2>
+                    </header>
+                    <div className="h-[calc(100%-2.5rem)]">
+                        {renderPreviewView()}
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-          </div>
+                </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         )}
-      </div>
       {isMobile && <MobileEditorNav activeView={mobileView} setView={setMobileView} />}
     </div>
   );
 }
+
+  
