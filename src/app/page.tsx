@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
-import AnimatedLaptop from '@/components/animated-laptop';
+import AnimatedDevices from '@/components/animated-devices';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -130,7 +130,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                  <AnimatedLaptop />
+                  <AnimatedDevices />
                 </div>
             </div>
         </section>
