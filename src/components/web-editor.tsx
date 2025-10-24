@@ -43,7 +43,6 @@ import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
 import { MobileEditorNav } from './mobile-editor-nav';
 import AiChat from './ai-chat';
-import WebBuilder from './web-builder';
 
 const defaultFiles = [
   {
@@ -113,7 +112,6 @@ export default function WebEditor() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [hasGenerated, setHasGenerated] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectName, setProjectName] = useState('Untitled Project');
   const [files, setFiles] = useState(defaultFiles);
@@ -130,12 +128,6 @@ export default function WebEditor() {
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
   
-  const handleGenerationComplete = (generatedFiles: { name: string; language: string; content: string }[]) => {
-    setFiles(generatedFiles);
-    setActiveFile(generatedFiles[0]?.name || '');
-    setHasGenerated(true);
-  };
-  
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
     checkMobile();
@@ -147,7 +139,6 @@ export default function WebEditor() {
     if (!user) return;
     const editingId = searchParams.get('edit');
     if (editingId) {
-      setHasGenerated(true); // If we're editing, we can assume it was generated
       try {
         const storedProjectsStr = localStorage.getItem(`bytestudio-archive-${user.uid}`);
         if (storedProjectsStr) {
@@ -362,10 +353,6 @@ export default function WebEditor() {
     setActiveFile(fileName);
     setMobileView('editor');
   };
-  
-   if (!hasGenerated) {
-    return <WebBuilder onGenerationComplete={handleGenerationComplete} />;
-  }
 
   const renderFilesView = () => (
     <div className="p-2 h-full bg-background/50 flex-1 flex flex-col min-h-0">
