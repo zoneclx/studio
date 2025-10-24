@@ -22,6 +22,7 @@ import {
   Terminal,
   MessageSquare,
   Settings,
+  Sparkles,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -47,7 +48,43 @@ import AiChat from './ai-chat';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { ThemeToggle } from './theme-toggle';
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
+
+const Logo = () => {
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <span className="text-xl font-bold font-display">Byte Studio</span>
+            </div>
+        );
+    }
+    
+    if (theme === 'redhat') {
+        return (
+            <div className="flex items-center gap-2">
+                <Terminal className="w-6 h-6 text-primary" />
+                <span className="text-xl font-bold font-display">Byte Studio</span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <span className="text-xl font-bold font-display">Byte Studio</span>
+        </div>
+    );
+};
 
 const defaultFiles = [
   {
@@ -563,143 +600,152 @@ export default function WebEditor() {
 
   // Desktop UI (VS Code style)
   return (
-    <TooltipProvider>
-      <div className="flex h-full w-full bg-background text-foreground">
-        {/* Activity Bar */}
-        <div className="w-12 bg-card border-r flex flex-col items-center justify-between py-2">
-            <div className="flex flex-col gap-2">
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className={cn('w-9 h-9', activeSidePanel === 'files' && 'bg-accent text-accent-foreground')}
-                            onClick={() => setActiveSidePanel('files')}
-                        >
-                            <File className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Files</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className={cn('w-9 h-9', activeSidePanel === 'ai-chat' && 'bg-accent text-accent-foreground')}
-                            onClick={() => setActiveSidePanel('ai-chat')}
-                        >
-                            <MessageSquare className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">AI Assistant</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className={cn('w-9 h-9', isTerminalVisible && 'bg-accent text-accent-foreground')}
-                            onClick={() => setTerminalVisible(v => !v)}
-                        >
-                            <Terminal className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Terminal</TooltipContent>
-                </Tooltip>
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className={cn('w-9 h-9', isPreviewVisible && 'bg-accent text-accent-foreground')}
-                            onClick={() => setPreviewVisible(v => !v)}
-                        >
-                            <Eye className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Preview</TooltipContent>
-                </Tooltip>
-            </div>
-            <div className="flex flex-col gap-2">
-                <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="w-9 h-9">
-                                    <Settings className="w-5 h-5" />
-                                </Button>
-                            </DialogTrigger>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">Settings</TooltipContent>
-                    </Tooltip>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Editor Settings</DialogTitle>
-                            <DialogDescription>Customize your development environment.</DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4">
-                           <div className="flex items-center justify-between">
-                               <Label>Theme</Label>
-                               <ThemeToggle />
-                           </div>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            </div>
-        </div>
+    <div className="h-screen w-full flex flex-col">
+        {/* Top Navbar */}
+        <header className="h-14 bg-card border-b flex items-center justify-between px-4 shrink-0 z-20">
+            <Link href="/dashboard">
+                <Logo />
+            </Link>
+            {/* Can add more nav items here if needed */}
+        </header>
         
-        {/* Main Layout */}
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
-          {/* Side Panel */}
-          <ResizablePanel defaultSize={15} minSize={10} maxSize={30}>
-              <div className='h-full bg-card/80 border-r'>
-                  {renderSidePanelContent()}
-              </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
+        {/* Editor Layout */}
+        <div className="flex flex-1 min-h-0">
+            <TooltipProvider>
+                <div className="flex h-full w-full bg-background text-foreground">
+                    {/* Activity Bar */}
+                    <div className="w-12 bg-card border-r flex flex-col items-center justify-between py-2">
+                        <div className="flex flex-col gap-2">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className={cn('w-9 h-9', activeSidePanel === 'files' && 'bg-accent text-accent-foreground')}
+                                        onClick={() => setActiveSidePanel('files')}
+                                    >
+                                        <File className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">Files</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className={cn('w-9 h-9', activeSidePanel === 'ai-chat' && 'bg-accent text-accent-foreground')}
+                                        onClick={() => setActiveSidePanel('ai-chat')}
+                                    >
+                                        <MessageSquare className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">AI Assistant</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className={cn('w-9 h-9', isTerminalVisible && 'bg-accent text-accent-foreground')}
+                                        onClick={() => setTerminalVisible(v => !v)}
+                                    >
+                                        <Terminal className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">Terminal</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className={cn('w-9 h-9', isPreviewVisible && 'bg-accent text-accent-foreground')}
+                                        onClick={() => setPreviewVisible(v => !v)}
+                                    >
+                                        <Eye className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">Preview</TooltipContent>
+                            </Tooltip>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <DialogTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="w-9 h-9">
+                                                <Settings className="w-5 h-5" />
+                                            </Button>
+                                        </DialogTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right">Settings</TooltipContent>
+                                </Tooltip>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Editor Settings</DialogTitle>
+                                        <DialogDescription>Customize your development environment.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="py-4">
+                                    <div className="flex items-center justify-between">
+                                        <Label>Theme</Label>
+                                        <ThemeToggle />
+                                    </div>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    </div>
+                    
+                    {/* Main Layout */}
+                    <ResizablePanelGroup direction="horizontal" className="flex-1">
+                    {/* Side Panel */}
+                    <ResizablePanel defaultSize={15} minSize={10} maxSize={30}>
+                        <div className='h-full bg-card/80 border-r'>
+                            {renderSidePanelContent()}
+                        </div>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
 
-          {/* Editor and Terminal */}
-          <ResizablePanel defaultSize={55}>
-              <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel defaultSize={100} minSize={30}>
-                      {renderEditorView()}
-                  </ResizablePanel>
-                  {isTerminalVisible && (
-                    <>
-                      <ResizableHandle withHandle />
-                      <ResizablePanel defaultSize={30} minSize={10} collapsible>
-                          {renderTerminalView()}
-                      </ResizablePanel>
-                    </>
-                  )}
-              </ResizablePanelGroup>
-          </ResizablePanel>
-          
-          {isPreviewVisible && (
-            <>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={30} minSize={20} collapsible>
-                  <div className="h-full bg-background">
-                      <header className="h-10 border-b flex items-center px-4">
-                          <h2 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider">
-                              <Eye className="w-4 h-4" />
-                              Preview
-                          </h2>
-                      </header>
-                      <div className="h-[calc(100%-2.5rem)]">
-                          {renderPreviewView()}
-                      </div>
-                  </div>
-              </ResizablePanel>
-            </>
-          )}
-        </ResizablePanelGroup>
-      </div>
-    </TooltipProvider>
+                    {/* Editor and Terminal */}
+                    <ResizablePanel defaultSize={55}>
+                        <ResizablePanelGroup direction="vertical">
+                            <ResizablePanel defaultSize={100} minSize={30}>
+                                {renderEditorView()}
+                            </ResizablePanel>
+                            {isTerminalVisible && (
+                                <>
+                                <ResizableHandle withHandle />
+                                <ResizablePanel defaultSize={30} minSize={10} collapsible>
+                                    {renderTerminalView()}
+                                </ResizablePanel>
+                                </>
+                            )}
+                        </ResizablePanelGroup>
+                    </ResizablePanel>
+                    
+                    {isPreviewVisible && (
+                        <>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel defaultSize={30} minSize={20} collapsible>
+                            <div className="h-full bg-background">
+                                <header className="h-10 border-b flex items-center px-4">
+                                    <h2 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider">
+                                        <Eye className="w-4 h-4" />
+                                        Preview
+                                    </h2>
+                                </header>
+                                <div className="h-[calc(100%-2.5rem)]">
+                                    {renderPreviewView()}
+                                </div>
+                            </div>
+                        </ResizablePanel>
+                        </>
+                    )}
+                    </ResizablePanelGroup>
+                </div>
+            </TooltipProvider>
+        </div>
+    </div>
   );
 }
-
-    
-
-    
