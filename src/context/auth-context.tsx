@@ -1,11 +1,11 @@
 
 'use client';
 
-import React, { createContext, useContext, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword, sendEmailVerification, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
-import { doc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, limit, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -36,21 +36,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
-  
-  useEffect(() => {
-    if (user && !isUserLoading && !user.displayName) {
-      const randomUsername = generateRandomUsername();
-      firebaseUpdateProfile(user, { displayName: randomUsername }).then(() => {
-        const userDocRef = doc(firestore, 'users', user.uid);
-        setDocumentNonBlocking(userDocRef, { 
-          displayName: randomUsername,
-          displayName_lowercase: randomUsername.toLowerCase(),
-          email: user.email,
-          uid: user.uid,
-        }, { merge: true });
-      });
-    }
-  }, [user, isUserLoading, firestore]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
@@ -67,12 +52,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const userDocRef = doc(firestore, 'users', newUser.uid);
         const randomUsername = generateRandomUsername();
         await firebaseUpdateProfile(newUser, { displayName: randomUsername });
-        setDocumentNonBlocking(userDocRef, {
+        // Use a blocking setDoc here to ensure the document exists before proceeding
+        await setDoc(userDocRef, {
             uid: newUser.uid,
             email: newUser.email,
             displayName: randomUsername,
             displayName_lowercase: randomUsername.toLowerCase(),
-        }, { merge: true });
+        });
     }
   };
 
@@ -84,6 +70,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isUsernameTaken = async (username: string): Promise<boolean> => {
     if (!firestore) return false;
     const usersRef = collection(firestore, 'users');
+    // Ensure we are not checking against the current user's own name if it hasn't changed.
+    if(user && user.displayName?.toLowerCase() === username.toLowerCase()) return false;
     const q = query(usersRef, where('displayName_lowercase', '==', username.toLowerCase()), limit(1));
     const querySnapshot = await getDocs(q);
     return !querySnapshot.empty;
@@ -98,12 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (details.name && details.name !== user.displayName) {
       const isTaken = await isUsernameTaken(details.name);
       if (isTaken) {
-        toast({
-          title: 'Username Taken',
-          description: 'This display name is already in use. Please choose another one.',
-          variant: 'destructive',
-        });
-        throw new Error('Username Taken');
+        throw new Error('This display name is already in use. Please choose another one.');
       }
       authUpdatePayload.displayName = details.name;
       firestoreUpdatePayload.displayName = details.name;
@@ -114,9 +97,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await firebaseUpdateProfile(user, authUpdatePayload);
     }
     
-    if (firestore) {
+    if (firestore && Object.keys(firestoreUpdatePayload).length > 0) {
       const userDocRef = doc(firestore, 'users', user.uid);
-      setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
+      // Use blocking update to ensure changes are saved and permissions are checked.
+      await setDoc(userDocRef, firestoreUpdatePayload, { merge: true });
     }
   };
 

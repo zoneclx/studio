@@ -25,7 +25,7 @@
           "description": "The user's email address."
         }
       },
-      "required": ["uid", "email"]
+      "required": ["uid", "email", "displayName", "displayName_lowercase"]
     }
   },
   "auth": {
@@ -49,6 +49,6 @@
         "rules": "allow read, write: if request.auth != null && request.auth.uid == userId;"
       }
     ],
-    "reasoning": "A fresh backend definition to solve persistent permission errors. This rule ensures that a user can only read or write to their own document in the 'users' collection, which is a secure and standard practice for managing user profiles. All other collections and rules have been removed to ensure a clean state."
+    "reasoning": "This rule ensures that a user can only read or write to their own document in the 'users' collection. This is a secure and standard practice for managing user profiles and resolves permission errors related to profile updates."
   }
 }
