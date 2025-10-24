@@ -31,13 +31,13 @@ export default function HackerEffect({
 
     if (currentLength < targetText.length) {
       let scrambleCount = 0;
-      const maxScrambles = 3;
+      const maxScrambles = 2; // Reduced from 3
       
       const updateScramble = () => {
         if (scrambleCount < maxScrambles) {
           setScrambledChar(characters[Math.floor(Math.random() * characters.length)]);
           scrambleCount++;
-          timeoutRef.current = setTimeout(updateScramble, 50);
+          timeoutRef.current = setTimeout(updateScramble, 25); // Reduced from 50
         } else {
           setScrambledChar('');
           setRevealedText(targetText.substring(0, currentLength + 1));
