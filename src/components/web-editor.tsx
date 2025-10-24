@@ -167,7 +167,7 @@ export default function WebEditor() {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   
-  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai-chat'>('files');
+  const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai-chat'>('editor');
   const [activeSidePanel, setActiveSidePanel] = useState<'files' | 'ai-chat'>('files');
   const [isTerminalVisible, setTerminalVisible] = useState(false);
   const [isPreviewVisible, setPreviewVisible] = useState(false);
@@ -289,25 +289,29 @@ export default function WebEditor() {
     try {
       const storageKey = `bytestudio-archive-${user.uid}`;
       const storedProjectsStr = localStorage.getItem(storageKey);
-      const projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
+      let projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
       
       const newTimestamp = new Date().toISOString();
+      const projectIndex = projects.findIndex(p => p.id === projectId);
 
-      if (projectId) { // Updating existing project
-        const projectIndex = projects.findIndex(p => p.id === projectId);
-        if (projectIndex !== -1) {
+      if (projectIndex !== -1) { // Updating existing project
           projects[projectIndex] = { ...projects[projectIndex], name: projectName, files, timestamp: newTimestamp };
-        }
-      } else { // Saving new project
-        const newProjectId = `proj-${Date.now()}`;
-        const newProject: Project = {
-          id: newProjectId,
-          name: projectName,
-          files,
-          timestamp: newTimestamp
-        };
-        projects.push(newProject);
-        setProjectId(newProjectId);
+      } else { // Saving new project or a loaded one that wasn't in the list
+          const newProjectId = projectId || `proj-${Date.now()}`;
+          const newProject: Project = {
+              id: newProjectId,
+              name: projectName,
+              files,
+              timestamp: newTimestamp
+          };
+          if (!projectId) {
+            projects.push(newProject);
+            setProjectId(newProjectId);
+          } else {
+             // This case handles a loaded project that might not be in local storage for some reason.
+             // It ensures we don't lose the work.
+             projects.push(newProject);
+          }
       }
 
       localStorage.setItem(storageKey, JSON.stringify(projects));
