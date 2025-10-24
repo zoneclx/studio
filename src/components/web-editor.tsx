@@ -21,7 +21,6 @@ import {
   PlusCircle,
   Terminal,
   MessageSquare,
-  PanelLeft,
   Settings,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
@@ -45,18 +44,8 @@ import { Label } from './ui/label';
 import { MobileNav } from './mobile-nav';
 import { MobileEditorNav } from './mobile-editor-nav';
 import AiChat from './ai-chat';
-import {
-    SidebarProvider,
-    Sidebar,
-    SidebarHeader,
-    SidebarContent,
-    SidebarFooter,
-    SidebarMenu,
-    SidebarMenuItem,
-    SidebarMenuButton,
-    useSidebar,
-} from './ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 
 const defaultFiles = [
@@ -121,30 +110,11 @@ interface Project {
   timestamp: string;
 }
 
-function EditorLayout({ children }: { children: React.ReactNode }) {
-    const isMobile = useIsMobile();
-    return (
-        <SidebarProvider defaultOpen={!isMobile}>
-            {children}
-        </SidebarProvider>
-    );
-}
-
 export default function WebEditor() {
-    return (
-        <EditorLayout>
-            <Editor />
-        </EditorLayout>
-    );
-}
-
-
-function Editor() {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { open, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
 
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -159,7 +129,7 @@ function Editor() {
   const [newFileName, setNewFileName] = useState('');
   
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai-chat'>('files');
-  const [activeSidebarView, setActiveSidebarView] = useState<'files' | 'ai-chat'>('files');
+  const [activeSidePanel, setActiveSidePanel] = useState<'files' | 'ai-chat'>('files');
 
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
@@ -232,6 +202,9 @@ function Editor() {
           originalLog(...args);
           window.parent.postMessage({ type: 'console', message: args.map(arg => JSON.stringify(arg)).join(' ') }, '*');
         };
+        window.addEventListener('error', function(event) {
+          window.parent.postMessage({ type: 'console', message: 'ERROR: ' + event.message }, '*');
+        });
       </script>
     `;
 
@@ -383,10 +356,10 @@ function Editor() {
     setMobileView('editor');
   };
 
-  const renderFilesView = () => (
+  const renderFilesView = (isForMobile: boolean) => (
     <div className="p-2 h-full bg-card/50 flex-1 flex flex-col min-h-0">
         <div className="flex justify-between items-center mb-2 px-2 pt-2 shrink-0">
-            <h2 className="text-sm font-semibold uppercase">Explorer</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider">Explorer</h2>
             <Dialog open={isNewFileOpen} onOpenChange={setNewFileOpen}>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -415,7 +388,7 @@ function Editor() {
           {files.map((file) => (
             <button
               key={file.name}
-              onClick={() => isMobile ? handleSelectFileMobile(file.name) : setActiveFile(file.name)}
+              onClick={() => isForMobile ? handleSelectFileMobile(file.name) : setActiveFile(file.name)}
               className={cn(
                 'w-full text-left p-2 rounded-md flex items-center gap-2 text-sm',
                  activeFile === file.name
@@ -433,19 +406,21 @@ function Editor() {
 
   const renderEditorView = () => (
     <Tabs value={activeFile} onValueChange={setActiveFile} className="h-full flex flex-col bg-background">
-        <div className="flex items-center justify-between border-b shrink-0">
-            <TabsList className="h-10 bg-transparent p-0 rounded-none border-0">
-            {files.map((file) => (
-                <TabsTrigger 
-                    key={file.name} 
-                    value={file.name} 
-                    className="h-10 text-sm flex items-center gap-1.5 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent"
-                >
-                    <FileIcon filename={file.name} /> 
-                    <span className="hidden sm:inline">{file.name}</span>
-                </TabsTrigger>
-            ))}
-            </TabsList>
+        <div className="flex items-center justify-between border-b shrink-0 h-10">
+            <ScrollArea className="h-10">
+                <TabsList className="h-10 bg-transparent p-0 rounded-none border-0">
+                {files.map((file) => (
+                    <TabsTrigger 
+                        key={file.name} 
+                        value={file.name} 
+                        className="h-10 text-sm flex items-center gap-1.5 px-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-accent/50"
+                    >
+                        <FileIcon filename={file.name} /> 
+                        {file.name}
+                    </TabsTrigger>
+                ))}
+                </TabsList>
+            </ScrollArea>
             <div className="flex items-center gap-2 px-4">
                 <div className="hidden lg:flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={runPreview}>
@@ -526,7 +501,7 @@ function Editor() {
   const renderTerminalView = () => (
      <div className="h-full flex-1 flex flex-col bg-background font-mono text-sm">
         <header className="h-10 border-b flex items-center px-4 shrink-0">
-            <h2 className="font-semibold text-sm">TERMINAL</h2>
+            <h2 className="font-semibold text-sm uppercase tracking-wider">Terminal</h2>
         </header>
         <ScrollArea className="flex-1 p-4">
             {terminalOutput.map((line, index) => (
@@ -556,108 +531,121 @@ function Editor() {
     </div>
   );
 
-  const renderSidebarContent = () => {
-    if (activeSidebarView === 'files') {
-        return renderFilesView();
+  const renderSidePanelContent = () => {
+    if (activeSidePanel === 'files') {
+        return renderFilesView(false);
     }
-    if (activeSidebarView === 'ai-chat') {
-        return (
-            <div className="h-full flex flex-col">
-                <div className="flex-1 min-h-0">
-                    <AiChat />
-                </div>
-            </div>
-        )
+    if (activeSidePanel === 'ai-chat') {
+        return <AiChat />;
     }
     return null;
   }
+  
+  // Mobile UI
+  if (isMobile) {
+    return (
+      <div className="flex h-full w-full flex-col">
+        <div className="flex-1 pb-14 overflow-y-auto">
+          {mobileView === 'files' && renderFilesView(true)}
+          {mobileView === 'editor' && renderEditorView()}
+          {mobileView === 'preview' && renderPreviewView()}
+          {mobileView === 'terminal' && renderTerminalView()}
+          {mobileView === 'ai-chat' && renderAiChatView()}
+        </div>
+        <MobileEditorNav activeView={mobileView} setView={setMobileView} />
+      </div>
+    );
+  }
 
+  // Desktop UI (VS Code style)
   return (
-    <div className="flex h-full w-full flex-col">
-        {isMobile ? (
-          <div className="flex-1 pb-14">
-            {mobileView === 'files' && renderFilesView()}
-            {mobileView === 'editor' && renderEditorView()}
-            {mobileView === 'preview' && renderPreviewView()}
-            {mobileView === 'terminal' && renderTerminalView()}
-            {mobileView === 'ai-chat' && renderAiChatView()}
-          </div>
-        ) : (
-          <ResizablePanelGroup direction="horizontal" className="flex-1">
-            <Sidebar>
-                <SidebarContent>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton 
-                                isActive={activeSidebarView === 'files'}
-                                onClick={() => setActiveSidebarView('files')}
-                                tooltip="Files"
-                            >
-                                <File className="w-5 h-5" />
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton 
-                                isActive={activeSidebarView === 'ai-chat'}
-                                onClick={() => setActiveSidebarView('ai-chat')}
-                                tooltip="AI Assistant"
-                            >
-                                <MessageSquare className="w-5 h-5" />
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarContent>
-                <SidebarFooter>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                             <SidebarMenuButton tooltip="Settings">
-                                <Settings className="w-5 h-5" />
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarFooter>
-            </Sidebar>
+    <TooltipProvider>
+      <div className="flex h-full w-full bg-background text-foreground">
+        {/* Activity Bar */}
+        <div className="w-12 bg-card border-r flex flex-col items-center justify-between py-2">
+            <div className="flex flex-col gap-2">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={cn('w-9 h-9', activeSidePanel === 'files' && 'bg-accent text-accent-foreground')}
+                            onClick={() => setActiveSidePanel('files')}
+                        >
+                            <File className="w-5 h-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Files</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={cn('w-9 h-9', activeSidePanel === 'ai-chat' && 'bg-accent text-accent-foreground')}
+                            onClick={() => setActiveSidePanel('ai-chat')}
+                        >
+                            <MessageSquare className="w-5 h-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">AI Assistant</TooltipContent>
+                </Tooltip>
+            </div>
+            <div className="flex flex-col gap-2">
+                 <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="w-9 h-9">
+                            <Settings className="w-5 h-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Settings</TooltipContent>
+                </Tooltip>
+            </div>
+        </div>
+        
+        {/* Main Layout */}
+        <ResizablePanelGroup direction="horizontal" className="flex-1">
+          {/* Side Panel */}
+          <ResizablePanel defaultSize={15} minSize={10} maxSize={30}>
+              <div className='h-full bg-card/80 border-r'>
+                  {renderSidePanelContent()}
+              </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={15} minSize={10} maxSize={30}>
-                <div className='h-full bg-card'>
-                    {renderSidebarContent()}
-                </div>
-            </ResizablePanel>
+          {/* Editor and Terminal */}
+          <ResizablePanel defaultSize={55}>
+              <ResizablePanelGroup direction="vertical">
+                  <ResizablePanel defaultSize={70}>
+                      {renderEditorView()}
+                  </ResizablePanel>
+                  <ResizableHandle withHandle />
+                  <ResizablePanel defaultSize={30}>
+                      {renderTerminalView()}
+                  </ResizablePanel>
+              </ResizablePanelGroup>
+          </ResizablePanel>
+          
+          <ResizableHandle withHandle />
 
-            <ResizableHandle withHandle />
-
-            <ResizablePanel defaultSize={55}>
-                <ResizablePanelGroup direction="vertical">
-                    <ResizablePanel defaultSize={70}>
-                        {renderEditorView()}
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={30}>
-                        {renderTerminalView()}
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-            </ResizablePanel>
-            
-            <ResizableHandle withHandle />
-
-            <ResizablePanel defaultSize={30}>
-                <div className="h-full bg-background">
-                    <header className="h-10 border-b flex items-center px-4">
-                        <h2 className="font-semibold flex items-center gap-2 text-sm">
-                            <Eye className="w-4 h-4" />
-                            PREVIEW
-                        </h2>
-                    </header>
-                    <div className="h-[calc(100%-2.5rem)]">
-                        {renderPreviewView()}
-                    </div>
-                </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        )}
-      {isMobile && <MobileEditorNav activeView={mobileView} setView={setMobileView} />}
-    </div>
+          {/* Preview Panel */}
+          <ResizablePanel defaultSize={30}>
+              <div className="h-full bg-background">
+                  <header className="h-10 border-b flex items-center px-4">
+                      <h2 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider">
+                          <Eye className="w-4 h-4" />
+                          Preview
+                      </h2>
+                  </header>
+                  <div className="h-[calc(100%-2.5rem)]">
+                      {renderPreviewView()}
+                  </div>
+              </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+    </TooltipProvider>
   );
 }
 
-  
+    
