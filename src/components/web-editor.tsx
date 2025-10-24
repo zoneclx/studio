@@ -130,6 +130,8 @@ export default function WebEditor() {
   
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai-chat'>('files');
   const [activeSidePanel, setActiveSidePanel] = useState<'files' | 'ai-chat'>('files');
+  const [isTerminalVisible, setTerminalVisible] = useState(false);
+  const [isPreviewVisible, setPreviewVisible] = useState(false);
 
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
@@ -590,6 +592,32 @@ export default function WebEditor() {
                     </TooltipTrigger>
                     <TooltipContent side="right">AI Assistant</TooltipContent>
                 </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={cn('w-9 h-9', isTerminalVisible && 'bg-accent text-accent-foreground')}
+                            onClick={() => setTerminalVisible(v => !v)}
+                        >
+                            <Terminal className="w-5 h-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Terminal</TooltipContent>
+                </Tooltip>
+                 <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={cn('w-9 h-9', isPreviewVisible && 'bg-accent text-accent-foreground')}
+                            onClick={() => setPreviewVisible(v => !v)}
+                        >
+                            <Eye className="w-5 h-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Preview</TooltipContent>
+                </Tooltip>
             </div>
             <div className="flex flex-col gap-2">
                  <Tooltip>
@@ -616,32 +644,38 @@ export default function WebEditor() {
           {/* Editor and Terminal */}
           <ResizablePanel defaultSize={55}>
               <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel defaultSize={70}>
+                  <ResizablePanel defaultSize={100} minSize={30}>
                       {renderEditorView()}
                   </ResizablePanel>
-                  <ResizableHandle withHandle />
-                  <ResizablePanel defaultSize={30}>
-                      {renderTerminalView()}
-                  </ResizablePanel>
+                  {isTerminalVisible && (
+                    <>
+                      <ResizableHandle withHandle />
+                      <ResizablePanel defaultSize={30} minSize={10} collapsible>
+                          {renderTerminalView()}
+                      </ResizablePanel>
+                    </>
+                  )}
               </ResizablePanelGroup>
           </ResizablePanel>
           
-          <ResizableHandle withHandle />
-
-          {/* Preview Panel */}
-          <ResizablePanel defaultSize={30}>
-              <div className="h-full bg-background">
-                  <header className="h-10 border-b flex items-center px-4">
-                      <h2 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider">
-                          <Eye className="w-4 h-4" />
-                          Preview
-                      </h2>
-                  </header>
-                  <div className="h-[calc(100%-2.5rem)]">
-                      {renderPreviewView()}
+          {isPreviewVisible && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={30} minSize={20} collapsible>
+                  <div className="h-full bg-background">
+                      <header className="h-10 border-b flex items-center px-4">
+                          <h2 className="font-semibold flex items-center gap-2 text-sm uppercase tracking-wider">
+                              <Eye className="w-4 h-4" />
+                              Preview
+                          </h2>
+                      </header>
+                      <div className="h-[calc(100%-2.5rem)]">
+                          {renderPreviewView()}
+                      </div>
                   </div>
-              </div>
-          </ResizablePanel>
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </div>
     </TooltipProvider>
