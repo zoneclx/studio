@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Canvas } from '@react-three/fiber'
+import { Code, FileText, Smartphone } from 'lucide-react';
 
 
 const codeSnippet = `
@@ -60,7 +60,7 @@ const Laptop = () => (
       </div>
       {/* Code */}
       <pre className="p-2 font-mono text-[5px] sm:text-[6px] text-gray-300 whitespace-pre-wrap">
-        <span className="text-purple-400">const</span> <span className="text-green-300">App</span> = () =&gt; ( ... );
+        <span className="text-purple-400">const</span> <span className="text-green-300">App</span> = () => ( ... );
       </pre>
     </div>
     {/* Base */}
@@ -87,55 +87,38 @@ const Phone = () => (
   </div>
 );
 
-const MatrixRain = () => {
-    useEffect(() => {
-        const canvas = document.getElementById('matrix-canvas') as HTMLCanvasElement;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        let w = canvas.width = canvas.parentElement!.clientWidth;
-        let h = canvas.height = canvas.parentElement!.clientHeight;
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, w, h);
-
-        const cols = Math.floor(w / 20) + 1;
-        const ypos = Array(cols).fill(0);
-
-        function matrix() {
-            if(!ctx) return;
-            ctx.fillStyle = '#0001';
-            ctx.fillRect(0, 0, w, h);
-
-            ctx.fillStyle = '#0f0';
-            ctx.font = '15pt monospace';
-
-            ypos.forEach((y, ind) => {
-                const text = String.fromCharCode(Math.random() * 128);
-                const x = ind * 20;
-                ctx.fillText(text, x, y);
-                if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
-                else ypos[ind] = y + 20;
-            });
-        }
-        
-        const interval = setInterval(matrix, 50);
-        return () => clearInterval(interval);
-
-    }, []);
-
-    return <canvas id="matrix-canvas" className="absolute inset-0 w-full h-full rounded-lg"></canvas>;
-}
+const EditorSchematic = () => (
+  <div className="relative w-[280px] h-[180px] sm:w-[320px] sm:h-[210px] md:w-[380px] md:h-[240px] bg-gray-900 rounded-lg border-2 border-gray-700 flex p-3 gap-2">
+    {/* Sidebar */}
+    <div className="w-1/4 h-full bg-gray-800/50 rounded-md p-2 space-y-2">
+        <div className="h-4 bg-primary/30 rounded w-full"></div>
+        <div className="h-4 bg-gray-700/50 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-700/50 rounded w-full"></div>
+    </div>
+    {/* Main panel */}
+    <div className="w-3/4 h-full flex flex-col gap-2">
+        {/* Editor */}
+        <div className="h-2/3 bg-gray-800/50 rounded-md p-2">
+            <div className="h-3 bg-blue-400/50 rounded w-1/2 mb-2"></div>
+            <div className="h-3 bg-pink-400/50 rounded w-3/4"></div>
+        </div>
+        {/* Terminal */}
+        <div className="h-1/3 bg-gray-800/50 rounded-md p-2">
+            <div className="h-3 bg-green-400/50 rounded w-2/3"></div>
+        </div>
+    </div>
+  </div>
+);
 
 
 export default function AnimatedDevices() {
-  const [activeDevice, setActiveDevice] = useState(0); // 0: Laptop, 1: Phone, 2: Matrix
+  const [activeDevice, setActiveDevice] = useState(0); // 0: Laptop, 1: Phone, 2: Editor
 
   useEffect(() => {
     const sequence = [
       { device: 0, duration: 5000 }, // Laptop
       { device: 1, duration: 7000 }, // Phone
-      { device: 2, duration: 8000 }, // Matrix
+      { device: 2, duration: 6000 }, // Editor Schematic
     ];
 
     let currentIndex = 0;
@@ -154,7 +137,7 @@ export default function AnimatedDevices() {
   const devices = [
       <Laptop key="laptop" />,
       <Phone key="phone" />,
-      <div key="matrix" className="relative w-[280px] h-[180px] sm:w-[320px] sm:h-[210px] md:w-[380px] md:h-[240px] bg-black rounded-lg"><MatrixRain /></div>
+      <EditorSchematic key="editor" />
   ]
 
   return (
@@ -164,7 +147,7 @@ export default function AnimatedDevices() {
             key={index}
             className={cn(
               "absolute transition-opacity duration-1000",
-              activeDevice === index ? "opacity-100 device-fade-in-animation" : "opacity-0"
+              activeDevice === index ? "opacity-100 device-fade-in-animation" : "opacity-0 pointer-events-none"
             )}
           >
               {device}
