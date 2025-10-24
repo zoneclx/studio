@@ -3,9 +3,8 @@
 
 import React, { createContext, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword, sendEmailVerification } from 'firebase/auth';
+import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile as firebaseUpdateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword, sendEmailVerification, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
-import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { doc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,26 +55,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
     await setPersistence(auth, persistence);
-    initiateEmailSignIn(auth, email, pass);
-    // Let the onAuthStateChanged handle the redirect via the user/loading state in pages.
+    await signInWithEmailAndPassword(auth, email, pass);
   };
 
   const signUp = async (email: string, pass: string) => {
-    initiateEmailSignUp(auth, email, pass, (newUser) => {
-        if(newUser) {
-            sendEmailVerification(newUser);
-            // Also create the user doc in firestore
-            const userDocRef = doc(firestore, 'users', newUser.uid);
-            const randomUsername = generateRandomUsername();
-            setDocumentNonBlocking(userDocRef, {
-                uid: newUser.uid,
-                email: newUser.email,
-                displayName: randomUsername,
-                displayName_lowercase: randomUsername.toLowerCase(),
-            }, { merge: true });
-        }
-    });
-    // Let the onAuthStateChanged handle the redirect.
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const newUser = userCredential.user;
+    
+    if(newUser) {
+        await sendEmailVerification(newUser);
+        const userDocRef = doc(firestore, 'users', newUser.uid);
+        const randomUsername = generateRandomUsername();
+        await firebaseUpdateProfile(newUser, { displayName: randomUsername });
+        setDocumentNonBlocking(userDocRef, {
+            uid: newUser.uid,
+            email: newUser.email,
+            displayName: randomUsername,
+            displayName_lowercase: randomUsername.toLowerCase(),
+        }, { merge: true });
+    }
   };
 
   const signOut = async () => {
