@@ -577,10 +577,10 @@ function Editor() {
   }
 
   return (
-    <div className="flex h-full flex-col pt-16">
+    <div className="flex h-full w-full flex-col">
       <div className='flex-1 flex flex-col min-h-0'>
         {isMobile ? (
-          <div className="flex-1 pb-14">
+          <div className="flex-1 pb-14 pt-12">
             {mobileView === 'files' && renderFilesView()}
             {mobileView === 'editor' && renderEditorView()}
             {mobileView === 'preview' && renderPreviewView()}
