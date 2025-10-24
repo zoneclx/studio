@@ -3,8 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { Canvas } from '@react-three/fiber'
 
-// Dummy code to display inside the devices
+
 const codeSnippet = `
 <div className="App">
   <header className="App-header">
@@ -86,36 +87,89 @@ const Phone = () => (
   </div>
 );
 
+const MatrixRain = () => {
+    useEffect(() => {
+        const canvas = document.getElementById('matrix-canvas') as HTMLCanvasElement;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let w = canvas.width = canvas.parentElement!.clientWidth;
+        let h = canvas.height = canvas.parentElement!.clientHeight;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);
+
+        const cols = Math.floor(w / 20) + 1;
+        const ypos = Array(cols).fill(0);
+
+        function matrix() {
+            if(!ctx) return;
+            ctx.fillStyle = '#0001';
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = '15pt monospace';
+
+            ypos.forEach((y, ind) => {
+                const text = String.fromCharCode(Math.random() * 128);
+                const x = ind * 20;
+                ctx.fillText(text, x, y);
+                if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+                else ypos[ind] = y + 20;
+            });
+        }
+        
+        const interval = setInterval(matrix, 50);
+        return () => clearInterval(interval);
+
+    }, []);
+
+    return <canvas id="matrix-canvas" className="absolute inset-0 w-full h-full rounded-lg"></canvas>;
+}
+
+
 export default function AnimatedDevices() {
-  const [showPhone, setShowPhone] = useState(false);
+  const [activeDevice, setActiveDevice] = useState(0); // 0: Laptop, 1: Phone, 2: Matrix
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowPhone(true);
-    }, 4000); // Switch to phone after 4 seconds
+    const sequence = [
+      { device: 0, duration: 5000 }, // Laptop
+      { device: 1, duration: 7000 }, // Phone
+      { device: 2, duration: 8000 }, // Matrix
+    ];
 
+    let currentIndex = 0;
+    
+    const nextDevice = () => {
+      currentIndex = (currentIndex + 1) % sequence.length;
+      setActiveDevice(sequence[currentIndex].device);
+      setTimeout(nextDevice, sequence[currentIndex].duration);
+    };
+
+    const timer = setTimeout(nextDevice, sequence[currentIndex].duration);
+    
     return () => clearTimeout(timer);
   }, []);
 
+  const devices = [
+      <Laptop key="laptop" />,
+      <Phone key="phone" />,
+      <div key="matrix" className="relative w-[280px] h-[180px] sm:w-[320px] sm:h-[210px] md:w-[380px] md:h-[240px] bg-black rounded-lg"><MatrixRain /></div>
+  ]
+
   return (
     <div className="relative w-full h-64 md:h-80 flex items-center justify-center">
-      <div
-        className={cn(
-          "absolute transition-opacity duration-700",
-          showPhone ? "opacity-0" : "opacity-100",
-          !showPhone && "device-fade-in-animation"
-        )}
-      >
-        <Laptop />
-      </div>
-      <div
-        className={cn(
-          "absolute transition-opacity duration-700",
-          showPhone ? "opacity-100 device-fade-in-animation" : "opacity-0"
-        )}
-      >
-        <Phone />
-      </div>
+      {devices.map((device, index) => (
+          <div
+            key={index}
+            className={cn(
+              "absolute transition-opacity duration-1000",
+              activeDevice === index ? "opacity-100 device-fade-in-animation" : "opacity-0"
+            )}
+          >
+              {device}
+          </div>
+      ))}
     </div>
   );
 }

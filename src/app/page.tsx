@@ -60,7 +60,7 @@ const features = [
     {
         icon: <Sparkles className="w-8 h-8 text-primary" />,
         title: "AI-Assisted Features",
-        description: "Leverage AI to generate code, get suggestions, and accelerate your development workflow. (Currently under development).",
+        description: "Leverage AI to get suggestions and accelerate your development workflow, making changes to your code with simple prompts.",
     },
 ];
 
@@ -80,11 +80,11 @@ export default function HomePage() {
         const effectContainerClass = "text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight mb-4 min-h-[120px] sm:min-h-[140px] lg:min-h-[150px] break-words";
         
         if (!mounted) {
-            return <div className={effectContainerClass} />;
+            return <div className={effectContainerClass} data-no-scroll-animation />;
         }
         if (theme === 'redhat') {
             return (
-                <div className={cn(effectContainerClass, 'text-foreground')}>
+                <div className={cn(effectContainerClass, 'text-foreground')} data-no-scroll-animation>
                     <HackerEffect
                         texts={redhatTitles}
                     />
@@ -92,7 +92,7 @@ export default function HomePage() {
             );
         }
         return (
-             <div className={effectContainerClass}>
+             <div className={effectContainerClass} data-no-scroll-animation>
                 <TypewriterEffect
                     texts={animatedTitles}
                 />
@@ -111,7 +111,7 @@ export default function HomePage() {
             <div className="absolute inset-0 -z-20 animated-gradient-background opacity-20 dark:opacity-30"></div>
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="flex flex-col items-start text-left z-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <div className="flex flex-col items-start text-left z-10" data-no-scroll-animation>
                     {renderTextEffect()}
                     <p className={cn("text-base sm:text-lg lg:text-xl max-w-xl mb-4 text-muted-foreground")}>
                         Byte Studio is a powerful, browser-based development environment.
@@ -129,7 +129,7 @@ export default function HomePage() {
                     </div>
                 </div>
 
-                <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                <div className="z-10" data-no-scroll-animation>
                   <AnimatedDevices />
                 </div>
             </div>
@@ -204,5 +204,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
