@@ -58,8 +58,8 @@ export default function RootLayout({
             <AuthProvider>
               <PluginProvider>
                 <AnimatedGradient />
-                <Header />
-                <main className="relative z-10 flex-1 flex flex-col">
+                 {!isEditorPage && <Header />}
+                <main className={cn("relative z-10 flex-1 flex flex-col", isEditorPage && "h-full")}>
                   {children}
                 </main>
                 {!isEditorPage && <Footer />}

@@ -27,6 +27,15 @@
     --gradient-start: 259 92% 90%;
     --gradient-mid: 240 50% 98%;
     --gradient-end: 280 90% 95%;
+
+    --sidebar-background: 220 13% 96%;
+    --sidebar-foreground: 220 9% 46%;
+    --sidebar-primary: 259 92% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 90%;
+    --sidebar-accent-foreground: 220 14% 11%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-ring: 259 92% 67%;
   }
 
   .dark {
@@ -52,6 +61,15 @@
     --gradient-start: 259 50% 15%;
     --gradient-mid: 240 20% 5%;
     --gradient-end: 280 50% 15%;
+
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 65%;
+    --sidebar-primary: 259 92% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 259 92% 67%;
   }
 
   .redhat {
@@ -77,6 +95,15 @@
     --gradient-start: 0 50% 15%;
     --gradient-mid: 240 20% 5%;
     --gradient-end: 0 50% 20%;
+    
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 65%;
+    --sidebar-primary: 0 84.2% 60.2%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 0 84.2% 60.2%;
   }
 }
 
