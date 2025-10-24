@@ -46,6 +46,7 @@ import { MobileEditorNav } from './mobile-editor-nav';
 import AiChat from './ai-chat';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { ThemeToggle } from './theme-toggle';
 
 
 const defaultFiles = [
@@ -126,6 +127,7 @@ export default function WebEditor() {
   const [isShareOpen, setShareOpen] = useState(false);
   const [isSaveOpen, setSaveOpen] = useState(false);
   const [isNewFileOpen, setNewFileOpen] = useState(false);
+  const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   
   const [mobileView, setMobileView] = useState<'files' | 'editor' | 'preview' | 'terminal' | 'ai-chat'>('files');
@@ -620,14 +622,30 @@ export default function WebEditor() {
                 </Tooltip>
             </div>
             <div className="flex flex-col gap-2">
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="w-9 h-9">
-                            <Settings className="w-5 h-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Settings</TooltipContent>
-                </Tooltip>
+                <Dialog open={isSettingsOpen} onOpenChange={setSettingsOpen}>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="w-9 h-9">
+                                    <Settings className="w-5 h-5" />
+                                </Button>
+                            </DialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Settings</TooltipContent>
+                    </Tooltip>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Editor Settings</DialogTitle>
+                            <DialogDescription>Customize your development environment.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                           <div className="flex items-center justify-between">
+                               <Label>Theme</Label>
+                               <ThemeToggle />
+                           </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
         
@@ -681,5 +699,7 @@ export default function WebEditor() {
     </TooltipProvider>
   );
 }
+
+    
 
     
