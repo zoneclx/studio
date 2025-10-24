@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import AnimatedLaptop from '@/components/animated-laptop';
 
 const animatedTitles = [
     "Build a website with a single prompt.",
@@ -129,31 +130,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                  <Card className="transform-gpu transition-transform duration-500 hover:rotate-[-2deg] hover:shadow-2xl bg-card/50 backdrop-blur-sm">
-                      <CardContent className="p-2">
-                          <div className="bg-muted/30 p-4 rounded-lg">
-                              <div className="bg-background/80 rounded-md shadow-inner-lg overflow-hidden border">
-                                  <div className="h-8 flex items-center justify-between px-3 bg-muted/50 border-b">
-                                      <div className="flex items-center gap-1.5">
-                                          <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                          <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                          <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                                      </div>
-                                      <div className="text-sm text-muted-foreground font-mono bg-background px-4 py-0.5 rounded-md border">
-                                        app.js
-                                      </div>
-                                  </div>
-                                  <div className="p-6 text-left space-y-2 font-mono text-xs text-muted-foreground">
-                                      <p><span className="text-blue-400">import</span> React <span className="text-blue-400">from</span> <span className="text-yellow-300">'react'</span>;</p>
-                                      <p><span className="text-purple-400">const</span> <span className="text-green-300">App</span> = () => (</p>
-                                      <div className="w-full h-4 bg-muted rounded-full animate-pulse my-2 ml-4"></div>
-                                      <p>);</p>
-                                      <p><span className="text-blue-400">export default</span> App;</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </CardContent>
-                  </Card>
+                  <AnimatedLaptop />
                 </div>
             </div>
         </section>
