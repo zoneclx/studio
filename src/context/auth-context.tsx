@@ -7,7 +7,7 @@ import { User, signOut as firebaseSignOut, sendPasswordResetEmail, setPersistenc
 import { useAuth as useFirebaseAuth, useUser, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { initiateEmailSignIn, initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { doc, collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -40,10 +40,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     if (user && !isUserLoading && !user.displayName) {
       const randomUsername = generateRandomUsername();
-      // This is a non-blocking call to update the Auth profile
-      firebaseUpdateProfile(user, { displayName: randomUsername });
+      firebaseUpdateProfile(user, { displayName: randomUsername }).then(() => {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        setDocumentNonBlocking(userDocRef, { 
+          displayName: randomUsername,
+          displayName_lowercase: randomUsername.toLowerCase(),
+          email: user.email,
+          uid: user.uid,
+        }, { merge: true });
+      });
     }
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, firestore]);
 
   const signIn = async (email: string, pass: string, rememberMe = false) => {
     const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
@@ -53,9 +60,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signUp = async (email: string, pass: string) => {
-    initiateEmailSignUp(auth, email, pass, (user) => {
-        if(user) {
-            sendEmailVerification(user);
+    initiateEmailSignUp(auth, email, pass, (newUser) => {
+        if(newUser) {
+            sendEmailVerification(newUser);
+            // Also create the user doc in firestore
+            const userDocRef = doc(firestore, 'users', newUser.uid);
+            const randomUsername = generateRandomUsername();
+            setDocumentNonBlocking(userDocRef, {
+                uid: newUser.uid,
+                email: newUser.email,
+                displayName: randomUsername,
+                displayName_lowercase: randomUsername.toLowerCase(),
+            }, { merge: true });
         }
     });
     // Let the onAuthStateChanged handle the redirect.
@@ -77,7 +93,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!user) throw new Error("Not authenticated");
 
     const authUpdatePayload: { displayName?: string } = {};
-    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string, email?: string, uid?: string } = {};
+    const firestoreUpdatePayload: { displayName?: string; displayName_lowercase?: string } = {};
 
     if (details.name && details.name !== user.displayName) {
       const isTaken = await isUsernameTaken(details.name);
@@ -94,15 +110,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       firestoreUpdatePayload.displayName_lowercase = details.name.toLowerCase();
     }
     
-    firestoreUpdatePayload.email = user.email!;
-    firestoreUpdatePayload.uid = user.uid;
-
     if (Object.keys(authUpdatePayload).length > 0) {
       await firebaseUpdateProfile(user, authUpdatePayload);
     }
     
     const userDocRef = doc(firestore, 'users', user.uid);
-    // This is now the primary place where user data is written to Firestore
     setDocumentNonBlocking(userDocRef, firestoreUpdatePayload, { merge: true });
   };
 
@@ -111,7 +123,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!user.emailVerified) throw new Error("Email not verified. Please verify your email before changing the password.");
 
     const credential = EmailAuthProvider.credential(user.email, currentPass);
-    await reauthenticateWithCredential(user, credential);
+    try {
+        await reauthenticateWithCredential(user, credential);
+    } catch (error: any) {
+        if (error.code === 'auth/invalid-credential') {
+            throw new Error('The current password you entered is incorrect. Please try again.');
+        }
+        throw error;
+    }
     await updatePassword(user, newPass);
   };
   
