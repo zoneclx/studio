@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Code, Terminal, Share2, Sparkles, Server, GitBranch, MessageSquare } from 'lucide-react';
+import { ArrowRight, Code, Terminal, Share2, Sparkles, Server, GitBranch, MessageSquare, User } from 'lucide-react';
 import HackerEffect from '@/components/hacker-effect';
 import TypewriterEffect from '@/components/typewriter-effect';
 import { cn } from '@/lib/utils';
@@ -190,7 +190,7 @@ export default function HomePage() {
                         Byte Studio leverages state-of-the-art web technologies to turn your ideas into reality. Our platform provides a robust, scalable, and powerful environment for instant development and deployment.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start max-w-7xl mx-auto">
                     <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
@@ -204,6 +204,19 @@ export default function HomePage() {
                             </p>
                         </CardContent>
                     </Card>
+                     <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        <CardHeader>
+                            <div className="flex items-center gap-2 mb-2">
+                                <User className="w-8 h-8 text-primary" />
+                                <h3 className="text-2xl font-display">About the Developer</h3>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">
+                                This application was created by Shawn Enzo J. Gimena, a passionate high school student with a drive for building innovative web solutions. This project showcases the power of modern development tools in the hands of a young creator.
+                            </p>
+                        </CardContent>
+                    </Card>
                     <Card className="bg-card/50 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                         <CardHeader>
                             <div className="flex items-center gap-2 mb-2">
@@ -213,7 +226,7 @@ export default function HomePage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-muted-foreground">
-                                By harnessing the power of modern web frameworks and cloud infrastructure, we provide an editor that is fast, reliable, and accessible from anywhere. This collaboration ensures that our users benefit from cutting-edge technology, resulting in a faster development cycle and a seamless creative process.
+                                By harnessing the power of modern web frameworks and cloud infrastructure, we provide an editor that is fast, reliable, and accessible from anywhere. This collaboration ensures that our users benefit from cutting-edge technology.
                             </p>
                         </CardContent>
                     </Card>
