@@ -17,8 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Sparkles, ArrowLeft } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Sparkles, ArrowLeft, LogIn } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -26,7 +26,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { signUp } = useAuth();
+  const { user, loading: authLoading, signUp } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +48,44 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+      return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+              <Card className="w-full max-w-sm">
+                  <CardHeader>
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                       <Skeleton className="h-10 w-full" />
+                  </CardContent>
+              </Card>
+          </div>
+      )
+  }
+  
+  if (user) {
+      return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+              <Card className="w-full max-w-sm text-center">
+                  <CardHeader>
+                      <CardTitle>You're Already Signed In</CardTitle>
+                      <CardDescription>You are logged in as {user.email}. No need to sign up again!</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <Link href="/dashboard">
+                          <Button className="w-full">
+                              <LogIn className="mr-2 h-4 w-4" /> Go to Dashboard
+                          </Button>
+                      </Link>
+                  </CardContent>
+              </Card>
+          </div>
+      )
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">

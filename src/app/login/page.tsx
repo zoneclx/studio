@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
-import { Sparkles, ArrowLeft } from 'lucide-react';
+import { Sparkles, ArrowLeft, LogIn } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { signIn } = useAuth();
+  const { user, loading: authLoading, signIn } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +44,44 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+  
+    if (authLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+                <Card className="w-full max-w-sm">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent className="grid gap-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                         <Skeleton className="h-10 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+    
+    if (user) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+                <Card className="w-full max-w-sm text-center">
+                    <CardHeader>
+                        <CardTitle>You're Already In!</CardTitle>
+                        <CardDescription>You are already logged in as {user.email}.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href="/dashboard">
+                            <Button className="w-full">
+                                <LogIn className="mr-2 h-4 w-4" /> Go to Dashboard
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
