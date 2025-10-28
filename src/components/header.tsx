@@ -114,7 +114,7 @@ export default function Header() {
                   </Link>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                  <Link href="/shared">
+                  <Link href="/under-development">
                     <Users className="mr-2 h-4 w-4" />
                     <span>Shared With Me</span>
                   </Link>
