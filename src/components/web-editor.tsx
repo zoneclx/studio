@@ -23,6 +23,7 @@ import {
   MessageSquare,
   Settings,
   Sparkles,
+  HardHat,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -50,6 +51,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { ThemeToggle } from './theme-toggle';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
+import { Card, CardHeader, CardTitle, CardDescription } from './ui/card';
 
 
 const Logo = () => {
@@ -304,14 +306,8 @@ export default function WebEditor() {
               files,
               timestamp: newTimestamp
           };
-          if (!projectId) {
-            projects.push(newProject);
-            setProjectId(newProjectId);
-          } else {
-             // This case handles a loaded project that might not be in local storage for some reason.
-             // It ensures we don't lose the work.
-             projects.push(newProject);
-          }
+          projects.push(newProject);
+          setProjectId(newProjectId);
       }
 
       localStorage.setItem(storageKey, JSON.stringify(projects));
@@ -570,9 +566,29 @@ export default function WebEditor() {
     </div>
   );
 
+  const UnderDevView = () => (
+    <div className="h-full w-full flex flex-col items-center justify-center p-4 text-center bg-background">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit border border-primary/20 mb-2">
+            <HardHat className="w-8 h-8 text-primary" />
+          </div>
+          <CardTitle>Coming Soon!</CardTitle>
+          <CardDescription>
+            The AI Assistant is currently under development. Check back later!
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+
   const renderAiChatView = () => (
-    <div className="h-full">
-        <AiChat />
+    <div className="h-full bg-card/80">
+      <header className="flex items-center gap-2 p-3 border-b h-14">
+          <Sparkles className="w-6 h-6 text-primary" />
+          <h2 className="text-lg font-semibold">AI Assistant</h2>
+      </header>
+      <UnderDevView />
     </div>
   );
 
@@ -581,7 +597,7 @@ export default function WebEditor() {
         return renderFilesView(false);
     }
     if (activeSidePanel === 'ai-chat') {
-        return <AiChat />;
+        return renderAiChatView();
     }
     return null;
   }
@@ -619,7 +635,7 @@ export default function WebEditor() {
           {mobileView === 'editor' && renderEditorView()}
           {mobileView === 'preview' && renderPreviewView()}
           {mobileView === 'terminal' && renderTerminalView()}
-          {mobileView === 'ai-chat' && renderAiChatView()}
+          {mobileView === 'ai-chat' && <UnderDevView />}
         </div>
         <MobileEditorNav activeView={mobileView} setView={setMobileView} />
       </div>
@@ -664,11 +680,12 @@ export default function WebEditor() {
                                         size="icon" 
                                         className={cn('w-9 h-9', activeSidePanel === 'ai-chat' && 'bg-accent text-accent-foreground')}
                                         onClick={() => setActiveSidePanel('ai-chat')}
+                                        disabled
                                     >
                                         <MessageSquare className="w-5 h-5" />
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent side="right">AI Assistant</TooltipContent>
+                                <TooltipContent side="right">AI Assistant (Coming Soon)</TooltipContent>
                             </Tooltip>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -777,3 +794,5 @@ export default function WebEditor() {
     </div>
   );
 }
+
+    
