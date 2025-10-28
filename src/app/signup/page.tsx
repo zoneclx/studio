@@ -35,7 +35,7 @@ export default function SignupPage() {
       await signUp(email, password);
       toast({
         title: 'Account Created!',
-        description: 'You have successfully signed up.',
+        description: 'Welcome aboard! Check your email to verify your account.',
       });
       router.push('/dashboard');
     } catch (error: any) {

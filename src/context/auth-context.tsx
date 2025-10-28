@@ -49,6 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     if(newUser) {
         await sendEmailVerification(newUser);
+         toast({
+            title: 'Verification Email Sent',
+            description: "We've sent a verification link to your email address. Please check your inbox!",
+        });
         const userDocRef = doc(firestore, 'users', newUser.uid);
         const randomUsername = generateRandomUsername();
         await firebaseUpdateProfile(newUser, { displayName: randomUsername });
