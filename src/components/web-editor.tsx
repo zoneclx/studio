@@ -24,6 +24,7 @@ import {
   Settings,
   Sparkles,
   HardHat,
+  Loader2,
 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -176,6 +177,7 @@ export default function WebEditor() {
 
   const [terminalOutput, setTerminalOutput] = useState<string[]>(['> Welcome to Byte Studio Terminal (simulation)...', '> Logs from your script will appear here.']);
   const [terminalInput, setTerminalInput] = useState('');
+  const [isInstalling, setIsInstalling] = useState(false);
   
   useEffect(() => {
     if (!user) return;
@@ -359,21 +361,38 @@ export default function WebEditor() {
     toast({ title: 'File Created', description: `Successfully created ${newFileName}.` });
   };
 
-  const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const command = terminalInput.trim();
-      const newOutput = [...terminalOutput, `> ${command}`];
+  const handleTerminalCommand = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter' || isInstalling) return;
+
+    const command = terminalInput.trim();
+    const newOutput = [...terminalOutput, `> ${command}`];
+    setTerminalOutput(newOutput);
+    setTerminalInput('');
+
+    if (command.toLowerCase() === 'clear') {
+      setTerminalOutput(['> Terminal cleared.']);
+    } else if (command.toLowerCase() === 'npm install') {
+      setIsInstalling(true);
       
-      if (command.toLowerCase() === 'clear') {
-        setTerminalOutput(['> Terminal cleared.']);
-      } else if (command) {
-        newOutput.push(`-bash: command not found: ${command}`);
-        setTerminalOutput(newOutput);
-      } else {
-        setTerminalOutput(newOutput);
+      const installSteps = [
+        "Resolving packages...",
+        "Fetching packages...",
+        "Linking dependencies...",
+        "up to date, audited 23 packages in 1s",
+        "3 packages are looking for funding",
+        "  run `npm fund` for details",
+        "found 0 vulnerabilities",
+        "Installation complete."
+      ];
+
+      for (const step of installSteps) {
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 100));
+        setTerminalOutput(prev => [...prev, step]);
       }
-      
-      setTerminalInput('');
+
+      setIsInstalling(false);
+    } else if (command) {
+      setTerminalOutput(prev => [...prev, `-bash: command not found: ${command}`]);
     }
   };
 
@@ -551,6 +570,7 @@ export default function WebEditor() {
                     <p className="whitespace-pre-wrap">{line}</p>
                 </div>
             ))}
+            {isInstalling && <div className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> <span>Running...</span></div>}
         </ScrollArea>
         <div className="flex items-center gap-2 p-2 border-t">
             <span className='text-muted-foreground'>></span>
@@ -561,6 +581,7 @@ export default function WebEditor() {
                 onKeyDown={handleTerminalCommand}
                 className="bg-transparent border-none text-foreground w-full p-0 h-auto focus-visible:ring-0"
                 placeholder="Type a command..."
+                disabled={isInstalling}
             />
         </div>
     </div>
@@ -782,7 +803,7 @@ export default function WebEditor() {
                                 </header>
                                 <div className="h-[calc(100%-2.5rem)]">
                                     {renderPreviewView()}
-                                </div>
+                                 </div>
                             </div>
                         </ResizablePanel>
                         </>
@@ -794,5 +815,7 @@ export default function WebEditor() {
     </div>
   );
 }
+
+    
 
     
