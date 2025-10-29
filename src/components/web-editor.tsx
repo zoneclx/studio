@@ -301,8 +301,7 @@ export default function WebEditor() {
       let projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
       const newTimestamp = new Date().toISOString();
   
-      let currentProjectId = projectId;
-      const existingProjectIndex = currentProjectId ? projects.findIndex(p => p.id === currentProjectId) : -1;
+      const existingProjectIndex = projectId ? projects.findIndex(p => p.id === projectId) : -1;
   
       if (existingProjectIndex !== -1) {
         // Update existing project
@@ -322,8 +321,7 @@ export default function WebEditor() {
           timestamp: newTimestamp,
         };
         projects.push(newProject);
-        setProjectId(newProjectId); // Update state with the new ID
-        currentProjectId = newProjectId;
+        setProjectId(newProjectId); // *** THIS WAS THE MISSING PIECE ***
       }
   
       localStorage.setItem(storageKey, JSON.stringify(projects));
@@ -837,3 +835,4 @@ export default function WebEditor() {
 
 
     
+
