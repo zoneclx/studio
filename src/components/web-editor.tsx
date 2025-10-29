@@ -283,45 +283,60 @@ export default function WebEditor() {
         description: 'You need to be logged in to save your work.',
         variant: 'destructive',
       });
+      setSaveOpen(false);
       return;
     }
     if (!projectName.trim()) {
-        toast({ title: 'Project Name Required', description: 'Please enter a name for your project.', variant: 'destructive'});
-        return;
+      toast({
+        title: 'Project Name Required',
+        description: 'Please enter a name for your project.',
+        variant: 'destructive',
+      });
+      return;
     }
-
+  
     try {
       const storageKey = `bytestudio-archive-${user.uid}`;
       const storedProjectsStr = localStorage.getItem(storageKey);
       let projects: Project[] = storedProjectsStr ? JSON.parse(storedProjectsStr) : [];
-      
       const newTimestamp = new Date().toISOString();
-      const projectIndex = projects.findIndex(p => p.id === projectId);
-
-      if (projectIndex !== -1) { // Updating existing project
-          projects[projectIndex] = { ...projects[projectIndex], name: projectName, files, timestamp: newTimestamp };
-      } else { // Saving new project or a loaded one that wasn't in the list
-          const newProjectId = projectId || `proj-${Date.now()}`;
-          const newProject: Project = {
-              id: newProjectId,
-              name: projectName,
-              files,
-              timestamp: newTimestamp
-          };
-          projects.push(newProject);
-          setProjectId(newProjectId);
+  
+      let currentProjectId = projectId;
+      const existingProjectIndex = currentProjectId ? projects.findIndex(p => p.id === currentProjectId) : -1;
+  
+      if (existingProjectIndex !== -1) {
+        // Update existing project
+        projects[existingProjectIndex] = {
+          ...projects[existingProjectIndex],
+          name: projectName,
+          files,
+          timestamp: newTimestamp,
+        };
+      } else {
+        // Create new project
+        const newProjectId = `proj-${Date.now()}`;
+        const newProject: Project = {
+          id: newProjectId,
+          name: projectName,
+          files,
+          timestamp: newTimestamp,
+        };
+        projects.push(newProject);
+        setProjectId(newProjectId); // Update state with the new ID
+        currentProjectId = newProjectId;
       }
-
+  
       localStorage.setItem(storageKey, JSON.stringify(projects));
       toast({
         title: 'Project Saved!',
-        description: `${projectName} has been saved.`,
+        description: `'${projectName}' has been successfully saved.`,
       });
       setSaveOpen(false);
     } catch (error) {
+      console.error('Failed to save project:', error);
       toast({
         title: 'Save Failed',
-        description: 'Could not save your work. Please try again.',
+        description: 'Could not save your work. Your browser might be blocking local storage.',
         variant: 'destructive',
       });
     }
@@ -817,5 +832,8 @@ export default function WebEditor() {
 }
 
     
+
+    
+
 
     
