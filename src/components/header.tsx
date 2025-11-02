@@ -25,6 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import { Badge } from './ui/badge';
 
 const Logo = () => {
     const { theme } = useTheme();
@@ -67,8 +68,9 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-3">
           <Logo />
+          <Badge variant="outline">Beta</Badge>
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-4">
