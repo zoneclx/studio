@@ -12,17 +12,17 @@ const GithubIcon = (props: React.ComponentProps<'svg'>) => (
   </svg>
 );
 
-// A simple Twitter/X icon component
-const TwitterIcon = (props: React.ComponentProps<'svg'>) => (
-    <svg viewBox="0 0 1200 1227" fill="none" aria-hidden="true" {...props}>
-        <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L112.383 44.0126H302.542L604.45 507.459L651.918 575.353L1093.53 1181.99H903.373L569.165 687.854V687.828Z" fill="currentColor"></path>
+const InstagramIcon = (props: React.ComponentProps<'svg'>) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
     </svg>
 );
 
-// A simple Discord icon component
-const DiscordIcon = (props: React.ComponentProps<'svg'>) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
-        <path d="M20.317 4.3698C18.698 3.5048 16.929 2.8748 15.093 2.5008C15.029 2.6808 14.962 2.8598 14.893 3.0378C13.821 4.5418 12.879 5.8648 12 7.0568C11.121 5.8648 10.179 4.5418 9.107 3.0378C9.038 2.8598 8.971 2.6808 8.907 2.5008C7.071 2.8748 5.302 3.5048 3.683 4.3698C0.633 9.2088 0 14.4958 1.157 19.5258C3.122 20.9578 5.152 21.9888 7.265 22.6228C7.611 22.0918 7.925 21.5368 8.208 20.9578C7.712 20.6978 7.234 20.4138 6.78 20.0938C6.924 20.0108 7.065 19.9218 7.202 19.8278C10.223 21.6138 13.777 21.6138 16.798 19.8278C16.935 19.9218 17.076 20.0108 17.22 20.0938C16.766 20.4138 16.288 20.6978 15.792 20.9578C16.075 21.5368 16.389 22.0918 16.735 22.6228C18.848 21.9888 20.878 20.9578 22.843 19.5258C24.08 13.7668 23.185 8.5258 20.317 4.3698ZM8.02 15.3318C7.076 15.3318 6.283 14.5008 6.283 13.5078C6.283 12.5158 7.076 11.6838 8.02 11.6838C8.964 11.6838 9.757 12.5158 9.757 13.5078C9.757 14.5008 8.964 15.3318 8.02 15.3318ZM15.98 15.3318C15.036 15.3318 14.243 14.5008 14.243 13.5078C14.243 12.5158 15.036 11.6838 15.98 11.6838C16.924 11.6838 17.717 12.5158 17.717 13.5078C17.717 14.5008 16.924 15.3318 15.98 15.3318Z"></path>
+const FacebookIcon = (props: React.ComponentProps<'svg'>) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
     </svg>
 );
 
@@ -55,8 +55,8 @@ const footerNav = [
 
 const socialLinks = [
     { name: 'GitHub', href: '#', icon: GithubIcon },
-    { name: 'Twitter', href: '#', icon: TwitterIcon },
-    { name: 'Discord', href: '#', icon: DiscordIcon },
+    { name: 'Facebook', href: '#', icon: FacebookIcon },
+    { name: 'Instagram', href: '#', icon: InstagramIcon },
 ]
 
 export default function Footer() {
