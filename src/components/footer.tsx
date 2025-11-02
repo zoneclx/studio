@@ -54,9 +54,9 @@ const footerNav = [
 ];
 
 const socialLinks = [
-    { name: 'GitHub', href: '#', icon: GithubIcon },
-    { name: 'Facebook', href: '#', icon: FacebookIcon },
-    { name: 'Instagram', href: '#', icon: InstagramIcon },
+    { name: 'GitHub', href: 'https://github.com/Firebase-Gen-AI/studio-nextjs-starter', icon: GithubIcon },
+    { name: 'Facebook', href: 'https://www.facebook.com/Firebase', icon: FacebookIcon },
+    { name: 'Instagram', href: 'https://www.instagram.com/firebase', icon: InstagramIcon },
 ]
 
 export default function Footer() {
@@ -92,7 +92,7 @@ export default function Footer() {
                 </p>
                 <div className="flex items-center gap-4">
                     {socialLinks.map((link) => (
-                        <Link key={link.name} href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
+                        <Link key={link.name} href={link.href} className="text-muted-foreground hover:text-primary transition-colors" target="_blank" rel="noopener noreferrer">
                             <span className="sr-only">{link.name}</span>
                             <link.icon className="h-5 w-5" />
                         </Link>
