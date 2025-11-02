@@ -59,7 +59,7 @@ export default function PrivacyPolicyPage() {
               <section>
                 <h2 className="text-xl font-semibold text-foreground mb-2">5. Contact Us</h2>
                 <p>
-                  If you have questions or comments about this Privacy Policy, please contact us at: enzogimena.business@gmail.com
+                  If you have questions or comments about this Privacy Policy, please contact us at: byteamogus@gmail.com
                 </p>
               </section>
             </div>

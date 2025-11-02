@@ -6,7 +6,7 @@ import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ContactPage() {
-  const email = 'support@bytestudio.dev';
+  const email = 'byteamogus@gmail.com';
 
   return (
     <div className="container mx-auto max-w-2xl py-8 px-4 flex-1 flex items-center justify-center pt-24">

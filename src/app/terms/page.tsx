@@ -62,7 +62,7 @@ export default function TermsPage() {
                <section>
                 <h2 className="text-xl font-semibold text-foreground mb-2">7. Contact Us</h2>
                 <p>
-                  If you have questions or comments about these Terms of Service, please contact us at: enzogimena.business@gmail.com
+                  If you have questions or comments about these Terms of Service, please contact us at: byteamogus@gmail.com
                 </p>
               </section>
             </div>
