@@ -54,9 +54,9 @@ const footerNav = [
 ];
 
 const socialLinks = [
-    { name: 'GitHub', href: 'https://github.com/Firebase-Gen-AI/studio-nextjs-starter', icon: GithubIcon },
-    { name: 'Facebook', href: 'https://www.facebook.com/Firebase', icon: FacebookIcon },
-    { name: 'Instagram', href: 'https://www.instagram.com/firebase', icon: InstagramIcon },
+    { name: 'GitHub', href: 'https://github.com/zoneclx', icon: GithubIcon },
+    { name: 'Facebook', href: 'https://www.facebook.com/enzodegimena.shawn', icon: FacebookIcon },
+    { name: 'Instagram', href: 'https://www.instagram.com/enzogimena.shawn', icon: InstagramIcon },
 ]
 
 export default function Footer() {
